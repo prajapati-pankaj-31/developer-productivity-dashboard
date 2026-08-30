@@ -5,7 +5,7 @@ export const CURRENT_USER: User = {
   name: 'Pankaj Prajapati',
   email: 'pankaj.prajapati@devhub.io',
   role: 'AI & Full Stack Developer',
-  avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+  avatarUrl: '/pankaj.jpg',
   initials: 'PP',
   status: 'flow',
   statusMessage: 'Deep work on Developer Productivity Dashboard & AI integrations',

@@ -72,8 +72,8 @@ export const MobileNav: React.FC<MobileNavProps> = ({
                 <Code2 className="h-5 w-5" />
               </div>
               <div>
-                <span className="font-bold text-sm text-zinc-900 dark:text-white">DevPulse</span>
-                <p className="text-[10px] text-zinc-400 uppercase tracking-wider">Engineering Org</p>
+                <span className="font-bold text-sm text-zinc-900 dark:text-white">Pankaj&apos;s DevHub</span>
+                <p className="text-[10px] text-zinc-400 uppercase tracking-wider">Personal Workspace</p>
               </div>
             </div>
             <button

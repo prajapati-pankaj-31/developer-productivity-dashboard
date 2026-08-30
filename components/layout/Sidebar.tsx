@@ -53,14 +53,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <div className="flex flex-col min-w-0">
               <div className="flex items-center gap-1.5">
                 <span className="font-bold text-sm tracking-tight text-zinc-900 dark:text-white truncate">
-                  DevPulse
+                  Pankaj&apos;s DevHub
                 </span>
                 <span className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.2 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800">
-                  Pro
+                  AI &amp; Dev
                 </span>
               </div>
               <span className="text-xs text-zinc-400 dark:text-zinc-500 truncate">
-                Engineering Org
+                Personal Workspace
               </span>
             </div>
           )}

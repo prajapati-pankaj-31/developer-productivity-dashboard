@@ -110,6 +110,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   return (
     <aside
       ref={sidebarRef}
+      suppressHydrationWarning
       style={{ width: isCollapsed ? 80 : `${width}px` }}
       className={cn(
         'relative hidden lg:flex flex-col justify-between border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 select-none z-20 shrink-0 h-full overflow-hidden',

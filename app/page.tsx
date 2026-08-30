@@ -23,6 +23,7 @@ import { TaskList } from '@/components/dashboard/TaskList';
 import { ActivityFeed } from '@/components/dashboard/ActivityFeed';
 import { ProjectDetailModal } from '@/components/dashboard/ProjectDetailModal';
 import { NewTaskModal } from '@/components/dashboard/NewTaskModal';
+import { AmbientBackground } from '@/components/ui/AmbientBackground';
 import { Button } from '@/components/ui/Button';
 import {
   Sparkles,
@@ -175,7 +176,10 @@ export default function DashboardPage() {
   }, [projects, filters]);
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-zinc-50 dark:bg-zinc-950 font-sans">
+    <div className="relative flex h-screen w-full overflow-hidden bg-zinc-50 dark:bg-zinc-950 font-sans">
+      {/* Subtle Dynamic Ambient Background */}
+      <AmbientBackground />
+
       {/* Mobile Navigation Drawer */}
       <MobileNav
         isOpen={isMobileNavOpen}
@@ -197,7 +201,7 @@ export default function DashboardPage() {
       />
 
       {/* Main Content Area */}
-      <div className="flex flex-1 flex-col overflow-hidden">
+      <div className="relative z-10 flex flex-1 flex-col overflow-hidden">
         {/* Top Header */}
         <Header
           currentUser={currentUser}

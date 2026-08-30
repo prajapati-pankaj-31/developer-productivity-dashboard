@@ -52,3 +52,72 @@ body {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Developer Ambient Grid Pattern */
+.bg-dev-grid {
+  background-image: 
+    linear-gradient(to right, rgba(99, 102, 241, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(99, 102, 241, 0.035) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.dark .bg-dev-grid {
+  background-image: 
+    linear-gradient(to right, rgba(99, 102, 241, 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(99, 102, 241, 0.045) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* Ambient Floating Glow Animations */
+@keyframes ambientDrift1 {
+  0%, 100% {
+    transform: translate(0px, 0px) scale(1);
+    opacity: 0.12;
+  }
+  50% {
+    transform: translate(40px, 25px) scale(1.08);
+    opacity: 0.18;
+  }
+}
+
+@keyframes ambientDrift2 {
+  0%, 100% {
+    transform: translate(0px, 0px) scale(1);
+    opacity: 0.10;
+  }
+  50% {
+    transform: translate(-35px, -30px) scale(1.05);
+    opacity: 0.16;
+  }
+}
+
+@keyframes ambientDrift3 {
+  0%, 100% {
+    transform: translate(0px, 0px) scale(1);
+    opacity: 0.08;
+  }
+  50% {
+    transform: translate(25px, -20px) scale(1.1);
+    opacity: 0.14;
+  }
+}
+
+.animate-ambient-1 {
+  animation: ambientDrift1 22s ease-in-out infinite;
+}
+
+.animate-ambient-2 {
+  animation: ambientDrift2 28s ease-in-out infinite;
+}
+
+.animate-ambient-3 {
+  animation: ambientDrift3 34s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-ambient-1,
+  .animate-ambient-2,
+  .animate-ambient-3 {
+    animation: none !important;
+  }
+}

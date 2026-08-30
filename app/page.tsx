@@ -160,6 +160,8 @@ export default function DashboardPage() {
         activeTab={activeTab}
         onTabChange={setActiveTab}
         currentUser={currentUser}
+        projectsCount={projects.length}
+        tasksCount={tasks.length}
       />
 
       {/* Desktop Sidebar */}
@@ -167,6 +169,8 @@ export default function DashboardPage() {
         activeTab={activeTab}
         onTabChange={setActiveTab}
         currentUser={currentUser}
+        projectsCount={projects.length}
+        tasksCount={tasks.length}
       />
 
       {/* Main Content Area */}

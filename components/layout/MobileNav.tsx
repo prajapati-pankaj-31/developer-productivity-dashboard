@@ -19,6 +19,8 @@ interface MobileNavProps {
   activeTab: TabType;
   onTabChange: (tab: TabType) => void;
   currentUser: User;
+  projectsCount?: number;
+  tasksCount?: number;
 }
 
 export const MobileNav: React.FC<MobileNavProps> = ({
@@ -27,6 +29,8 @@ export const MobileNav: React.FC<MobileNavProps> = ({
   activeTab,
   onTabChange,
   currentUser,
+  projectsCount,
+  tasksCount,
 }) => {
   useEffect(() => {
     if (isOpen) {
@@ -43,8 +47,8 @@ export const MobileNav: React.FC<MobileNavProps> = ({
 
   const navItems: { id: TabType; label: string; icon: React.ComponentType<{ className?: string }>; badge?: string }[] = [
     { id: 'overview', label: 'Overview', icon: LayoutDashboard },
-    { id: 'projects', label: 'Projects', icon: FolderGit2, badge: '4' },
-    { id: 'tasks', label: 'Tasks & Sprints', icon: CheckSquare, badge: '6' },
+    { id: 'projects', label: 'Projects', icon: FolderGit2, badge: projectsCount !== undefined ? `${projectsCount}` : undefined },
+    { id: 'tasks', label: 'Tasks & Sprints', icon: CheckSquare, badge: tasksCount !== undefined ? `${tasksCount}` : undefined },
     { id: 'activity', label: 'Activity Feed', icon: Activity },
   ];
 

@@ -4,7 +4,7 @@ import React from 'react';
 import { Task, TaskStatus } from '@/types';
 import { Avatar } from '@/components/ui/Avatar';
 import { ProgressBar } from '@/components/ui/ProgressBar';
-import { getPriorityStyles, formatDate } from '@/lib/utils';
+import { getPriorityStyles, formatDate, cn } from '@/lib/utils';
 import {
   Calendar,
   GitBranch,
@@ -37,7 +37,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
         {/* Header: Project Key + Priority + Status selector */}
         <div className="flex items-center justify-between gap-2 mb-2.5">
           <div className="flex items-center gap-1.5 flex-wrap">
-            <span className="text-[11px] font-semibold text-zinc-500 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded">
+            <span className="text-[11px] font-semibold text-zinc-700 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-800 border border-zinc-200/80 dark:border-zinc-700/80 px-2 py-0.5 rounded">
               {task.projectName}
             </span>
             <span
@@ -53,39 +53,40 @@ export const TaskCard: React.FC<TaskCardProps> = ({
             <select
               value={task.status}
               onChange={(e) => onStatusChange(task.id, e.target.value as TaskStatus)}
-              className="appearance-none rounded-md border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 px-2.5 py-1 pr-6 text-[11px] font-semibold text-zinc-700 dark:text-zinc-300 focus:outline-none focus:ring-1 focus:ring-indigo-500 cursor-pointer"
+              className="appearance-none rounded-md border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 px-2.5 py-1 pr-6 text-[11px] font-semibold text-zinc-800 dark:text-zinc-200 focus:outline-none focus:ring-1 focus:ring-indigo-500 cursor-pointer shadow-2xs"
             >
               <option value="backlog">Backlog</option>
               <option value="in_progress">In Progress</option>
               <option value="in_review">In Review</option>
               <option value="completed">Completed</option>
             </select>
-            <ChevronDown className="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 h-3 w-3 text-zinc-400" />
+            <ChevronDown className="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 h-3 w-3 text-zinc-500 dark:text-zinc-400" />
           </div>
         </div>
 
         {/* Title */}
         <h4
-          className={`text-sm font-bold leading-snug mb-1.5 ${
+          className={cn(
+            'text-sm font-bold leading-snug mb-1.5 transition-colors',
             task.status === 'completed'
-              ? 'line-through text-zinc-400 dark:text-zinc-500'
-              : 'text-zinc-900 dark:text-zinc-100'
-          }`}
+              ? 'line-through text-zinc-500 dark:text-zinc-400'
+              : 'text-zinc-950 dark:text-white'
+          )}
         >
           {task.title}
         </h4>
 
         {/* Description */}
-        <p className="text-xs text-zinc-500 dark:text-zinc-400 line-clamp-2 mb-3 leading-relaxed">
+        <p className="text-xs text-zinc-700 dark:text-zinc-300 line-clamp-2 mb-3 leading-relaxed font-normal">
           {task.description}
         </p>
 
         {/* Tags */}
-        <div className="flex flex-wrap gap-1 mb-3">
+        <div className="flex flex-wrap gap-1.5 mb-3">
           {task.tags.map((tag) => (
             <span
               key={tag}
-              className="text-[10px] font-medium px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800/80 text-zinc-600 dark:text-zinc-400"
+              className="text-[10px] font-semibold px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200/80 dark:border-zinc-700/80"
             >
               #{tag}
             </span>
@@ -94,30 +95,30 @@ export const TaskCard: React.FC<TaskCardProps> = ({
 
         {/* Git Branch & PR */}
         {(task.branchName || task.prNumber) && (
-          <div className="flex items-center gap-2 mb-3 text-[11px] text-zinc-500 dark:text-zinc-400 flex-wrap">
+          <div className="flex items-center gap-2 mb-3 text-xs flex-wrap">
             {task.branchName && (
-              <span className="inline-flex items-center gap-1 font-mono bg-zinc-50 dark:bg-zinc-800 px-1.5 py-0.5 rounded border border-zinc-200/60 dark:border-zinc-700/60">
-                <GitBranch className="h-3 w-3 text-indigo-500" />
+              <span className="inline-flex items-center gap-1 font-mono text-zinc-800 dark:text-zinc-200 bg-zinc-100/90 dark:bg-zinc-800 px-2 py-0.5 rounded border border-zinc-200 dark:border-zinc-700 font-medium">
+                <GitBranch className="h-3 w-3 text-indigo-600 dark:text-indigo-400" />
                 {task.branchName}
               </span>
             )}
             {task.prNumber && (
-              <span className="inline-flex items-center gap-1 font-mono text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/40 px-1.5 py-0.5 rounded border border-purple-200/60 dark:border-purple-800/60">
-                <GitPullRequest className="h-3 w-3" />
+              <span className="inline-flex items-center gap-1 font-mono text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/60 px-2 py-0.5 rounded border border-purple-200 dark:border-purple-800 font-medium">
+                <GitPullRequest className="h-3 w-3 text-purple-600 dark:text-purple-400" />
                 #{task.prNumber}
               </span>
             )}
           </div>
         )}
 
-        {/* Subtask checklist progress */}
+        {/* Subtask checklist container */}
         {totalSubtasks > 0 && (
-          <div className="mb-3 p-2.5 rounded-lg bg-zinc-50 dark:bg-zinc-850/60 border border-zinc-200/60 dark:border-zinc-800">
-            <div className="flex items-center justify-between text-[11px] text-zinc-500 dark:text-zinc-400 mb-1.5 font-medium">
-              <span className="flex items-center gap-1">
-                <CheckSquare className="h-3.5 w-3.5 text-zinc-400" /> Subtasks
+          <div className="mb-3 p-3 rounded-lg bg-zinc-100/90 dark:bg-zinc-800/60 border border-zinc-200/90 dark:border-zinc-700/80 transition-colors">
+            <div className="flex items-center justify-between text-xs text-zinc-700 dark:text-zinc-300 mb-2 font-semibold">
+              <span className="flex items-center gap-1.5">
+                <CheckSquare className="h-3.5 w-3.5 text-zinc-600 dark:text-zinc-400" /> Subtasks
               </span>
-              <span className="font-semibold text-zinc-800 dark:text-zinc-200">
+              <span className="font-bold text-zinc-950 dark:text-white">
                 {completedSubtasks}/{totalSubtasks} ({subtaskProgress}%)
               </span>
             </div>
@@ -128,23 +129,29 @@ export const TaskCard: React.FC<TaskCardProps> = ({
             />
 
             {/* Checklist items */}
-            <div className="mt-2 space-y-1">
+            <div className="mt-2.5 space-y-1.5">
               {task.subtasks.map((st) => (
-                <div
+                <label
                   key={st.id}
-                  onClick={() => onToggleSubtask && onToggleSubtask(task.id, st.id)}
-                  className="flex items-center gap-2 text-xs text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100 cursor-pointer select-none"
+                  className="flex items-center gap-2.5 py-1 text-xs hover:text-zinc-950 dark:hover:text-white cursor-pointer select-none group/item"
                 >
                   <input
                     type="checkbox"
                     checked={st.completed}
                     onChange={() => onToggleSubtask && onToggleSubtask(task.id, st.id)}
-                    className="h-3.5 w-3.5 rounded border-zinc-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+                    className="h-3.5 w-3.5 rounded border-zinc-400 dark:border-zinc-600 text-indigo-600 focus:ring-indigo-500 cursor-pointer shrink-0"
                   />
-                  <span className={`text-[11px] ${st.completed ? 'line-through text-zinc-400 dark:text-zinc-500' : ''}`}>
+                  <span
+                    className={cn(
+                      'text-xs leading-tight transition-colors',
+                      st.completed
+                        ? 'line-through text-zinc-500 dark:text-zinc-400 font-medium'
+                        : 'text-zinc-900 dark:text-zinc-100 font-medium'
+                    )}
+                  >
                     {st.title}
                   </span>
-                </div>
+                </label>
               ))}
             </div>
           </div>
@@ -152,21 +159,21 @@ export const TaskCard: React.FC<TaskCardProps> = ({
       </div>
 
       {/* Footer: Due date, logged hours & Assignee */}
-      <div className="pt-3 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
-        <div className="flex items-center gap-3 text-[11px] text-zinc-500 dark:text-zinc-400">
-          <span className="flex items-center gap-1 font-medium">
-            <Calendar className="h-3 w-3 text-zinc-400" />
-            {formatDate(task.dueDate)}
+      <div className="pt-3 border-t border-zinc-200/80 dark:border-zinc-800 flex items-center justify-between gap-2 flex-wrap">
+        <div className="flex items-center gap-3 text-xs text-zinc-700 dark:text-zinc-300">
+          <span className="flex items-center gap-1.5 font-medium" title="Due date">
+            <Calendar className="h-3.5 w-3.5 text-zinc-500 dark:text-zinc-400 shrink-0" />
+            <span>{formatDate(task.dueDate)}</span>
           </span>
-          <span className="flex items-center gap-1 font-mono">
-            <Clock className="h-3 w-3 text-zinc-400" />
-            {task.loggedHours}h / {task.estimatedHours}h
+          <span className="flex items-center gap-1.5 font-mono text-zinc-800 dark:text-zinc-200 font-medium" title="Logged / Estimated hours">
+            <Clock className="h-3.5 w-3.5 text-zinc-500 dark:text-zinc-400 shrink-0" />
+            <span>{task.loggedHours}h / {task.estimatedHours}h</span>
           </span>
         </div>
 
         <div className="flex items-center gap-2">
           <Avatar user={task.assignee} size="xs" />
-          <span className="text-[11px] font-medium text-zinc-700 dark:text-zinc-300 hidden sm:inline">
+          <span className="text-xs font-semibold text-zinc-800 dark:text-zinc-200 hidden sm:inline">
             {task.assignee.name.split(' ')[0]}
           </span>
         </div>

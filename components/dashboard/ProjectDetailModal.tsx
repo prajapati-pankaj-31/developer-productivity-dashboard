@@ -131,7 +131,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
         {/* Active Tasks associated with project */}
         <div>
           <div className="flex items-center justify-between mb-2">
-            <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-wider">
+            <h4 className="text-xs font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
               Sprint Tasks ({projectTasks.length})
             </h4>
             <Button
@@ -149,27 +149,27 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
             {projectTasks.map((t) => (
               <div
                 key={t.id}
-                className="p-2.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-850 flex items-center justify-between text-xs"
+                className="p-2.5 rounded-lg border border-zinc-200/80 dark:border-zinc-700/80 bg-zinc-100/80 dark:bg-zinc-800/60 flex items-center justify-between text-xs transition-colors"
               >
                 <div className="flex items-center gap-2 truncate mr-2">
                   <CheckCircle2
                     className={`h-4 w-4 shrink-0 ${
                       t.status === 'completed'
                         ? 'text-emerald-500'
-                        : 'text-zinc-400 dark:text-zinc-600'
+                        : 'text-zinc-400 dark:text-zinc-500'
                     }`}
                   />
                   <span
                     className={`truncate font-medium ${
                       t.status === 'completed'
-                        ? 'line-through text-zinc-400'
-                        : 'text-zinc-800 dark:text-zinc-200'
+                        ? 'line-through text-zinc-500 dark:text-zinc-400'
+                        : 'text-zinc-950 dark:text-white'
                     }`}
                   >
                     {t.title}
                   </span>
                 </div>
-                <span className="text-[11px] text-zinc-400 shrink-0 font-mono">
+                <span className="text-xs text-zinc-700 dark:text-zinc-300 shrink-0 font-mono font-medium">
                   {t.estimatedHours}h est.
                 </span>
               </div>

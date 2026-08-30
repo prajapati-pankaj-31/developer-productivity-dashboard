@@ -68,7 +68,18 @@ export default function DashboardPage() {
   // Task Actions
   const handleStatusChange = (taskId: string, newStatus: TaskStatus) => {
     setTasks((prevTasks) =>
-      prevTasks.map((t) => (t.id === taskId ? { ...t, status: newStatus } : t))
+      prevTasks.map((t) => {
+        if (t.id === taskId) {
+          // If manually marked completed, auto-complete all subtasks
+          const updatedSubtasks =
+            newStatus === 'completed'
+              ? t.subtasks.map((st) => ({ ...st, completed: true }))
+              : t.subtasks;
+
+          return { ...t, status: newStatus, subtasks: updatedSubtasks };
+        }
+        return t;
+      })
     );
   };
 
@@ -76,11 +87,23 @@ export default function DashboardPage() {
     setTasks((prevTasks) =>
       prevTasks.map((t) => {
         if (t.id === taskId) {
+          const updatedSubtasks = t.subtasks.map((st) =>
+            st.id === subtaskId ? { ...st, completed: !st.completed } : st
+          );
+          const allCompleted =
+            updatedSubtasks.length > 0 && updatedSubtasks.every((st) => st.completed);
+
+          let nextStatus = t.status;
+          if (allCompleted && t.status !== 'completed') {
+            nextStatus = 'completed';
+          } else if (!allCompleted && t.status === 'completed') {
+            nextStatus = 'in_progress';
+          }
+
           return {
             ...t,
-            subtasks: t.subtasks.map((st) =>
-              st.id === subtaskId ? { ...st, completed: !st.completed } : st
-            ),
+            status: nextStatus,
+            subtasks: updatedSubtasks,
           };
         }
         return t;

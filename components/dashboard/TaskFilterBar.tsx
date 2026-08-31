@@ -29,7 +29,7 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
     filters.status !== 'all';
 
   return (
-    <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 p-3.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-xs">
+    <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 p-3.5 rounded-xl border border-zinc-200/80 dark:border-zinc-800/60 bg-white/85 dark:bg-[#0c0e1f]/75 backdrop-blur-md shadow-xs">
       {/* Search Input */}
       <div className="relative flex-1 min-w-[200px]">
         <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">

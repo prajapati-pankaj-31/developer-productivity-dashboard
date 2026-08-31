@@ -22,7 +22,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
   return (
     <div
       onClick={() => onSelectProject && onSelectProject(project)}
-      className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 shadow-xs hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-md transition-all flex flex-col justify-between cursor-pointer group"
+      className="rounded-xl border border-zinc-200/80 dark:border-zinc-800/60 bg-white/85 dark:bg-[#0c0e1f]/75 backdrop-blur-md p-5 shadow-xs hover:border-indigo-500/40 dark:hover:border-indigo-500/30 hover:shadow-md transition-all flex flex-col justify-between cursor-pointer group"
     >
       <div>
         {/* Top bar: Key + Status */}

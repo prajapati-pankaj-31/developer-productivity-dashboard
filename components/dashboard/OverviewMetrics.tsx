@@ -58,7 +58,7 @@ export const OverviewMetrics: React.FC<OverviewMetricsProps> = ({
       {metrics.map((metric) => (
         <div
           key={metric.id}
-          className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 shadow-xs transition-all hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-sm group"
+          className="rounded-xl border border-zinc-200/80 dark:border-zinc-800/60 bg-white/85 dark:bg-[#0c0e1f]/75 backdrop-blur-md p-5 shadow-xs transition-all hover:border-indigo-500/40 dark:hover:border-indigo-500/30 hover:shadow-sm group"
         >
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">

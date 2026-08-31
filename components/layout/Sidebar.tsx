@@ -113,14 +113,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
       suppressHydrationWarning
       style={{ width: isCollapsed ? 80 : `${width}px` }}
       className={cn(
-        'relative hidden lg:flex flex-col justify-between border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 select-none z-20 shrink-0 h-full overflow-hidden',
+        'relative hidden lg:flex flex-col justify-between border-r border-zinc-200/80 dark:border-zinc-800/60 bg-white/85 dark:bg-[#070914]/80 backdrop-blur-md select-none z-20 shrink-0 h-full overflow-hidden',
         isResizing ? 'transition-none' : 'transition-[width] duration-150 ease-out'
       )}
     >
       {/* Content Container */}
       <div className="flex flex-col h-full overflow-y-auto p-4 scrollbar-none">
         {/* Brand / Logo */}
-        <div className="flex items-center gap-3 px-2 py-2 mb-6 border-b border-zinc-100 dark:border-zinc-850 pb-4">
+        <div className="flex items-center gap-3 px-2 py-2 mb-6 border-b border-zinc-100 dark:border-zinc-800/60 pb-4">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-400 text-white shadow-md shadow-indigo-500/20">
             <Code2 className="h-5 w-5" />
           </div>
@@ -158,8 +158,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 className={cn(
                   'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all group relative',
                   isActive
-                    ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300 font-semibold'
-                    : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:text-zinc-100 dark:hover:bg-zinc-900'
+                    ? 'bg-indigo-50/90 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300 font-semibold shadow-2xs'
+                    : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100/70 dark:text-zinc-400 dark:hover:text-zinc-100 dark:hover:bg-zinc-900/50'
                 )}
                 title={item.label}
               >
@@ -198,7 +198,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
         {/* Focus Mode & Productivity Card */}
         {!isCollapsed && (
-          <div className="mt-8 p-3.5 rounded-xl bg-gradient-to-b from-indigo-50/80 to-zinc-50 dark:from-indigo-950/20 dark:to-zinc-900/50 border border-indigo-100 dark:border-indigo-950/60 shadow-xs">
+          <div className="mt-8 p-3.5 rounded-xl bg-gradient-to-b from-indigo-50/70 to-zinc-50/50 dark:from-[#0d1024]/70 dark:to-zinc-900/50 backdrop-blur-xs border border-indigo-100/70 dark:border-indigo-950/60 shadow-2xs">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-1.5 text-xs font-semibold text-zinc-900 dark:text-zinc-200">
                 <Zap className="h-4 w-4 text-amber-500 fill-amber-500 shrink-0" />
@@ -223,8 +223,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* User profile footer */}
-      <div className="p-3 border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/40">
-        <div className="flex items-center gap-3 px-2 py-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800/60 transition-colors">
+      <div className="p-3 border-t border-zinc-200/80 dark:border-zinc-800/60 bg-zinc-50/40 dark:bg-zinc-900/30">
+        <div className="flex items-center gap-3 px-2 py-1.5 rounded-lg hover:bg-zinc-100/60 dark:hover:bg-zinc-800/50 transition-colors">
           <Avatar user={currentUser} size="sm" showStatus />
           {!isCollapsed && (
             <div className="flex flex-col min-w-0 flex-1">

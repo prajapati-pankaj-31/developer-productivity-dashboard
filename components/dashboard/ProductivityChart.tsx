@@ -21,7 +21,7 @@ export const ProductivityChart: React.FC<ProductivityChartProps> = ({ data }) =>
   const totalTasks = data.reduce((acc, curr) => acc + curr.tasksCompleted, 0);
 
   return (
-    <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 shadow-xs flex flex-col justify-between">
+    <div className="rounded-xl border border-zinc-200/80 dark:border-zinc-800/60 bg-white/85 dark:bg-[#0c0e1f]/75 backdrop-blur-md p-5 shadow-xs flex flex-col justify-between">
       {/* Header & Metric Toggles */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-zinc-100 dark:border-zinc-800">
         <div>

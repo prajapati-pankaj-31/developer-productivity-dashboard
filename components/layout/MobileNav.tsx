@@ -67,7 +67,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({
       />
 
       {/* Drawer */}
-      <div className="fixed inset-y-0 left-0 w-72 bg-white dark:bg-zinc-950 border-r border-zinc-200 dark:border-zinc-800 p-5 flex flex-col justify-between shadow-2xl z-10">
+      <div className="fixed inset-y-0 left-0 w-72 bg-white/90 dark:bg-[#070914]/90 backdrop-blur-lg border-r border-zinc-200/80 dark:border-zinc-800/60 p-5 flex flex-col justify-between shadow-2xl z-10">
         <div>
           {/* Header */}
           <div className="flex items-center justify-between pb-4 border-b border-zinc-100 dark:border-zinc-800">

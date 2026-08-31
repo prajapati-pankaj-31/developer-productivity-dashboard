@@ -23,7 +23,7 @@ import { TaskList } from '@/components/dashboard/TaskList';
 import { ActivityFeed } from '@/components/dashboard/ActivityFeed';
 import { ProjectDetailModal } from '@/components/dashboard/ProjectDetailModal';
 import { NewTaskModal } from '@/components/dashboard/NewTaskModal';
-import { AmbientBackground } from '@/components/ui/AmbientBackground';
+import { DynamicBackground } from '@/components/ui/DynamicBackground';
 import { Button } from '@/components/ui/Button';
 import {
   Sparkles,
@@ -177,8 +177,8 @@ export default function DashboardPage() {
 
   return (
     <div className="relative flex h-screen w-full overflow-hidden bg-zinc-50 dark:bg-zinc-950 font-sans">
-      {/* Subtle Dynamic Ambient Background */}
-      <AmbientBackground />
+      {/* Futuristic Dynamic Ambient Background */}
+      <DynamicBackground />
 
       {/* Mobile Navigation Drawer */}
       <MobileNav

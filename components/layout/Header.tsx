@@ -90,7 +90,7 @@ export const Header: React.FC<HeaderProps> = ({
   ];
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-zinc-200 dark:border-zinc-800 bg-white/90 dark:bg-zinc-950/90 backdrop-blur-md px-4 sm:px-6">
+    <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-zinc-200/80 dark:border-zinc-800/60 bg-white/80 dark:bg-[#070914]/75 backdrop-blur-md px-4 sm:px-6">
       {/* Left: Mobile trigger & Search */}
       <div className="flex items-center gap-3 flex-1 max-w-xl">
         <button

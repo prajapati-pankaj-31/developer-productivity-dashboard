@@ -32,7 +32,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   const subtaskProgress = totalSubtasks > 0 ? Math.round((completedSubtasks / totalSubtasks) * 100) : 0;
 
   return (
-    <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-4 shadow-xs hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-sm transition-all flex flex-col justify-between group">
+    <div className="rounded-xl border border-zinc-200/80 dark:border-zinc-800/60 bg-white/85 dark:bg-[#0c0e1f]/75 backdrop-blur-md p-4 shadow-xs hover:border-indigo-500/40 dark:hover:border-indigo-500/30 hover:shadow-sm transition-all flex flex-col justify-between group">
       <div>
         {/* Header: Project Key + Priority + Status selector */}
         <div className="flex items-center justify-between gap-2 mb-2.5">

@@ -14,7 +14,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #09090b;
+    --background: #04060e;
     --foreground: #f4f4f5;
   }
 }
@@ -56,68 +56,88 @@ body {
 /* Developer Ambient Grid Pattern */
 .bg-dev-grid {
   background-image: 
-    linear-gradient(to right, rgba(99, 102, 241, 0.035) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(99, 102, 241, 0.035) 1px, transparent 1px);
-  background-size: 32px 32px;
+    linear-gradient(to right, rgba(99, 102, 241, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(99, 102, 241, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
 }
 
 .dark .bg-dev-grid {
   background-image: 
-    linear-gradient(to right, rgba(99, 102, 241, 0.045) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(99, 102, 241, 0.045) 1px, transparent 1px);
-  background-size: 32px 32px;
+    linear-gradient(to right, rgba(99, 102, 241, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(99, 102, 241, 0.035) 1px, transparent 1px);
+  background-size: 40px 40px;
 }
 
-/* Ambient Floating Glow Animations */
-@keyframes ambientDrift1 {
+/* Constellation & Network Animations */
+@keyframes constellationPulse {
   0%, 100% {
-    transform: translate(0px, 0px) scale(1);
-    opacity: 0.12;
+    transform: scale(1);
+    opacity: 0.85;
   }
   50% {
-    transform: translate(40px, 25px) scale(1.08);
-    opacity: 0.18;
+    transform: scale(1.15);
+    opacity: 1;
   }
 }
 
-@keyframes ambientDrift2 {
+@keyframes nodeGlowTwinkle {
   0%, 100% {
-    transform: translate(0px, 0px) scale(1);
-    opacity: 0.10;
+    transform: scale(0.9);
+    opacity: 0.6;
   }
   50% {
-    transform: translate(-35px, -30px) scale(1.05);
-    opacity: 0.16;
+    transform: scale(1.35);
+    opacity: 1;
   }
 }
 
-@keyframes ambientDrift3 {
-  0%, 100% {
-    transform: translate(0px, 0px) scale(1);
-    opacity: 0.08;
+@keyframes meshWaveBottom {
+  0% {
+    transform: translate3d(0, 0, 0) scaleY(1);
+    opacity: 0.75;
   }
   50% {
-    transform: translate(25px, -20px) scale(1.1);
-    opacity: 0.14;
+    transform: translate3d(20px, -8px, 0) scaleY(1.08);
+    opacity: 0.95;
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scaleY(1);
+    opacity: 0.75;
   }
 }
 
-.animate-ambient-1 {
-  animation: ambientDrift1 22s ease-in-out infinite;
+@keyframes rayPulse {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.1);
+  }
 }
 
-.animate-ambient-2 {
-  animation: ambientDrift2 28s ease-in-out infinite;
+.animate-constellation {
+  animation: constellationPulse 12s ease-in-out infinite;
 }
 
-.animate-ambient-3 {
-  animation: ambientDrift3 34s ease-in-out infinite;
+.animate-node-twinkle {
+  animation: nodeGlowTwinkle 4s ease-in-out infinite;
+}
+
+.animate-mesh-bottom {
+  animation: meshWaveBottom 24s ease-in-out infinite;
+}
+
+.animate-ray-pulse {
+  animation: rayPulse 6s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .animate-ambient-1,
-  .animate-ambient-2,
-  .animate-ambient-3 {
+  .animate-constellation,
+  .animate-node-twinkle,
+  .animate-mesh-bottom,
+  .animate-ray-pulse {
     animation: none !important;
   }
 }

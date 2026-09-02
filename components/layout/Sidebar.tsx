@@ -113,14 +113,52 @@ export const Sidebar: React.FC<SidebarProps> = ({
       suppressHydrationWarning
       style={{ width: isCollapsed ? 80 : `${width}px` }}
       className={cn(
-        'relative hidden lg:flex flex-col justify-between border-r border-zinc-200/80 dark:border-zinc-800/60 bg-white/85 dark:bg-[#070914]/80 backdrop-blur-md select-none z-20 shrink-0 h-full overflow-hidden',
+        'relative hidden lg:flex flex-col justify-between border-r border-indigo-950/50 bg-[#050611]/92 backdrop-blur-xl select-none z-20 shrink-0 h-full overflow-hidden shadow-[4px_0_24px_rgba(0,0,0,0.3)]',
         isResizing ? 'transition-none' : 'transition-[width] duration-150 ease-out'
       )}
     >
-      {/* Content Container */}
-      <div className="flex flex-col h-full overflow-y-auto p-4 scrollbar-none">
+      {/* Internal Subtle Futuristic Atmospheric Background Layers */}
+      <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden select-none" aria-hidden="true">
+        {/* Soft Ambient Radial Glows */}
+        <div
+          className="absolute inset-0 opacity-80"
+          style={{
+            background:
+              'radial-gradient(circle 220px at 15% 10%, rgba(99, 102, 241, 0.08) 0%, transparent 70%), radial-gradient(circle 260px at 35% 82%, rgba(168, 85, 247, 0.12) 0%, transparent 70%)',
+          }}
+        />
+
+        {/* Faint Internal Constellation Vectors */}
+        <svg
+          className="absolute inset-0 w-full h-full opacity-35"
+          viewBox="0 0 280 800"
+          fill="none"
+          preserveAspectRatio="none"
+        >
+          <g stroke="rgba(168, 85, 247, 0.3)" strokeWidth="0.8" strokeDasharray="3 5">
+            <line x1="30" y1="620" x2="90" y2="580" />
+            <line x1="90" y1="580" x2="160" y2="640" />
+            <line x1="90" y1="580" x2="120" y2="710" />
+            <line x1="160" y1="640" x2="220" y2="600" />
+            <line x1="120" y1="710" x2="190" y2="730" />
+          </g>
+          <circle cx="30" cy="620" r="2" fill="#c084fc" />
+          <circle cx="90" cy="580" r="3" fill="#e879f9" />
+          <circle cx="160" cy="640" r="2.5" fill="#38bdf8" />
+          <circle cx="220" cy="600" r="2" fill="#818cf8" />
+          <circle cx="120" cy="710" r="2.5" fill="#d946ef" />
+          <circle cx="190" cy="730" r="2" fill="#00f0ff" />
+        </svg>
+
+        {/* Sparse Micro Particles */}
+        <div className="absolute top-[30%] right-[18%] w-1 h-1 rounded-full bg-indigo-400/25 blur-[0.5px] animate-subtle-particle" />
+        <div className="absolute bottom-[22%] left-[25%] w-1 h-1 rounded-full bg-purple-400/30 blur-[0.5px] animate-subtle-particle" style={{ animationDelay: '4s' }} />
+      </div>
+
+      {/* Content Container (Sits cleanly on top of atmospheric background) */}
+      <div className="relative z-10 flex flex-col h-full overflow-y-auto p-4 scrollbar-none">
         {/* Brand / Logo */}
-        <div className="flex items-center gap-3 px-2 py-2 mb-6 border-b border-zinc-100 dark:border-zinc-800/60 pb-4">
+        <div className="flex items-center gap-3 px-2 py-2 mb-6 border-b border-indigo-950/40 pb-4">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-400 text-white shadow-md shadow-indigo-500/20">
             <Code2 className="h-5 w-5" />
           </div>
@@ -130,11 +168,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 <span className="font-bold text-sm tracking-tight text-zinc-900 dark:text-white truncate">
                   Pankaj&apos;s DevHub
                 </span>
-                <span className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.2 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 shrink-0">
+                <span className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.2 rounded bg-indigo-950/80 text-indigo-300 border border-indigo-800/60 shrink-0">
                   AI &amp; Dev
                 </span>
               </div>
-              <span className="text-xs text-zinc-400 dark:text-zinc-500 truncate">
+              <span className="text-xs text-zinc-400 dark:text-zinc-400 truncate">
                 Personal Workspace
               </span>
             </div>
@@ -158,20 +196,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 className={cn(
                   'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all group relative',
                   isActive
-                    ? 'bg-indigo-50/90 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300 font-semibold shadow-2xs'
-                    : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100/70 dark:text-zinc-400 dark:hover:text-zinc-100 dark:hover:bg-zinc-900/50'
+                    ? 'bg-gradient-to-r from-indigo-600/20 to-indigo-600/5 text-indigo-300 font-semibold shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] border-l-2 border-indigo-500'
+                    : 'text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/40'
                 )}
                 title={item.label}
               >
-                {isActive && (
-                  <span className="absolute left-0 top-1.5 bottom-1.5 w-1 rounded-r-full bg-indigo-600 dark:bg-indigo-500" />
-                )}
                 <Icon
                   className={cn(
                     'h-5 w-5 shrink-0 transition-colors',
                     isActive
-                      ? 'text-indigo-600 dark:text-indigo-400'
-                      : 'text-zinc-400 group-hover:text-zinc-600 dark:text-zinc-500 dark:group-hover:text-zinc-300'
+                      ? 'text-indigo-400'
+                      : 'text-zinc-400 group-hover:text-zinc-200'
                   )}
                 />
                 {!isCollapsed && (
@@ -182,8 +217,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         className={cn(
                           'ml-auto text-xs px-2 py-0.5 rounded-full font-semibold shrink-0',
                           isActive
-                            ? 'bg-indigo-200 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200'
-                            : 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400'
+                            ? 'bg-indigo-900/80 text-indigo-200 border border-indigo-700/50'
+                            : 'bg-zinc-800 text-zinc-400 border border-zinc-700/50'
                         )}
                       >
                         {item.badge}
@@ -198,23 +233,23 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
         {/* Focus Mode & Productivity Card */}
         {!isCollapsed && (
-          <div className="mt-8 p-3.5 rounded-xl bg-gradient-to-b from-indigo-50/70 to-zinc-50/50 dark:from-[#0d1024]/70 dark:to-zinc-900/50 backdrop-blur-xs border border-indigo-100/70 dark:border-indigo-950/60 shadow-2xs">
+          <div className="mt-8 p-3.5 rounded-xl bg-gradient-to-b from-[#0e1227]/90 to-[#080a1a]/95 backdrop-blur-xs border border-indigo-950/60 shadow-[0_4px_16px_rgba(0,0,0,0.3),inset_0_1px_0_0_rgba(255,255,255,0.04)]">
             <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-1.5 text-xs font-semibold text-zinc-900 dark:text-zinc-200">
+              <div className="flex items-center gap-1.5 text-xs font-semibold text-zinc-200">
                 <Zap className="h-4 w-4 text-amber-500 fill-amber-500 shrink-0" />
                 <span className="truncate">Sprint Cycle 14</span>
               </div>
-              <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 shrink-0">
+              <span className="text-[11px] font-bold text-emerald-400 shrink-0">
                 On Track
               </span>
             </div>
-            <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mb-2.5 truncate">
+            <p className="text-[11px] text-zinc-400 mb-2.5 truncate">
               38 / 42 story pts resolved (90%)
             </p>
             <ProgressBar value={90} size="xs" variant="gradient" />
-            <div className="mt-3 pt-2.5 border-t border-zinc-200/60 dark:border-zinc-800/80 flex items-center justify-between text-[11px] text-zinc-500 dark:text-zinc-400">
+            <div className="mt-3 pt-2.5 border-t border-indigo-950/60 flex items-center justify-between text-[11px] text-zinc-400">
               <span className="flex items-center gap-1 truncate">
-                <TrendingUp className="h-3.5 w-3.5 text-emerald-500 shrink-0" /> +12% velocity
+                <TrendingUp className="h-3.5 w-3.5 text-emerald-400 shrink-0" /> +12% velocity
               </span>
               <span className="shrink-0">4d left</span>
             </div>
@@ -223,15 +258,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* User profile footer */}
-      <div className="p-3 border-t border-zinc-200/80 dark:border-zinc-800/60 bg-zinc-50/40 dark:bg-zinc-900/30">
-        <div className="flex items-center gap-3 px-2 py-1.5 rounded-lg hover:bg-zinc-100/60 dark:hover:bg-zinc-800/50 transition-colors">
+      <div className="relative z-10 p-3 border-t border-indigo-950/50 bg-[#050611]/80 backdrop-blur-xs">
+        <div className="flex items-center gap-3 px-2 py-1.5 rounded-lg hover:bg-zinc-800/40 transition-colors">
           <Avatar user={currentUser} size="sm" showStatus />
           {!isCollapsed && (
             <div className="flex flex-col min-w-0 flex-1">
-              <span className="text-xs font-semibold text-zinc-900 dark:text-zinc-100 truncate">
+              <span className="text-xs font-semibold text-zinc-100 truncate">
                 {currentUser.name}
               </span>
-              <span className="text-[11px] text-zinc-400 dark:text-zinc-500 truncate flex items-center gap-1">
+              <span className="text-[11px] text-zinc-400 truncate flex items-center gap-1">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />
                 <span className="truncate">Flow Mode Active</span>
               </span>
@@ -240,25 +275,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
       </div>
 
-      {/* Resizable Handle / Border */}
+      {/* Resizable Handle / Border (Desktop only) */}
       {!isCollapsed && (
         <div
           onMouseDown={handleMouseDown}
           className={cn(
-            'absolute top-0 right-0 bottom-0 w-2 cursor-col-resize select-none z-30 group flex items-center justify-center transition-colors',
-            isResizing ? 'bg-indigo-600/30 dark:bg-indigo-500/30' : 'hover:bg-indigo-500/20'
+            'absolute top-0 right-0 w-1.5 h-full cursor-col-resize z-30 transition-colors group',
+            isResizing ? 'bg-indigo-500/80 shadow-[0_0_8px_rgba(99,102,241,0.5)]' : 'hover:bg-indigo-500/40'
           )}
-          title="Drag to resize sidebar width"
+          title="Drag to resize sidebar (240px - 420px)"
         >
-          {/* Subtle central grip indicator on hover/drag */}
-          <div
-            className={cn(
-              'w-0.5 h-8 rounded-full transition-all duration-150',
-              isResizing
-                ? 'bg-indigo-600 dark:bg-indigo-400 h-12 w-1'
-                : 'bg-transparent group-hover:bg-indigo-400 dark:group-hover:bg-indigo-500'
-            )}
-          />
+          {/* Visual indicator bar */}
+          <div className="absolute top-1/2 -translate-y-1/2 right-0.5 w-0.5 h-8 bg-zinc-600 group-hover:bg-indigo-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
         </div>
       )}
     </aside>

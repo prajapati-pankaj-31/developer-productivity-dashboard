@@ -219,12 +219,19 @@ export default function DashboardPage() {
           {/* Welcome Banner */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-zinc-200/80 dark:border-zinc-800">
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-zinc-900 dark:text-white">
                   Developer Productivity Hub
                 </h1>
-                <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-semibold text-indigo-700 bg-indigo-50 dark:bg-indigo-950/60 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 px-2 py-0.5 rounded-full">
+                <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-semibold text-indigo-700 bg-indigo-50 dark:bg-indigo-950/60 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/60 px-2 py-0.5 rounded-full">
                   <Sparkles className="h-3 w-3 text-amber-500" /> Sprint #14
+                </span>
+                <span
+                  className="inline-flex items-center gap-1.5 text-[10px] font-medium text-zinc-600 dark:text-zinc-400 bg-zinc-100 dark:bg-[#0c0f24] border border-zinc-200 dark:border-indigo-950/60 px-2 py-0.5 rounded-full select-none"
+                  title="Prototype demonstrating developer metrics and telemetry"
+                >
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                  Simulated Telemetry
                 </span>
               </div>
               <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mt-1">

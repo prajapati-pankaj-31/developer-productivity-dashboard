@@ -21,9 +21,9 @@ export const ProductivityChart: React.FC<ProductivityChartProps> = ({ data }) =>
   const totalTasks = data.reduce((acc, curr) => acc + curr.tasksCompleted, 0);
 
   return (
-    <div className="rounded-xl border border-zinc-200/80 dark:border-zinc-800/60 bg-white/85 dark:bg-[#0c0e1f]/75 backdrop-blur-md p-5 shadow-xs flex flex-col justify-between">
+    <div className="rounded-xl border border-zinc-200/80 dark:border-indigo-950/60 bg-white dark:bg-gradient-to-b dark:from-[#0e1227]/90 dark:to-[#080a1c]/95 backdrop-blur-md p-5 shadow-[0_4px_20px_rgba(0,0,0,0.25),inset_0_1px_0_0_rgba(255,255,255,0.03)] flex flex-col justify-between">
       {/* Header & Metric Toggles */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-zinc-100 dark:border-zinc-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-zinc-100 dark:border-indigo-950/50">
         <div>
           <div className="flex items-center gap-2">
             <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">
@@ -39,7 +39,7 @@ export const ProductivityChart: React.FC<ProductivityChartProps> = ({ data }) =>
         </div>
 
         {/* View Switcher Tabs */}
-        <div className="inline-flex rounded-lg bg-zinc-100 dark:bg-zinc-800 p-1 self-start sm:self-auto text-xs">
+        <div className="inline-flex rounded-lg bg-zinc-100 dark:bg-[#070918]/80 border border-zinc-200/80 dark:border-indigo-950/50 p-1 self-start sm:self-auto text-xs">
           <button
             onClick={() => setActiveMetric('focus')}
             className={cn(
@@ -67,76 +67,81 @@ export const ProductivityChart: React.FC<ProductivityChartProps> = ({ data }) =>
         </div>
       </div>
 
-      {/* Chart Visual Section */}
-      <div className="pt-6 pb-2">
-        <div className="grid grid-cols-7 gap-2 sm:gap-4 items-end h-44 sm:h-48 px-2">
-          {data.map((day) => {
-            const isFocus = activeMetric === 'focus';
-            const value = isFocus ? day.focusHours : day.commitCount;
-            const maxValue = isFocus ? maxFocusHours : maxCommits;
-            const heightPercent = Math.max(Math.min((value / maxValue) * 100, 100), 4);
-            const isHovered = hoveredDay?.day === day.day;
+      {/* Chart Visualizer */}
+      <div className="mt-4">
+        {/* Metric Value Preview on Hover */}
+        <div className="flex items-center justify-between h-7 mb-2">
+          <span className="text-xs text-zinc-500 dark:text-zinc-400">
+            {activeMetric === 'focus' ? 'Focus Target: 7.0h / day' : 'Commit Cadence: Mon - Fri'}
+          </span>
+          {hoveredDay && (
+            <span className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 animate-in fade-in duration-100">
+              {hoveredDay.day}:{' '}
+              {activeMetric === 'focus'
+                ? `${hoveredDay.focusHours}h focus`
+                : `${hoveredDay.commitCount} commits, ${hoveredDay.pullRequestsCount} PRs`}
+            </span>
+          )}
+        </div>
+
+        {/* Bar Columns */}
+        <div className="flex items-end justify-between gap-2 sm:gap-4 h-48 pt-4 pb-2">
+          {data.map((item) => {
+            const value = activeMetric === 'focus' ? item.focusHours : item.commitCount;
+            const maxValue = activeMetric === 'focus' ? maxFocusHours : maxCommits;
+            const heightPercent = Math.max(Math.round((value / maxValue) * 100), 4);
+            const isHovered = hoveredDay?.day === item.day;
 
             return (
               <div
-                key={day.day}
-                className="flex flex-col items-center gap-2 group h-full justify-end relative cursor-pointer"
-                onMouseEnter={() => setHoveredDay(day)}
+                key={item.day}
+                onMouseEnter={() => setHoveredDay(item)}
                 onMouseLeave={() => setHoveredDay(null)}
+                className="flex-1 flex flex-col items-center gap-2 h-full justify-end group cursor-pointer"
               >
-                {/* Tooltip */}
-                {isHovered && (
-                  <div className="absolute -top-12 z-30 bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 px-2.5 py-1.5 rounded-lg text-xs font-medium shadow-lg whitespace-nowrap pointer-events-none animate-in fade-in zoom-in-95 duration-150">
-                    <p className="font-bold">{day.day}</p>
-                    <p className="text-[11px] opacity-90">
-                      {isFocus ? `${day.focusHours}h focus` : `${day.commitCount} commits`} • {day.tasksCompleted} tasks
-                    </p>
-                  </div>
-                )}
-
-                {/* Value Label */}
+                {/* Value tooltip on top of bar */}
                 <span
                   className={cn(
-                    'text-[10px] font-semibold transition-opacity duration-200',
-                    day.isToday
-                      ? 'text-indigo-600 dark:text-indigo-400'
-                      : 'text-zinc-400 group-hover:text-zinc-700 dark:group-hover:text-zinc-200'
+                    'text-[10px] font-mono transition-opacity duration-150',
+                    isHovered
+                      ? 'opacity-100 text-indigo-600 dark:text-indigo-400 font-bold'
+                      : 'opacity-60 text-zinc-400 group-hover:opacity-100'
                   )}
                 >
-                  {isFocus ? (value > 0 ? `${value}h` : '-') : (value > 0 ? value : '-')}
+                  {value > 0 ? (activeMetric === 'focus' ? `${value}h` : value) : '-'}
                 </span>
 
-                {/* Bar */}
-                <div className="w-full max-w-[36px] bg-zinc-100 dark:bg-zinc-800 rounded-t-lg overflow-hidden flex flex-col justify-end h-32 relative">
+                {/* Track and Bar Fill */}
+                <div className="w-full max-w-[48px] h-36 bg-zinc-100 dark:bg-zinc-800/40 rounded-lg overflow-hidden p-1 flex flex-col justify-end relative border border-transparent group-hover:border-indigo-500/30 transition-colors">
                   <div
-                    className={cn(
-                      'w-full rounded-t-lg transition-all duration-500',
-                      day.isToday
-                        ? 'bg-gradient-to-t from-indigo-600 to-indigo-400 shadow-sm shadow-indigo-500/30'
-                        : value > 0
-                        ? 'bg-zinc-300 dark:bg-zinc-700 group-hover:bg-indigo-400 dark:group-hover:bg-indigo-500'
-                        : 'bg-transparent'
-                    )}
                     style={{ height: `${heightPercent}%` }}
+                    className={cn(
+                      'w-full rounded-md transition-all duration-300 ease-out',
+                      item.isToday
+                        ? 'bg-gradient-to-t from-indigo-600 via-indigo-500 to-blue-400 shadow-md shadow-indigo-500/20'
+                        : isHovered
+                        ? 'bg-gradient-to-t from-indigo-500 to-indigo-400'
+                        : 'bg-gradient-to-t from-zinc-300 to-zinc-200 dark:from-zinc-700 dark:to-zinc-600'
+                    )}
                   />
                 </div>
 
-                {/* Day Label */}
-                <div className="flex flex-col items-center">
-                  <span
-                    className={cn(
-                      'text-xs font-medium transition-colors',
-                      day.isToday
-                        ? 'text-indigo-600 dark:text-indigo-400 font-bold'
-                        : 'text-zinc-500 dark:text-zinc-400'
-                    )}
-                  >
-                    {day.shortDay}
-                  </span>
-                  {day.isToday && (
-                    <span className="h-1 w-1 rounded-full bg-indigo-600 dark:bg-indigo-400 mt-0.5" />
+                {/* Day label */}
+                <span
+                  className={cn(
+                    'text-xs transition-colors',
+                    item.isToday
+                      ? 'font-bold text-indigo-600 dark:text-indigo-400'
+                      : isHovered
+                      ? 'font-medium text-zinc-900 dark:text-zinc-100'
+                      : 'text-zinc-400 dark:text-zinc-500'
                   )}
-                </div>
+                >
+                  {item.shortDay}
+                  {item.isToday && (
+                    <span className="block mx-auto h-1 w-1 rounded-full bg-indigo-600 dark:bg-indigo-400 mt-0.5" />
+                  )}
+                </span>
               </div>
             );
           })}
@@ -144,25 +149,25 @@ export const ProductivityChart: React.FC<ProductivityChartProps> = ({ data }) =>
       </div>
 
       {/* Summary Footer */}
-      <div className="mt-4 pt-3 border-t border-zinc-100 dark:border-zinc-800 grid grid-cols-3 gap-2.5 text-center">
-        <div className="p-2.5 rounded-lg bg-zinc-100/80 dark:bg-zinc-800/60 border border-zinc-200/80 dark:border-zinc-700/60 transition-colors">
-          <p className="text-[11px] text-zinc-600 dark:text-zinc-300 uppercase tracking-wider font-semibold">
+      <div className="mt-4 pt-3 border-t border-zinc-100 dark:border-indigo-950/50 grid grid-cols-3 gap-2.5 text-center">
+        <div className="p-2.5 rounded-lg bg-zinc-100/80 dark:bg-[#070918]/80 border border-zinc-200/80 dark:border-indigo-950/50 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.02)] transition-colors">
+          <p className="text-[11px] text-zinc-600 dark:text-zinc-400 uppercase tracking-wider font-semibold">
             Total Focus
           </p>
           <p className="text-base font-bold text-zinc-950 dark:text-white mt-0.5">
             {totalFocus.toFixed(1)}h
           </p>
         </div>
-        <div className="p-2.5 rounded-lg bg-zinc-100/80 dark:bg-zinc-800/60 border border-zinc-200/80 dark:border-zinc-700/60 transition-colors">
-          <p className="text-[11px] text-zinc-600 dark:text-zinc-300 uppercase tracking-wider font-semibold">
+        <div className="p-2.5 rounded-lg bg-zinc-100/80 dark:bg-[#070918]/80 border border-zinc-200/80 dark:border-indigo-950/50 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.02)] transition-colors">
+          <p className="text-[11px] text-zinc-600 dark:text-zinc-400 uppercase tracking-wider font-semibold">
             Total Commits
           </p>
           <p className="text-base font-bold text-zinc-950 dark:text-white mt-0.5">
             {totalCommits}
           </p>
         </div>
-        <div className="p-2.5 rounded-lg bg-zinc-100/80 dark:bg-zinc-800/60 border border-zinc-200/80 dark:border-zinc-700/60 transition-colors">
-          <p className="text-[11px] text-zinc-600 dark:text-zinc-300 uppercase tracking-wider font-semibold">
+        <div className="p-2.5 rounded-lg bg-zinc-100/80 dark:bg-[#070918]/80 border border-zinc-200/80 dark:border-indigo-950/50 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.02)] transition-colors">
+          <p className="text-[11px] text-zinc-600 dark:text-zinc-400 uppercase tracking-wider font-semibold">
             Completed
           </p>
           <p className="text-base font-bold text-zinc-950 dark:text-white mt-0.5">

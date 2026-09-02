@@ -61,9 +61,9 @@ export const FocusTimerCard: React.FC = () => {
   const progressPercent = Math.round(((totalModeSeconds - timeLeft) / totalModeSeconds) * 100);
 
   return (
-    <div className="rounded-xl border border-zinc-200/80 dark:border-zinc-800/60 bg-white/85 dark:bg-[#0c0e1f]/75 backdrop-blur-md p-5 shadow-xs flex flex-col justify-between">
+    <div className="rounded-xl border border-zinc-200/80 dark:border-indigo-950/60 bg-white dark:bg-gradient-to-b dark:from-[#0e1227]/90 dark:to-[#080a1c]/95 backdrop-blur-md p-5 shadow-[0_4px_20px_rgba(0,0,0,0.25),inset_0_1px_0_0_rgba(255,255,255,0.03)] flex flex-col justify-between">
       {/* Header */}
-      <div className="flex items-center justify-between pb-3 border-b border-zinc-100 dark:border-zinc-800">
+      <div className="flex items-center justify-between pb-3 border-b border-zinc-100 dark:border-indigo-950/50">
         <div className="flex items-center gap-2">
           <div className="p-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400">
             <Zap className="h-4 w-4" />
@@ -85,8 +85,8 @@ export const FocusTimerCard: React.FC = () => {
           className={cn(
             'px-3 py-1 text-xs font-semibold rounded-lg transition-colors cursor-pointer',
             mode === 'work'
-              ? 'bg-indigo-600 text-white dark:bg-indigo-500'
-              : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700'
+              ? 'bg-indigo-600 text-white dark:bg-indigo-500 shadow-xs'
+              : 'bg-zinc-100 dark:bg-zinc-800/80 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700'
           )}
         >
           25m Focus Sprint
@@ -96,8 +96,8 @@ export const FocusTimerCard: React.FC = () => {
           className={cn(
             'px-3 py-1 text-xs font-semibold rounded-lg transition-colors cursor-pointer',
             mode === 'break'
-              ? 'bg-emerald-600 text-white dark:bg-emerald-500'
-              : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700'
+              ? 'bg-emerald-600 text-white dark:bg-emerald-500 shadow-xs'
+              : 'bg-zinc-100 dark:bg-zinc-800/80 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700'
           )}
         >
           5m Rest Break
@@ -126,7 +126,7 @@ export const FocusTimerCard: React.FC = () => {
       </div>
 
       {/* Controls */}
-      <div className="flex items-center justify-center gap-2 pt-4 border-t border-zinc-100 dark:border-zinc-800">
+      <div className="flex items-center justify-center gap-2 pt-4 border-t border-zinc-100 dark:border-indigo-950/50">
         <Button
           variant={isRunning ? 'secondary' : 'primary'}
           size="sm"
@@ -142,7 +142,7 @@ export const FocusTimerCard: React.FC = () => {
       </div>
 
       {/* Footer Streak */}
-      <div className="mt-3 flex items-center justify-between text-[11px] bg-zinc-100/80 dark:bg-zinc-800/60 border border-zinc-200/80 dark:border-zinc-700/60 p-2.5 rounded-lg transition-colors">
+      <div className="mt-3 flex items-center justify-between text-[11px] bg-zinc-100/80 dark:bg-[#070918]/80 border border-zinc-200/80 dark:border-indigo-950/50 p-2.5 rounded-lg shadow-[inset_0_1px_0_0_rgba(255,255,255,0.02)] transition-colors">
         <span className="flex items-center gap-1.5 font-semibold text-zinc-700 dark:text-zinc-300">
           <Sparkles className="h-3.5 w-3.5 text-amber-500" /> Today&apos;s Sessions
         </span>

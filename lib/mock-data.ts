@@ -115,7 +115,7 @@ export const WEEKLY_PRODUCTIVITY_DATA: DailyProductivity[] = [
 export const MOCK_PROJECTS: Project[] = [
   {
     id: 'proj-dpd',
-    name: 'Developer Productivity Dashboard',
+    name: 'Innovation Hacks Internship / Developer Productivity Dashboard',
     key: 'DPD',
     description: 'Modern developer productivity hub tracking weekly focus hours, sprint velocity, task boards, and telemetry.',
     status: 'on_track',

@@ -32,7 +32,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   const subtaskProgress = totalSubtasks > 0 ? Math.round((completedSubtasks / totalSubtasks) * 100) : 0;
 
   return (
-    <div className="rounded-xl border border-zinc-200/80 dark:border-zinc-800/60 bg-white/85 dark:bg-[#0c0e1f]/75 backdrop-blur-md p-4 shadow-xs hover:border-indigo-500/40 dark:hover:border-indigo-500/30 hover:shadow-sm transition-all flex flex-col justify-between group">
+    <div className="rounded-xl border border-zinc-200/80 dark:border-indigo-950/60 bg-white dark:bg-gradient-to-b dark:from-[#0e1227]/90 dark:to-[#080a1c]/95 backdrop-blur-md p-4 shadow-[0_4px_20px_rgba(0,0,0,0.25),inset_0_1px_0_0_rgba(255,255,255,0.03)] hover:border-indigo-500/40 hover:shadow-[0_8px_24px_rgba(99,102,241,0.08),inset_0_1px_0_0_rgba(255,255,255,0.05)] transition-all flex flex-col justify-between group">
       <div>
         {/* Header: Project Key + Priority + Status selector */}
         <div className="flex items-center justify-between gap-2 mb-2.5">
@@ -64,20 +64,13 @@ export const TaskCard: React.FC<TaskCardProps> = ({
           </div>
         </div>
 
-        {/* Title */}
-        <h4
-          className={cn(
-            'text-sm font-bold leading-snug mb-1.5 transition-colors',
-            task.status === 'completed'
-              ? 'line-through text-zinc-500 dark:text-zinc-400'
-              : 'text-zinc-950 dark:text-white'
-          )}
-        >
+        {/* Task Title */}
+        <h4 className="text-sm font-bold text-zinc-950 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors mb-1.5">
           {task.title}
         </h4>
 
         {/* Description */}
-        <p className="text-xs text-zinc-700 dark:text-zinc-300 line-clamp-2 mb-3 leading-relaxed font-normal">
+        <p className="text-xs text-zinc-700 dark:text-zinc-300 line-clamp-2 leading-relaxed mb-3">
           {task.description}
         </p>
 
@@ -86,7 +79,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
           {task.tags.map((tag) => (
             <span
               key={tag}
-              className="text-[10px] font-semibold px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200/80 dark:border-zinc-700/80"
+              className="text-[10px] font-medium px-2 py-0.5 rounded-md bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border border-zinc-200/60 dark:border-zinc-700/60"
             >
               #{tag}
             </span>
@@ -113,7 +106,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
 
         {/* Subtask checklist container */}
         {totalSubtasks > 0 && (
-          <div className="mb-3 p-3 rounded-lg bg-zinc-100/90 dark:bg-zinc-800/60 border border-zinc-200/90 dark:border-zinc-700/80 transition-colors">
+          <div className="mb-3 p-3 rounded-lg bg-zinc-100/90 dark:bg-[#070918]/80 border border-zinc-200/90 dark:border-indigo-950/50 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.02)] transition-colors">
             <div className="flex items-center justify-between text-xs text-zinc-700 dark:text-zinc-300 mb-2 font-semibold">
               <span className="flex items-center gap-1.5">
                 <CheckSquare className="h-3.5 w-3.5 text-zinc-600 dark:text-zinc-400" /> Subtasks

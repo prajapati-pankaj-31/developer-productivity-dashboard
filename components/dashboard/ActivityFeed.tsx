@@ -61,8 +61,8 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
   };
 
   return (
-    <div className="rounded-xl border border-zinc-200/80 dark:border-zinc-800/60 bg-white/85 dark:bg-[#0c0e1f]/75 backdrop-blur-md p-5 shadow-xs">
-      <div className="flex items-center justify-between pb-3 mb-3 border-b border-zinc-100 dark:border-zinc-800">
+    <div className="rounded-xl border border-zinc-200/80 dark:border-indigo-950/60 bg-white dark:bg-gradient-to-b dark:from-[#0e1227]/90 dark:to-[#080a1c]/95 backdrop-blur-md p-5 shadow-[0_4px_20px_rgba(0,0,0,0.25),inset_0_1px_0_0_rgba(255,255,255,0.03)]">
+      <div className="flex items-center justify-between pb-3 mb-3 border-b border-zinc-100 dark:border-indigo-950/50">
         <div>
           <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">{title}</h3>
           <p className="text-xs text-zinc-400">Live feed of commits, reviews & deployments</p>

@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Project, Task, TaskPriority, User } from '@/types';
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
+import { Select, SelectOption } from '@/components/ui/Select';
 
 interface NewTaskModalProps {
   isOpen: boolean;
@@ -28,10 +29,31 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
   const [tagsInput, setTagsInput] = useState('');
   const [assigneeId, setAssigneeId] = useState(teamMembers[0]?.id || '');
   const [dueDate, setDueDate] = useState('2026-09-10');
+  const [error, setError] = useState('');
+
+  const projectOptions: SelectOption[] = projects.map((p) => ({
+    value: p.id,
+    label: `${p.key} - ${p.name}`,
+  }));
+
+  const priorityOptions: SelectOption<TaskPriority>[] = [
+    { value: 'urgent', label: '🔴 Urgent' },
+    { value: 'high', label: '🟠 High' },
+    { value: 'medium', label: '🔵 Medium' },
+    { value: 'low', label: '⚪ Low' },
+  ];
+
+  const assigneeOptions: SelectOption[] = teamMembers.map((m) => ({
+    value: m.id,
+    label: `${m.name} (${m.role.split(' ')[0]})`,
+  }));
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title.trim()) return;
+    if (!title.trim()) {
+      setError('Task title is required');
+      return;
+    }
 
     const selectedProject = projects.find((p) => p.id === projectId) || projects[0];
     const selectedAssignee = teamMembers.find((m) => m.id === assigneeId) || teamMembers[0];
@@ -77,6 +99,12 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
       maxWidth="lg"
     >
       <form onSubmit={handleSubmit} className="space-y-4">
+        {error && (
+          <div className="p-2.5 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs font-medium">
+            {error}
+          </div>
+        )}
+
         {/* Task Title */}
         <div>
           <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">
@@ -86,7 +114,10 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
             type="text"
             required
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={(e) => {
+              setTitle(e.target.value);
+              if (error) setError('');
+            }}
             placeholder="e.g. Implement edge rate limiting on Auth Gateway"
             className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
           />
@@ -98,33 +129,24 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
             <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">
               Assigned Project
             </label>
-            <select
+            <Select
               value={projectId}
-              onChange={(e) => setProjectId(e.target.value)}
-              className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2 text-xs font-medium text-zinc-900 dark:text-zinc-100 focus:border-indigo-500 focus:outline-none"
-            >
-              {projects.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.key} - {p.name}
-                </option>
-              ))}
-            </select>
+              onChange={(val) => setProjectId(val)}
+              options={projectOptions}
+              className="w-full"
+            />
           </div>
 
           <div>
             <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">
               Priority Level
             </label>
-            <select
+            <Select
               value={priority}
-              onChange={(e) => setPriority(e.target.value as TaskPriority)}
-              className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2 text-xs font-medium text-zinc-900 dark:text-zinc-100 focus:border-indigo-500 focus:outline-none"
-            >
-              <option value="urgent">🔴 Urgent</option>
-              <option value="high">🟠 High</option>
-              <option value="medium">🔵 Medium</option>
-              <option value="low">⚪ Low</option>
-            </select>
+              onChange={(val) => setPriority(val as TaskPriority)}
+              options={priorityOptions}
+              className="w-full"
+            />
           </div>
         </div>
 
@@ -134,17 +156,12 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
             <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">
               Assignee
             </label>
-            <select
+            <Select
               value={assigneeId}
-              onChange={(e) => setAssigneeId(e.target.value)}
-              className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2 text-xs font-medium text-zinc-900 dark:text-zinc-100 focus:border-indigo-500 focus:outline-none"
-            >
-              {teamMembers.map((m) => (
-                <option key={m.id} value={m.id}>
-                  {m.name} ({m.role.split(' ')[0]})
-                </option>
-              ))}
-            </select>
+              onChange={(val) => setAssigneeId(val)}
+              options={assigneeOptions}
+              className="w-full"
+            />
           </div>
 
           <div>

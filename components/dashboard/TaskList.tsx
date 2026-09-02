@@ -8,6 +8,8 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { cn } from '@/lib/utils';
 import { ArrowUpDown } from 'lucide-react';
 
+import { Select, SelectOption } from '@/components/ui/Select';
+
 interface TaskListProps {
   tasks: Task[];
   isLoading?: boolean;
@@ -15,6 +17,12 @@ interface TaskListProps {
   onToggleSubtask?: (taskId: string, subtaskId: string) => void;
   onResetFilters?: () => void;
 }
+
+const sortOptions: SelectOption<'dueDate' | 'priority' | 'hours'>[] = [
+  { value: 'dueDate', label: 'Due Date' },
+  { value: 'priority', label: 'Priority' },
+  { value: 'hours', label: 'Estimated Hours' },
+];
 
 export const TaskList: React.FC<TaskListProps> = ({
   tasks,
@@ -107,18 +115,19 @@ export const TaskList: React.FC<TaskListProps> = ({
         </div>
 
         {/* Sort Select */}
-        <div className="flex items-center gap-2 self-end sm:self-auto text-xs text-zinc-500">
-          <ArrowUpDown className="h-3.5 w-3.5" />
-          <span className="hidden sm:inline">Sort:</span>
-          <select
+        <div className="flex items-center gap-2 self-end sm:self-auto text-xs text-zinc-400">
+          <ArrowUpDown className="h-3.5 w-3.5 text-zinc-500" />
+          <span className="hidden sm:inline font-medium">Sort:</span>
+          <Select
             value={sortBy}
-            onChange={(e) => setSortBy(e.target.value as 'dueDate' | 'priority' | 'hours')}
-            className="rounded-md border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-2 py-1 text-xs font-medium text-zinc-700 dark:text-zinc-300 focus:outline-none focus:ring-1 focus:ring-indigo-500 cursor-pointer"
-          >
-            <option value="dueDate">Due Date</option>
-            <option value="priority">Priority</option>
-            <option value="hours">Estimated Hours</option>
-          </select>
+            onChange={(val) => setSortBy(val as 'dueDate' | 'priority' | 'hours')}
+            options={sortOptions}
+            size="xs"
+            align="right"
+            aria-label="Sort tasks by"
+            className="min-w-[130px]"
+            menuClassName="w-40"
+          />
         </div>
       </div>
 

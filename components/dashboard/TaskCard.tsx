@@ -11,14 +11,22 @@ import {
   GitPullRequest,
   Clock,
   CheckSquare,
-  ChevronDown,
 } from 'lucide-react';
+
+import { Select, SelectOption } from '@/components/ui/Select';
 
 interface TaskCardProps {
   task: Task;
   onStatusChange: (taskId: string, newStatus: TaskStatus) => void;
   onToggleSubtask?: (taskId: string, subtaskId: string) => void;
 }
+
+const statusOptions: SelectOption<TaskStatus>[] = [
+  { value: 'backlog', label: 'Backlog' },
+  { value: 'in_progress', label: 'In Progress' },
+  { value: 'in_review', label: 'In Review' },
+  { value: 'completed', label: 'Completed' },
+];
 
 export const TaskCard: React.FC<TaskCardProps> = ({
   task,
@@ -48,20 +56,17 @@ export const TaskCard: React.FC<TaskCardProps> = ({
             </span>
           </div>
 
-          {/* Interactive Status Changer Dropdown */}
-          <div className="relative inline-block">
-            <select
-              value={task.status}
-              onChange={(e) => onStatusChange(task.id, e.target.value as TaskStatus)}
-              className="appearance-none rounded-md border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 px-2.5 py-1 pr-6 text-[11px] font-semibold text-zinc-800 dark:text-zinc-200 focus:outline-none focus:ring-1 focus:ring-indigo-500 cursor-pointer shadow-2xs"
-            >
-              <option value="backlog">Backlog</option>
-              <option value="in_progress">In Progress</option>
-              <option value="in_review">In Review</option>
-              <option value="completed">Completed</option>
-            </select>
-            <ChevronDown className="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 h-3 w-3 text-zinc-500 dark:text-zinc-400" />
-          </div>
+          {/* Interactive Custom Status Changer Dropdown */}
+          <Select
+            value={task.status}
+            onChange={(newStatus) => onStatusChange(task.id, newStatus)}
+            options={statusOptions}
+            size="xs"
+            align="right"
+            aria-label="Change task status"
+            className="min-w-[105px]"
+            menuClassName="w-36"
+          />
         </div>
 
         {/* Task Title */}

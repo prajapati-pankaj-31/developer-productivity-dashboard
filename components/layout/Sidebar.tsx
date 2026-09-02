@@ -10,6 +10,7 @@ import {
   Zap,
   TrendingUp,
   Code2,
+  Settings,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Avatar } from '@/components/ui/Avatar';
@@ -23,6 +24,8 @@ interface SidebarProps {
   tasksCount?: number;
   isCollapsed?: boolean;
   onToggleCollapse?: () => void;
+  onOpenProfile?: () => void;
+  onOpenSettings?: () => void;
 }
 
 const MIN_WIDTH = 240;
@@ -54,6 +57,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   projectsCount,
   tasksCount,
   isCollapsed = false,
+  onOpenProfile,
+  onOpenSettings,
 }) => {
   const [width, setWidth] = useState<number>(getInitialWidth);
   const [isResizing, setIsResizing] = useState<boolean>(false);
@@ -113,49 +118,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
       suppressHydrationWarning
       style={{ width: isCollapsed ? 80 : `${width}px` }}
       className={cn(
-        'relative hidden lg:flex flex-col justify-between border-r border-indigo-950/50 bg-[#050611]/92 backdrop-blur-xl select-none z-20 shrink-0 h-full overflow-hidden shadow-[4px_0_24px_rgba(0,0,0,0.3)]',
+        'relative hidden lg:flex flex-col justify-between border-r border-indigo-950/60 bg-[#050611]/60 backdrop-blur-xl select-none z-20 shrink-0 h-full overflow-hidden shadow-[4px_0_24px_rgba(0,0,0,0.3)]',
         isResizing ? 'transition-none' : 'transition-[width] duration-150 ease-out'
       )}
     >
-      {/* Internal Subtle Futuristic Atmospheric Background Layers */}
-      <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden select-none" aria-hidden="true">
-        {/* Soft Ambient Radial Glows */}
-        <div
-          className="absolute inset-0 opacity-80"
-          style={{
-            background:
-              'radial-gradient(circle 220px at 15% 10%, rgba(99, 102, 241, 0.08) 0%, transparent 70%), radial-gradient(circle 260px at 35% 82%, rgba(168, 85, 247, 0.12) 0%, transparent 70%)',
-          }}
-        />
-
-        {/* Faint Internal Constellation Vectors */}
-        <svg
-          className="absolute inset-0 w-full h-full opacity-35"
-          viewBox="0 0 280 800"
-          fill="none"
-          preserveAspectRatio="none"
-        >
-          <g stroke="rgba(168, 85, 247, 0.3)" strokeWidth="0.8" strokeDasharray="3 5">
-            <line x1="30" y1="620" x2="90" y2="580" />
-            <line x1="90" y1="580" x2="160" y2="640" />
-            <line x1="90" y1="580" x2="120" y2="710" />
-            <line x1="160" y1="640" x2="220" y2="600" />
-            <line x1="120" y1="710" x2="190" y2="730" />
-          </g>
-          <circle cx="30" cy="620" r="2" fill="#c084fc" />
-          <circle cx="90" cy="580" r="3" fill="#e879f9" />
-          <circle cx="160" cy="640" r="2.5" fill="#38bdf8" />
-          <circle cx="220" cy="600" r="2" fill="#818cf8" />
-          <circle cx="120" cy="710" r="2.5" fill="#d946ef" />
-          <circle cx="190" cy="730" r="2" fill="#00f0ff" />
-        </svg>
-
-        {/* Sparse Micro Particles */}
-        <div className="absolute top-[30%] right-[18%] w-1 h-1 rounded-full bg-indigo-400/25 blur-[0.5px] animate-subtle-particle" />
-        <div className="absolute bottom-[22%] left-[25%] w-1 h-1 rounded-full bg-purple-400/30 blur-[0.5px] animate-subtle-particle" style={{ animationDelay: '4s' }} />
-      </div>
-
-      {/* Content Container (Sits cleanly on top of atmospheric background) */}
+      {/* Content Container (Sits cleanly on top of global dynamic background) */}
       <div className="relative z-10 flex flex-col h-full overflow-y-auto p-4 scrollbar-none">
         {/* Brand / Logo */}
         <div className="flex items-center gap-3 px-2 py-2 mb-6 border-b border-indigo-950/40 pb-4">
@@ -229,6 +196,20 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </button>
             );
           })}
+
+          {/* Quick Settings Action */}
+          <button
+            type="button"
+            onClick={onOpenSettings}
+            className={cn(
+              'group w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-semibold transition-all duration-150 text-zinc-400 hover:text-zinc-100 hover:bg-white/[0.04] border border-transparent hover:border-indigo-500/20 cursor-pointer text-left mt-1',
+              isCollapsed && 'justify-center px-2'
+            )}
+            title="Workspace Preferences"
+          >
+            <Settings className="h-4 w-4 shrink-0 text-zinc-400 group-hover:text-indigo-400 transition-colors" />
+            {!isCollapsed && <span className="truncate">Settings</span>}
+          </button>
         </div>
 
         {/* Focus Mode & Productivity Card */}
@@ -259,20 +240,30 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       {/* User profile footer */}
       <div className="relative z-10 p-3 border-t border-indigo-950/50 bg-[#050611]/80 backdrop-blur-xs">
-        <div className="flex items-center gap-3 px-2 py-1.5 rounded-lg hover:bg-zinc-800/40 transition-colors">
+        <button
+          type="button"
+          onClick={onOpenProfile}
+          className="group/profile w-full flex items-center gap-3 px-2 py-1.5 rounded-lg hover:bg-white/[0.05] border border-transparent hover:border-indigo-500/30 transition-all text-left cursor-pointer"
+          title="Open Developer Profile & Settings"
+        >
           <Avatar user={currentUser} size="sm" showStatus />
           {!isCollapsed && (
             <div className="flex flex-col min-w-0 flex-1">
-              <span className="text-xs font-semibold text-zinc-100 truncate">
-                {currentUser.name}
-              </span>
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-zinc-100 group-hover/profile:text-indigo-300 transition-colors truncate">
+                  {currentUser.name}
+                </span>
+                <span className="text-[10px] text-zinc-500 group-hover/profile:text-indigo-400 opacity-0 group-hover/profile:opacity-100 transition-opacity">
+                  Edit ⚙️
+                </span>
+              </div>
               <span className="text-[11px] text-zinc-400 truncate flex items-center gap-1">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />
                 <span className="truncate">Flow Mode Active</span>
               </span>
             </div>
           )}
-        </div>
+        </button>
       </div>
 
       {/* Resizable Handle / Border (Desktop only) */}

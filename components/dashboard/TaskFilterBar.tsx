@@ -54,7 +54,7 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
   ];
 
   return (
-    <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 p-3.5 rounded-xl border border-zinc-200/80 dark:border-indigo-950/60 bg-white dark:bg-gradient-to-b dark:from-[#0e1227]/90 dark:to-[#080a1c]/95 backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.25),inset_0_1px_0_0_rgba(255,255,255,0.03)]">
+    <div className="relative z-20 flex flex-col md:flex-row md:items-center justify-between gap-3 p-3.5 rounded-xl border border-zinc-200/80 dark:border-indigo-950/60 bg-white dark:bg-gradient-to-b dark:from-[#0b0e1e]/96 dark:to-[#070915]/98 backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.3),inset_0_1px_0_0_rgba(255,255,255,0.03)]">
       {/* Search Input */}
       <div className="relative flex-1 min-w-[200px]">
         <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
@@ -108,6 +108,7 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
           onChange={(val) => onFilterChange({ status: val as TaskFilterState['status'] })}
           options={statusOptions}
           size="sm"
+          align="right"
           aria-label="Filter by status"
           className="min-w-[120px]"
           menuClassName="w-44"

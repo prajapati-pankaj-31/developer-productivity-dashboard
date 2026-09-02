@@ -25,6 +25,9 @@ interface HeaderProps {
   isLoadingState: boolean;
   onToggleLoadingState: () => void;
   onStatusChange: (status: User['status']) => void;
+  onOpenProfile?: () => void;
+  onOpenSettings?: () => void;
+  onOpenShortcuts?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -36,6 +39,9 @@ export const Header: React.FC<HeaderProps> = ({
   isLoadingState,
   onToggleLoadingState,
   onStatusChange,
+  onOpenProfile,
+  onOpenSettings,
+  onOpenShortcuts,
 }) => {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const notifRef = useRef<HTMLDivElement>(null);
@@ -90,7 +96,7 @@ export const Header: React.FC<HeaderProps> = ({
   ];
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-indigo-950/40 bg-gradient-to-r from-[#050611]/94 via-[#070a1e]/90 to-[#050611]/94 backdrop-blur-md px-4 sm:px-6 shadow-[0_4px_20px_-4px_rgba(99,102,241,0.04)]">
+    <header className="sticky top-0 z-40 flex h-16 w-full items-center justify-between border-b border-indigo-950/40 bg-gradient-to-r from-[#050611]/94 via-[#070a1e]/90 to-[#050611]/94 backdrop-blur-md px-4 sm:px-6 shadow-[0_4px_20px_-4px_rgba(99,102,241,0.04)]">
       {/* Left: Mobile trigger & Search */}
       <div className="flex items-center gap-3 flex-1 max-w-xl">
         <button
@@ -223,7 +229,13 @@ export const Header: React.FC<HeaderProps> = ({
         </Button>
 
         {/* User Profile */}
-        <UserProfileMenu user={currentUser} onStatusChange={onStatusChange} />
+        <UserProfileMenu
+          user={currentUser}
+          onStatusChange={onStatusChange}
+          onOpenProfile={onOpenProfile}
+          onOpenSettings={onOpenSettings}
+          onOpenShortcuts={onOpenShortcuts}
+        />
       </div>
     </header>
   );

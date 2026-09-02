@@ -40,26 +40,26 @@ export function getPriorityStyles(priority: TaskPriority) {
   switch (priority) {
     case 'urgent':
       return {
-        bg: 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/40 dark:text-rose-400 dark:border-rose-800',
+        bg: 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/50 dark:text-rose-300 dark:border-rose-800/60',
         dot: 'bg-rose-500',
         label: 'Urgent',
       };
     case 'high':
       return {
-        bg: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-400 dark:border-amber-800',
+        bg: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/50 dark:text-amber-300 dark:border-amber-800/60',
         dot: 'bg-amber-500',
         label: 'High',
       };
     case 'medium':
       return {
-        bg: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/40 dark:text-blue-400 dark:border-blue-800',
+        bg: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/50 dark:text-blue-300 dark:border-blue-800/60',
         dot: 'bg-blue-500',
         label: 'Medium',
       };
     case 'low':
       return {
-        bg: 'bg-slate-50 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700',
-        dot: 'bg-slate-400',
+        bg: 'bg-slate-50 text-slate-700 border-slate-200 dark:bg-zinc-800/80 dark:text-zinc-300 dark:border-zinc-700/60',
+        dot: 'bg-zinc-400',
         label: 'Low',
       };
   }

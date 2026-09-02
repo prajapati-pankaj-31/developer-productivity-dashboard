@@ -176,7 +176,7 @@ export function Select<T extends string = string>({
   };
 
   return (
-    <div ref={containerRef} className={cn('relative inline-block text-left', className)}>
+    <div ref={containerRef} className={cn('relative inline-block text-left', isOpen ? 'z-30' : 'z-auto', className)}>
       <button
         ref={buttonRef}
         id={selectId}
@@ -210,7 +210,7 @@ export function Select<T extends string = string>({
       {isOpen && (
         <div
           className={cn(
-            'absolute z-50 mt-1.5 min-w-[160px] w-full max-w-[320px] rounded-lg bg-gradient-to-b from-[#0e1227] to-[#080a1a] border border-indigo-950/80 p-1 shadow-[0_10px_25px_-5px_rgba(0,0,0,0.6),0_0_15px_rgba(99,102,241,0.08)] backdrop-blur-xl animate-in fade-in zoom-in-95 duration-100 select-none',
+            'absolute z-30 mt-1.5 min-w-[160px] w-full max-w-[320px] rounded-lg bg-gradient-to-b from-[#0e1227] to-[#080a1a] border border-indigo-950/80 p-1 shadow-[0_10px_25px_-5px_rgba(0,0,0,0.6),0_0_15px_rgba(99,102,241,0.08)] backdrop-blur-xl animate-in fade-in zoom-in-95 duration-100 select-none',
             align === 'right' ? 'right-0' : 'left-0',
             menuClassName
           )}
@@ -235,14 +235,14 @@ export function Select<T extends string = string>({
                   onClick={() => handleSelect(option)}
                   onMouseEnter={() => !option.disabled && setHighlightedIndex(index)}
                   className={cn(
-                    'flex items-center justify-between px-2.5 py-1.5 text-xs rounded-md cursor-pointer transition-colors font-medium',
+                    'group/opt flex items-center justify-between px-2.5 py-1.5 text-xs rounded-md cursor-pointer transition-all duration-150 font-medium',
                     option.disabled
                       ? 'opacity-40 cursor-not-allowed text-zinc-500'
                       : isSelected
-                      ? 'bg-indigo-600/25 text-indigo-200 font-semibold'
+                      ? 'bg-gradient-to-r from-indigo-500/20 to-purple-500/10 text-white font-semibold border border-indigo-500/30 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.04)]'
                       : isHighlighted
-                      ? 'bg-indigo-600/15 text-indigo-200'
-                      : 'text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800/50'
+                      ? 'bg-white/[0.06] text-white border border-white/[0.08]'
+                      : 'border border-transparent text-zinc-300 hover:text-white hover:bg-white/[0.05]'
                   )}
                 >
                   <span className="flex items-center gap-2 truncate">

@@ -81,7 +81,7 @@ export const TaskList: React.FC<TaskListProps> = ({
   return (
     <div className="space-y-4">
       {/* Sub-Tabs & Sorter */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-zinc-200 dark:border-zinc-800">
+      <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-zinc-200 dark:border-zinc-800">
         {/* Status Pills */}
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
           {tabs.map((tab) => {
@@ -94,8 +94,8 @@ export const TaskList: React.FC<TaskListProps> = ({
                 className={cn(
                   'flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer',
                   isActive
-                    ? 'bg-indigo-600 text-white shadow-xs dark:bg-indigo-500'
-                    : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700'
+                    ? 'bg-indigo-600 text-white shadow-xs dark:bg-indigo-600 border border-indigo-400/40'
+                    : 'bg-zinc-100 dark:bg-[#0a0d20] border border-zinc-200/60 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-800/80 dark:hover:text-zinc-200'
                 )}
               >
                 <span>{tab.label}</span>
@@ -103,8 +103,8 @@ export const TaskList: React.FC<TaskListProps> = ({
                   className={cn(
                     'text-[10px] px-1.5 py-0.2 rounded-full font-bold',
                     isActive
-                      ? 'bg-indigo-700 text-indigo-100 dark:bg-indigo-600'
-                      : 'bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300'
+                      ? 'bg-indigo-700 text-white dark:bg-indigo-700/90'
+                      : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-400'
                   )}
                 >
                   {count}

@@ -26,6 +26,26 @@ body {
   overflow-x: hidden;
 }
 
+/* Interactive Cursor Pointer Guarantee */
+button,
+[role="button"],
+select,
+a,
+summary,
+input[type="checkbox"],
+input[type="radio"],
+input[type="submit"],
+input[type="button"],
+label[for] {
+  cursor: pointer;
+}
+
+button:disabled,
+[role="button"][aria-disabled="true"],
+input:disabled {
+  cursor: not-allowed;
+}
+
 /* Custom crisp scrollbars */
 ::-webkit-scrollbar {
   width: 6px;
@@ -117,6 +137,17 @@ body {
   }
 }
 
+@keyframes particleFloat {
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translate3d(12px, -18px, 0);
+    opacity: 0.8;
+  }
+}
+
 .animate-constellation {
   animation: constellationPulse 12s ease-in-out infinite;
 }
@@ -133,11 +164,21 @@ body {
   animation: rayPulse 6s ease-in-out infinite;
 }
 
+.animate-particle-float {
+  animation: particleFloat 14s ease-in-out infinite;
+}
+
+.animate-subtle-particle {
+  animation: particleFloat 18s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-constellation,
   .animate-node-twinkle,
   .animate-mesh-bottom,
-  .animate-ray-pulse {
+  .animate-ray-pulse,
+  .animate-particle-float,
+  .animate-subtle-particle {
     animation: none !important;
   }
 }

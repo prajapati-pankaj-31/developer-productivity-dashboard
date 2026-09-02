@@ -23,6 +23,9 @@ import { TaskList } from '@/components/dashboard/TaskList';
 import { ActivityFeed } from '@/components/dashboard/ActivityFeed';
 import { ProjectDetailModal } from '@/components/dashboard/ProjectDetailModal';
 import { NewTaskModal } from '@/components/dashboard/NewTaskModal';
+import { ProfileModal } from '@/components/dashboard/ProfileModal';
+import { SettingsModal, WorkspaceSettings, defaultSettings } from '@/components/dashboard/SettingsModal';
+import { KeyboardShortcutsModal } from '@/components/dashboard/KeyboardShortcutsModal';
 import { DynamicBackground } from '@/components/ui/DynamicBackground';
 import { Button } from '@/components/ui/Button';
 import {
@@ -43,6 +46,10 @@ export default function DashboardPage() {
   // Modals & Drawers
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [isNewTaskModalOpen, setIsNewTaskModalOpen] = useState(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+  const [isShortcutsModalOpen, setIsShortcutsModalOpen] = useState(false);
+  const [workspaceSettings, setWorkspaceSettings] = useState<WorkspaceSettings>(defaultSettings);
   const [isLoadingState, setIsLoadingState] = useState(false);
 
   // Filters
@@ -175,6 +182,57 @@ export default function DashboardPage() {
     });
   }, [projects, filters]);
 
+  // User & Workspace Settings Handlers
+  const handleSaveUser = (updatedUser: Partial<User>) => {
+    setCurrentUser((prev) => ({ ...prev, ...updatedUser }));
+  };
+
+  const handleSaveSettings = (newSettings: WorkspaceSettings) => {
+    setWorkspaceSettings(newSettings);
+    if (newSettings.defaultTab && newSettings.defaultTab !== activeTab) {
+      setActiveTab(newSettings.defaultTab);
+    }
+  };
+
+  // Keyboard Shortcuts Listener
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      if (
+        target &&
+        (target.tagName === 'INPUT' ||
+          target.tagName === 'TEXTAREA' ||
+          target.tagName === 'SELECT' ||
+          target.isContentEditable)
+      ) {
+        return;
+      }
+      if (e.key === 'p' || e.key === 'P') {
+        e.preventDefault();
+        setIsProfileModalOpen(true);
+      } else if (e.key === 's' || e.key === 'S') {
+        e.preventDefault();
+        setIsSettingsModalOpen(true);
+      } else if (e.key === '1') {
+        setActiveTab('overview');
+      } else if (e.key === '2') {
+        setActiveTab('projects');
+      } else if (e.key === '3') {
+        setActiveTab('tasks');
+      } else if (e.key === '4') {
+        setActiveTab('activity');
+      } else if (e.key === 'n' || e.key === 'N') {
+        e.preventDefault();
+        setIsNewTaskModalOpen(true);
+      } else if (e.key === '?') {
+        e.preventDefault();
+        setIsShortcutsModalOpen(true);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [activeTab]);
+
   return (
     <div className="relative flex h-screen w-full overflow-hidden bg-zinc-50 dark:bg-zinc-950 font-sans">
       {/* Futuristic Dynamic Ambient Background */}
@@ -198,6 +256,8 @@ export default function DashboardPage() {
         currentUser={currentUser}
         projectsCount={projects.length}
         tasksCount={tasks.length}
+        onOpenProfile={() => setIsProfileModalOpen(true)}
+        onOpenSettings={() => setIsSettingsModalOpen(true)}
       />
 
       {/* Main Content Area */}
@@ -212,6 +272,9 @@ export default function DashboardPage() {
           isLoadingState={isLoadingState}
           onToggleLoadingState={() => setIsLoadingState(!isLoadingState)}
           onStatusChange={handleUserStatusChange}
+          onOpenProfile={() => setIsProfileModalOpen(true)}
+          onOpenSettings={() => setIsSettingsModalOpen(true)}
+          onOpenShortcuts={() => setIsShortcutsModalOpen(true)}
         />
 
         {/* Scrollable Dashboard View */}
@@ -219,19 +282,12 @@ export default function DashboardPage() {
           {/* Welcome Banner */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-zinc-200/80 dark:border-zinc-800">
             <div>
-              <div className="flex items-center gap-2 flex-wrap">
+              <div className="flex items-center gap-2">
                 <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-zinc-900 dark:text-white">
                   Developer Productivity Hub
                 </h1>
                 <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-semibold text-indigo-700 bg-indigo-50 dark:bg-indigo-950/60 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/60 px-2 py-0.5 rounded-full">
                   <Sparkles className="h-3 w-3 text-amber-500" /> Sprint #14
-                </span>
-                <span
-                  className="inline-flex items-center gap-1.5 text-[10px] font-medium text-zinc-600 dark:text-zinc-400 bg-zinc-100 dark:bg-[#0c0f24] border border-zinc-200 dark:border-indigo-950/60 px-2 py-0.5 rounded-full select-none"
-                  title="Prototype demonstrating developer metrics and telemetry"
-                >
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                  Simulated Telemetry
                 </span>
               </div>
               <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mt-1">
@@ -465,6 +521,28 @@ export default function DashboardPage() {
         projects={projects}
         teamMembers={TEAM_MEMBERS}
         onAddTask={handleAddTask}
+      />
+
+      {/* Developer Profile & Identity Modal */}
+      <ProfileModal
+        isOpen={isProfileModalOpen}
+        onClose={() => setIsProfileModalOpen(false)}
+        user={currentUser}
+        onSaveUser={handleSaveUser}
+      />
+
+      {/* Workspace & Developer Settings Modal */}
+      <SettingsModal
+        isOpen={isSettingsModalOpen}
+        onClose={() => setIsSettingsModalOpen(false)}
+        settings={workspaceSettings}
+        onSaveSettings={handleSaveSettings}
+      />
+
+      {/* Keyboard Shortcuts Sheet Modal */}
+      <KeyboardShortcutsModal
+        isOpen={isShortcutsModalOpen}
+        onClose={() => setIsShortcutsModalOpen(false)}
       />
     </div>
   );

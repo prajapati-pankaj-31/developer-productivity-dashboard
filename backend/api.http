@@ -1,0 +1,240 @@
+### ====================================================================
+### Developer Productivity Dashboard — REST API Collection
+### Base URL: http://localhost:5000/api/v1
+### ====================================================================
+
+@baseUrl = http://localhost:5000
+@api = http://localhost:5000/api/v1
+
+### 1. Root & Health Checks
+# @name GetRoot
+GET {{baseUrl}}/
+Accept: application/json
+
+###
+# @name GetHealth
+GET {{baseUrl}}/health
+Accept: application/json
+
+
+### ====================================================================
+### 2. USERS API (/api/v1/users)
+### ====================================================================
+
+### Get All Users
+# @name GetAllUsers
+GET {{api}}/users
+Accept: application/json
+
+### Get Single User by ID
+# @name GetUserById
+GET {{api}}/users/usr-1
+Accept: application/json
+
+### Create New User
+# @name CreateUser
+POST {{api}}/users
+Content-Type: application/json
+
+{
+  "name": "Ananya Sharma",
+  "role": "ML & Data Engineer",
+  "email": "ananya.s@devhub.io",
+  "status": "flow",
+  "statusMessage": "Training LLM quantization models",
+  "weeklyFocusGoalHours": 35
+}
+
+### Update User
+# @name UpdateUser
+PATCH {{api}}/users/usr-1
+Content-Type: application/json
+
+{
+  "role": "Staff AI Engineer & Full Stack Lead",
+  "status": "flow",
+  "weeklyFocusGoalHours": 40
+}
+
+### Delete User (Temporary test user)
+# @name DeleteUser
+DELETE {{api}}/users/usr-5
+Accept: application/json
+
+
+### ====================================================================
+### 3. PROJECTS API (/api/v1/projects)
+### ====================================================================
+
+### Get All Projects
+# @name GetAllProjects
+GET {{api}}/projects
+Accept: application/json
+
+### Filter Projects by Status
+# @name FilterProjectsStatus
+GET {{api}}/projects?status=on_track
+Accept: application/json
+
+### Filter Projects by Search Keyword
+# @name SearchProjects
+GET {{api}}/projects?search=appointment
+Accept: application/json
+
+### Get Single Project by ID
+# @name GetProjectById
+GET {{api}}/projects/proj-dpd
+Accept: application/json
+
+### Create New Project
+# @name CreateProject
+POST {{api}}/projects
+Content-Type: application/json
+
+{
+  "name": "AI Code Hotspot Analyzer",
+  "key": "ACH",
+  "description": "Static code analysis tool evaluating commit churn and developer test coverage.",
+  "status": "on_track",
+  "deadline": "2026-06-30",
+  "techStack": ["Python", "FastAPI", "TypeScript", "Next.js"],
+  "leadId": "usr-1"
+}
+
+### Update Project
+# @name UpdateProject
+PATCH {{api}}/projects/proj-dpd
+Content-Type: application/json
+
+{
+  "progress": 95,
+  "status": "completed"
+}
+
+### Delete Project
+# @name DeleteProject
+DELETE {{api}}/projects/proj-ach
+Accept: application/json
+
+
+### ====================================================================
+### 4. TASKS API (/api/v1/tasks)
+### ====================================================================
+
+### Get All Tasks
+# @name GetAllTasks
+GET {{api}}/tasks
+Accept: application/json
+
+### Filter Tasks by Status (in_progress)
+# @name FilterTasksStatus
+GET {{api}}/tasks?status=in_progress
+Accept: application/json
+
+### Filter Tasks by Priority (urgent)
+# @name FilterTasksPriority
+GET {{api}}/tasks?priority=urgent
+Accept: application/json
+
+### Filter Tasks by Project
+# @name FilterTasksProject
+GET {{api}}/tasks?projectId=proj-saq
+Accept: application/json
+
+### Search Tasks by Keyword
+# @name SearchTasks
+GET {{api}}/tasks?search=algorithm
+Accept: application/json
+
+### Get Single Task by ID
+# @name GetTaskById
+GET {{api}}/tasks/task-1
+Accept: application/json
+
+### Create New Task
+# @name CreateTask
+POST {{api}}/tasks
+Content-Type: application/json
+
+{
+  "title": "Stream real-time developer metrics via WebSockets",
+  "description": "Build WebSocket server gateway forwarding live git commits and task telemetry.",
+  "projectId": "proj-dpd",
+  "assigneeId": "usr-1",
+  "priority": "high",
+  "status": "in_progress",
+  "dueDate": "2026-03-12",
+  "estimatedHours": 6,
+  "tags": ["WebSockets", "Telemetry", "Backend"],
+  "subtasks": [
+    { "title": "Implement broadcast channel", "completed": true },
+    { "title": "Connect dashboard widget listener", "completed": false }
+  ]
+}
+
+### Update Task
+# @name UpdateTask
+PATCH {{api}}/tasks/task-1
+Content-Type: application/json
+
+{
+  "priority": "urgent",
+  "estimatedHours": 9,
+  "loggedHours": 7.5
+}
+
+### Update Task Status (Dedicated Endpoint)
+# @name UpdateTaskStatus
+PATCH {{api}}/tasks/task-1/status
+Content-Type: application/json
+
+{
+  "status": "completed"
+}
+
+### Delete Task
+# @name DeleteTask
+DELETE {{api}}/tasks/task-1
+Accept: application/json
+
+
+### ====================================================================
+### 5. NEGATIVE / VALIDATION ERROR TESTS
+### ====================================================================
+
+### 404 Route Not Found
+# @name RouteNotFound
+GET {{api}}/unknown-path
+Accept: application/json
+
+### 400 Validation Error (Missing Title)
+# @name CreateTaskValidationError
+POST {{api}}/tasks
+Content-Type: application/json
+
+{
+  "description": "Missing title & relations",
+  "dueDate": "2026-03-15"
+}
+
+### 400 Bad Request (Invalid Status Enum)
+# @name InvalidStatusEnum
+PATCH {{api}}/tasks/task-1/status
+Content-Type: application/json
+
+{
+  "status": "invalid_status_value"
+}
+
+### 404 Not Found (Invalid Relational Project ID)
+# @name InvalidRelationalProject
+POST {{api}}/tasks
+Content-Type: application/json
+
+{
+  "title": "Task for missing project",
+  "description": "Testing relational reference validation",
+  "projectId": "proj-non-existent",
+  "assigneeId": "usr-1",
+  "dueDate": "2026-03-15"
+}

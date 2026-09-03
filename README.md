@@ -1,179 +1,187 @@
-# Developer Productivity Dashboard
+# Developer Productivity Dashboard & REST API
 
-A modern, responsive frontend dashboard designed for engineering teams to monitor developer productivity, track sprint tasks, manage project roadmaps, and maintain deep focus sessions.
-
----
-
-## 📌 Features
-
-- **Dashboard Overview & Metrics**: Real-time KPI summary cards tracking Focus Score, Sprint Velocity, Active Pull Requests, and Logged Focus Hours with trend indicators.
-- **Weekly Productivity Velocity Chart**: Interactive pure CSS/Tailwind bar chart visualizing daily focus time and Git commit cadence with day-by-day tooltips.
-- **Deep Work / Pomodoro Companion Timer**: Interactive 25-minute focus sprints and 5-minute break cycles with session streak tracking.
-- **Project Hub**: Comprehensive project cards displaying health status badges (*On Track*, *At Risk*, *Delayed*, *Completed*), progress bars, repository details, contributor avatar stacks, and interactive project detail modals.
-- **Sprint Task Board**:
-  - Task cards with priority badges (Urgent, High, Medium, Low).
-  - Inline status selector dropdown (*Backlog*, *In Progress*, *In Review*, *Completed*).
-  - Interactive subtask checklists with live progress calculation.
-  - Due date warnings, logged vs. estimated hours, branch references, and PR badges.
-- **Search & Multi-Parameter Filter UI**: Instant filtering across tasks and projects by search query, project key, priority, and status, with clear/reset actions.
-- **Interactive Modals**: Dialogs for creating new tasks and viewing detailed project roadmaps.
-- **Engineering Activity Feed**: Chronological telemetry stream of Git commits, PR reviews, staging deployments, and task completions.
-- **State Handling**: Accessible skeleton loaders for simulated loading states and user-friendly zero-result empty states.
-- **Responsive Layout**: Fluid experience optimized for desktop, tablet, and mobile with a slide-out drawer navigation.
+> Full-Stack Engineering Platform for developer productivity tracking, sprint management, project telemetry, and focus companion workflows.
+> Developed as part of the **Innovation Hacks Full Stack Development Internship**.
 
 ---
 
-## 🛠️ Tech Stack
+## 🏗️ Architecture Overview
 
-- **Framework**: [Next.js](https://nextjs.org/) (App Router)
-- **Language**: [TypeScript](https://www.typescriptlang.org/)
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
-- **Icons**: [Lucide React](https://lucide.dev/)
+```
+┌─────────────────────────────────────────────────────────┐
+│              Task 1: Next.js 16 Frontend                │
+│   (Futuristic Glass UI, Sprint Boards, Focus Timer)     │
+└───────────────────────────▲─────────────────────────────┘
+                            │ REST API (CORS & JSON)
+┌───────────────────────────▼─────────────────────────────┐
+│       Task 2: Express + TypeScript REST API Layer       │
+│  (Controllers ➔ Services ➔ Validators ➔ Middlewares)   │
+└───────────────────────────▲─────────────────────────────┘
+                            │
+              ┌─────────────┴─────────────┐
+              ▼                           ▼
+   [Current] Task 2 Store        [Next] Task 3 Persistence
+      (In-Memory Store)        (PostgreSQL / MongoDB / Prisma)
+```
 
 ---
 
-## 📂 Project Structure
+## 📌 Internship Milestones
 
-```text
+### 🌟 Task 1: Developer Productivity Dashboard (Frontend)
+- **KPI Metrics & Velocity Charts:** Focus score, sprint velocity, PR reviews, and daily focus cadence.
+- **Sprint Task Board:** Inline status transitions, subtask progress, priority badges, and branch tags.
+- **Engineering Projects Hub:** Multi-project health tracking, progress bars, and modal roadmaps.
+- **Focus Companion & Preferences:** Pomodoro work timer, developer profile modal, and workspace settings.
+- **Dynamic Futuristic Ambience:** Full-screen SVG constellation network, flowing particles, and mouse spotlight.
+
+### ⚡ Task 2: Users, Projects & Tasks REST API (Backend)
+- **Node.js + Express + TypeScript:** Modular layered architecture (Controllers, Services, Validators, Middlewares).
+- **Zod Schema Validation:** Strict request body, query, and parameter validation across all write operations.
+- **Relational Integrity:** Validates project and assignee references; guards against deleting users or projects with active tasks.
+- **Status Management:** Dedicated `PATCH /api/v1/tasks/:id/status` endpoint with strict enum validation.
+- **Centralized Error Handling:** Consistent JSON error structure and HTTP status codes (`200`, `201`, `400`, `404`, `409`, `500`).
+- **Comprehensive Testing:** 35 automated integration tests with Vitest & Supertest, Postman Collection v2.1, and VS Code `api.http`.
+
+---
+
+## 🛠️ Technology Stack
+
+| Layer | Technologies |
+| :--- | :--- |
+| **Frontend** | Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS v4, Lucide Icons |
+| **Backend** | Node.js v20+, Express.js 4.21, TypeScript 5.7, Zod 3.24, Helmet, CORS |
+| **Testing** | Vitest, Supertest (35 passing integration tests) |
+| **Tooling** | Postman Collection v2.1, REST Client (`api.http`), `tsx` |
+
+---
+
+## 📂 Repository Structure
+
+```
 developer-productivity-dashboard/
-├── app/
-│   ├── favicon.ico
-│   ├── globals.css              # Custom styles, theme tokens, and scrollbars
-│   ├── layout.tsx               # Root layout and metadata configuration
-│   └── page.tsx                 # Main dashboard container and state coordinator
-├── components/
-│   ├── dashboard/
-│   │   ├── ActivityFeed.tsx     # Live engineering activity stream
-│   │   ├── FocusTimerCard.tsx   # Pomodoro focus session timer
-│   │   ├── NewTaskModal.tsx     # New sprint task modal dialog
-│   │   ├── OverviewMetrics.tsx  # KPI productivity metrics cards
-│   │   ├── ProductivityChart.tsx# Weekly velocity visualization chart
-│   │   ├── ProjectCard.tsx      # Project roadmap card
-│   │   ├── ProjectDetailModal.tsx # Project overview modal dialog
-│   │   ├── ProjectList.tsx      # Project grid with skeleton and empty states
-│   │   ├── TaskCard.tsx         # Task card with status dropdown & subtasks
-│   │   ├── TaskFilterBar.tsx    # Search and multi-parameter filter controls
-│   │   └── TaskList.tsx         # Filterable task grid with status tabs
-│   ├── layout/
-│   │   ├── Header.tsx           # Global search, notifications, and actions
-│   │   ├── MobileNav.tsx        # Mobile slide-out drawer navigation
-│   │   ├── Sidebar.tsx          # Desktop sidebar navigation and sprint stats
-│   │   └── UserProfileMenu.tsx  # Profile dropdown with status switcher
-│   └── ui/
-│       ├── Avatar.tsx           # User avatar and avatar group components
-│       ├── Badge.tsx            # Multi-variant status and priority chips
-│       ├── Button.tsx           # Reusable button component
-│       ├── EmptyState.tsx       # Zero-result fallback display
-│       ├── Modal.tsx            # Accessible modal dialog primitive
-│       ├── ProgressBar.tsx      # Multi-variant progress indicator
-│       └── SkeletonLoader.tsx   # Placeholder skeleton loading components
-├── lib/
-│   ├── mock-data.ts             # Developer productivity datasets
-│   └── utils.ts                 # Formatting utilities and style helpers
-├── types/
-│   └── index.ts                 # TypeScript type definitions
-├── public/                      # Static assets
-├── .gitignore
-├── next.config.ts
-├── package.json
-├── postcss.config.mjs
-├── README.md
+│
+├── app/                         # Next.js App Router pages and layouts
+├── components/                  # React dashboard and UI components
+├── lib/                         # Frontend mock data and utility helpers
+├── types/                       # Shared TypeScript type definitions
+├── docs/
+│   └── postman_collection.json  # Task 2 Postman Collection v2.1
+│
+├── backend/                     # Task 2 Backend REST API
+│   ├── src/
+│   │   ├── controllers/         # HTTP Controllers
+│   │   ├── routes/              # Express API Routes
+│   │   ├── services/            # Core Business Logic & Validations
+│   │   ├── validators/          # Zod Validation Schemas
+│   │   ├── middleware/          # Error, Validation & 404 Middlewares
+│   │   ├── data/                # In-memory Store & Seed Data
+│   │   ├── types/               # Backend Type Definitions
+│   │   ├── utils/               # API Response & Custom Error Classes
+│   │   ├── app.ts               # Express App Setup
+│   │   └── server.ts            # Server Entrypoint
+│   ├── tests/                   # Vitest Automated Test Suites
+│   ├── api.http                 # REST Client Test File
+│   ├── package.json
+│   ├── tsconfig.json
+│   ├── .env.example
+│   └── README.md                # Detailed Backend API Documentation
+│
+├── package.json                 # Frontend Package
+├── README.md                    # Root Documentation
 └── tsconfig.json
 ```
 
 ---
 
-## ⚙️ Installation and Setup
+## 🚀 Quick Start Guide
 
-### Prerequisites
+### 1. Run the Frontend (Task 1)
+```bash
+# Install frontend dependencies
+npm install
 
-- [Node.js](https://nodejs.org/) (version 18.18.0 or higher recommended)
-- [npm](https://www.npmjs.com/) (or yarn / pnpm / bun)
-
-### Steps
-
-1. **Clone the repository**:
-   ```bash
-   git clone <REPOSITORY_URL>
-   cd developer-productivity-dashboard
-   ```
-
-2. **Install dependencies**:
-   ```bash
-   npm install
-   ```
+# Start Next.js development server
+npm run dev
+```
+Open [http://localhost:3000](http://localhost:3000) to view the Developer Productivity Dashboard.
 
 ---
 
-## 🚀 How to Run Locally
-
-### Start Development Server
+### 2. Run the Backend REST API (Task 2)
 ```bash
+# Navigate to backend folder
+cd backend
+
+# Install backend dependencies
+npm install
+
+# Start development API server with hot-reload
 npm run dev
 ```
-Open [http://localhost:3000](http://localhost:3000) in your browser to view the application.
+The REST API will run at [http://localhost:5000](http://localhost:5000).
 
-### Run Linter
+- **Health Check:** `http://localhost:5000/health`
+- **API Base:** `http://localhost:5000/api/v1`
+- **Users:** `http://localhost:5000/api/v1/users`
+- **Projects:** `http://localhost:5000/api/v1/projects`
+- **Tasks:** `http://localhost:5000/api/v1/tasks`
+
+---
+
+## 🧪 Testing & Verification
+
+### Run Backend Automated Tests
 ```bash
-npm run lint
+cd backend
+npm test
+```
+```
+ ✓ tests/health.test.ts (3 tests)
+ ✓ tests/projects.test.ts (10 tests)
+ ✓ tests/users.test.ts (9 tests)
+ ✓ tests/tasks.test.ts (13 tests)
+
+ Test Files  4 passed (4)
+      Tests  35 passed (35)
 ```
 
-### Build for Production
+### Run Frontend Linter & Production Build
 ```bash
+# Root directory
+npm run lint
 npm run build
 ```
 
-### Start Production Server
-```bash
-npm run start
-```
+---
+
+## 📑 API Endpoints Summary
+
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `GET` | `/health` | Server Health Status |
+| `GET` | `/api/v1/users` | List all users |
+| `GET` | `/api/v1/users/:id` | Get user by ID |
+| `POST` | `/api/v1/users` | Create user |
+| `PATCH` | `/api/v1/users/:id` | Update user |
+| `DELETE` | `/api/v1/users/:id` | Delete user |
+| `GET` | `/api/v1/projects` | List projects (query: `status`, `search`) |
+| `GET` | `/api/v1/projects/:id` | Get project by ID |
+| `POST` | `/api/v1/projects` | Create project |
+| `PATCH` | `/api/v1/projects/:id` | Update project |
+| `DELETE` | `/api/v1/projects/:id` | Delete project |
+| `GET` | `/api/v1/tasks` | List tasks (query: `status`, `priority`, `projectId`, `search`) |
+| `GET` | `/api/v1/tasks/:id` | Get task by ID |
+| `POST` | `/api/v1/tasks` | Create task (relational validation) |
+| `PATCH` | `/api/v1/tasks/:id` | Update task |
+| `DELETE` | `/api/v1/tasks/:id` | Delete task |
+| `PATCH` | `/api/v1/tasks/:id/status` | Dedicated task status update |
+
+For complete payload examples and schema documentation, see [`backend/README.md`](file:///d:/int/developer-productivity-dashboard/backend/README.md).
 
 ---
 
-## 📸 Screenshots
+## 🔮 Roadmap: Task 3 & Task 4
 
-<!-- Add your screenshots here by replacing the placeholders below -->
-
-### Dashboard Overview
-![Dashboard Overview Placeholder](public/screenshots/overview.png)
-*(Replace with screenshot: Overview tab displaying KPI metrics, weekly chart, and active projects)*
-
-### Task Board & Filter UI
-![Task Board Placeholder](public/screenshots/tasks.png)
-*(Replace with screenshot: Task board with search filters and status tabs)*
-
-### Mobile Responsive View
-![Mobile Responsive Placeholder](public/screenshots/mobile.png)
-*(Replace with screenshot: Mobile navigation drawer and responsive layout)*
-
----
-
-## 🎥 Demo Video
-
-<!-- Add your demo video link or embed below -->
-
-[![Demo Video](https://img.shields.io/badge/Demo-Watch%20Video-blue?style=for-the-badge&logo=youtube)](https://example.com/demo-video-link)
-*(Replace link above with your demonstration recording URL)*
-
----
-
-## 🔐 Environment Variables
-
-No environment variables are required for this frontend demonstration phase as all data is currently loaded via local typed mock data.
-
-For future backend/database integration, create a `.env.local` file based on:
-```env
-# NEXT_PUBLIC_API_BASE_URL=http://localhost:8000/api
-# DATABASE_URL=postgresql://user:password@localhost:5432/productivity_db
-# NEXTAUTH_SECRET=your_auth_secret
-```
-
----
-
-## 🔮 Future Scope
-
-- **Backend & Database Integration**: Connect to a Node.js/Go backend with PostgreSQL / Prisma ORM for persistent task and project management.
-- **Git Provider Integrations**: Webhooks for GitHub / GitLab to automatically update PR statuses, track commit telemetry, and calculate lead time to deploy.
-- **Authentication & RBAC**: User authentication via NextAuth / Clerk with role-based permissions (Developer, Tech Lead, Engineering Manager).
-- **AI-Powered Workload & Focus Insights**: Automated daily sprint summaries, blocker detection, and focus recommendations.
-- **Real-Time Collaboration**: WebSocket integration for live status updates and real-time team pairing boards.
+- **Task 3 (Database Integration):** Connect PostgreSQL / MongoDB via Prisma ORM to replace the in-memory repository with persistent storage.
+- **Task 4 (Authentication & AI Workflows):** JWT / OAuth authentication and AI-powered sprint task breakdown & workload recommendations.

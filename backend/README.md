@@ -1,6 +1,6 @@
-# Task 2 — Users, Projects & Tasks REST API
+# Users, Projects & Tasks REST API
 
-> Production-grade RESTful backend built with **Node.js**, **Express**, and **TypeScript** for the **Developer Productivity Dashboard** (Innovation Hacks Internship).
+> Production-grade RESTful backend built with **Node.js**, **Express**, and **TypeScript** for the **Developer Productivity Dashboard**.
 
 ---
 
@@ -21,14 +21,14 @@
 - [9. Standard Response & Centralized Error Handling](#9-standard-response--centralized-error-handling)
 - [10. Automated Testing](#10-automated-testing)
 - [11. API Testing Collections](#11-api-testing-collections)
-- [12. Roadmap & Task 3 Database Transition](#12-roadmap--task-3-database-transition)
+- [12. Roadmap & Database Transition](#12-roadmap--database-transition)
 
 ---
 
 ## 1. Overview
-This backend delivers **Task 2** of the Innovation Hacks Full Stack Internship. It provides clean, modular, and type-safe REST APIs powering the Task 1 Developer Productivity Dashboard frontend, including Users, Engineering Projects, Sprint Tasks, and real-time Status transitions.
+This backend provides clean, modular, and type-safe REST APIs powering the Developer Productivity Dashboard frontend, including Users, Engineering Projects, Sprint Tasks, and real-time Status transitions.
 
-The service uses an in-memory repository designed to decouple business logic from the storage layer, allowing persistent databases (PostgreSQL/MongoDB via Prisma/Mongoose) to be connected seamlessly in **Task 3**.
+The service uses an in-memory repository designed to decouple business logic from the storage layer, allowing persistent databases (PostgreSQL/MongoDB via Prisma/Mongoose) to be connected seamlessly.
 
 ---
 
@@ -295,7 +295,7 @@ GET /health
     "title": "Stream real-time developer metrics via WebSockets",
     "description": "Build WebSocket server gateway forwarding live git commits and task telemetry.",
     "projectId": "proj-dpd",
-    "projectName": "Innovation Hacks Internship / Developer Productivity Dashboard",
+    "projectName": "Developer Productivity Dashboard Platform",
     "priority": "high",
     "status": "in_progress",
     "assignee": {
@@ -431,22 +431,22 @@ npm test
 
 ---
 
-## 12. Roadmap & Task 3 Database Transition
+## 12. Roadmap & Database Transition
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│               Task 1: Next.js Frontend                  │
+│               Next.js Frontend (Client)                 │
 └───────────────────────────▲─────────────────────────────┘
                             │ REST API Calls (CORS enabled)
 ┌───────────────────────────▼─────────────────────────────┐
-│       Task 2: Express + TypeScript REST API Layer       │
+│       Express + TypeScript REST API Layer               │
 │  (Controllers ➔ Services ➔ Validators ➔ Middlewares)   │
 └───────────────────────────▲─────────────────────────────┘
                             │
               ┌─────────────┴─────────────┐
               ▼                           ▼
-   [Current] Task 2 Store        [Next] Task 3 Persistence
-      (In-Memory Store)        (PostgreSQL / MongoDB / Prisma)
+        In-Memory Store          Persistent Storage
+      (Fast Mock Data)     (PostgreSQL / MongoDB / Prisma)
 ```
 
-In **Task 3**, `InMemoryStore` in `src/data/mock-data.ts` will be replaced with database repositories without requiring any changes to Controllers, Routes, or Validators.
+The `InMemoryStore` in `src/data/mock-data.ts` can be seamlessly replaced with database repositories without requiring any changes to Controllers, Routes, or Validators.

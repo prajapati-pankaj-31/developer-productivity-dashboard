@@ -68,7 +68,7 @@ export const INITIAL_USERS: User[] = [
 export const INITIAL_PROJECTS: Project[] = [
   {
     id: 'proj-dpd',
-    name: 'Innovation Hacks Internship / Developer Productivity Dashboard',
+    name: 'Developer Productivity Dashboard Platform',
     key: 'DPD',
     description: 'Modern developer productivity hub tracking weekly focus hours, sprint velocity, task boards, and telemetry.',
     status: 'on_track',
@@ -198,7 +198,7 @@ export const INITIAL_TASKS: Task[] = [
     title: 'Build Users, Projects & Tasks REST API with Zod validation',
     description: 'Implement Express TypeScript backend architecture with centralized error handling and filtering.',
     projectId: 'proj-dpd',
-    projectName: 'Innovation Hacks Internship / Developer Productivity Dashboard',
+    projectName: 'Developer Productivity Dashboard Platform',
     priority: 'urgent',
     status: 'in_progress',
     assignee: INITIAL_USERS[0],

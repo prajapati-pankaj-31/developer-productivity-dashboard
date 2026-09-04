@@ -1,8 +1,8 @@
 {
   "info": {
-    "name": "Developer Productivity Dashboard - REST API (Task 2)",
+    "name": "Developer Productivity Dashboard - REST API",
     "_postman_id": "7f8b91a2-3b4c-4e5d-8f9a-1a2b3c4d5e6f",
-    "description": "Production-grade REST API collection for Task 2 (Users, Projects & Tasks API) with comprehensive endpoint testing, query filtering, relational validation, and status code assertions.",
+    "description": "Production-grade REST API collection for Users, Projects & Tasks API with comprehensive endpoint testing, query filtering, relational validation, and status code assertions.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [

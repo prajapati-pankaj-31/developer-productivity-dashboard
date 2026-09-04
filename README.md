@@ -1,7 +1,6 @@
 # Developer Productivity Dashboard & REST API
 
 > Full-Stack Engineering Platform for developer productivity tracking, sprint management, project telemetry, and focus companion workflows.
-> Developed as part of the **Innovation Hacks Full Stack Development Internship**.
 
 ---
 
@@ -9,39 +8,39 @@
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│              Task 1: Next.js 16 Frontend                │
+│               Next.js 16 Frontend (UI)                  │
 │   (Futuristic Glass UI, Sprint Boards, Focus Timer)     │
 └───────────────────────────▲─────────────────────────────┘
                             │ REST API (CORS & JSON)
 ┌───────────────────────────▼─────────────────────────────┐
-│       Task 2: Express + TypeScript REST API Layer       │
+│       Express + TypeScript REST API Layer               │
 │  (Controllers ➔ Services ➔ Validators ➔ Middlewares)   │
 └───────────────────────────▲─────────────────────────────┘
                             │
               ┌─────────────┴─────────────┐
               ▼                           ▼
-   [Current] Task 2 Store        [Next] Task 3 Persistence
-      (In-Memory Store)        (PostgreSQL / MongoDB / Prisma)
+       In-Memory Store           Persistent Storage
+     (Fast Local State)    (PostgreSQL / MongoDB / Prisma)
 ```
 
 ---
 
-## 📌 Internship Milestones
+## 📌 Core Features & Modules
 
-### 🌟 Task 1: Developer Productivity Dashboard (Frontend)
+### 🌟 Frontend: Developer Productivity Dashboard
 - **KPI Metrics & Velocity Charts:** Focus score, sprint velocity, PR reviews, and daily focus cadence.
 - **Sprint Task Board:** Inline status transitions, subtask progress, priority badges, and branch tags.
 - **Engineering Projects Hub:** Multi-project health tracking, progress bars, and modal roadmaps.
 - **Focus Companion & Preferences:** Pomodoro work timer, developer profile modal, and workspace settings.
 - **Dynamic Futuristic Ambience:** Full-screen SVG constellation network, flowing particles, and mouse spotlight.
 
-### ⚡ Task 2: Users, Projects & Tasks REST API (Backend)
+### ⚡ Backend: Users, Projects & Tasks REST API
 - **Node.js + Express + TypeScript:** Modular layered architecture (Controllers, Services, Validators, Middlewares).
 - **Zod Schema Validation:** Strict request body, query, and parameter validation across all write operations.
 - **Relational Integrity:** Validates project and assignee references; guards against deleting users or projects with active tasks.
 - **Status Management:** Dedicated `PATCH /api/v1/tasks/:id/status` endpoint with strict enum validation.
 - **Centralized Error Handling:** Consistent JSON error structure and HTTP status codes (`200`, `201`, `400`, `404`, `409`, `500`).
-- **Comprehensive Testing:** 35 automated integration tests with Vitest & Supertest, Postman Collection v2.1, and VS Code `api.http`.
+- **Comprehensive Testing:** 35+ automated integration tests with Vitest & Supertest, Postman Collection v2.1, and VS Code `api.http`.
 
 ---
 
@@ -51,7 +50,7 @@
 | :--- | :--- |
 | **Frontend** | Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS v4, Lucide Icons |
 | **Backend** | Node.js v20+, Express.js 4.21, TypeScript 5.7, Zod 3.24, Helmet, CORS |
-| **Testing** | Vitest, Supertest (35 passing integration tests) |
+| **Testing** | Vitest, Supertest (automated integration tests) |
 | **Tooling** | Postman Collection v2.1, REST Client (`api.http`), `tsx` |
 
 ---
@@ -66,9 +65,9 @@ developer-productivity-dashboard/
 ├── lib/                         # Frontend mock data and utility helpers
 ├── types/                       # Shared TypeScript type definitions
 ├── docs/
-│   └── postman_collection.json  # Task 2 Postman Collection v2.1
+│   └── postman_collection.json  # Postman Collection v2.1
 │
-├── backend/                     # Task 2 Backend REST API
+├── backend/                     # Backend REST API
 │   ├── src/
 │   │   ├── controllers/         # HTTP Controllers
 │   │   ├── routes/              # Express API Routes
@@ -96,7 +95,7 @@ developer-productivity-dashboard/
 
 ## 🚀 Quick Start Guide
 
-### 1. Run the Frontend (Task 1)
+### 1. Run the Frontend
 ```bash
 # Install frontend dependencies
 npm install
@@ -108,7 +107,7 @@ Open [http://localhost:3000](http://localhost:3000) to view the Developer Produc
 
 ---
 
-### 2. Run the Backend REST API (Task 2)
+### 2. Run the Backend REST API
 ```bash
 # Navigate to backend folder
 cd backend
@@ -137,13 +136,10 @@ cd backend
 npm test
 ```
 ```
- ✓ tests/health.test.ts (3 tests)
- ✓ tests/projects.test.ts (10 tests)
- ✓ tests/users.test.ts (9 tests)
- ✓ tests/tasks.test.ts (13 tests)
-
- Test Files  4 passed (4)
-      Tests  35 passed (35)
+ ✓ tests/health.test.ts
+ ✓ tests/projects.test.ts
+ ✓ tests/users.test.ts
+ ✓ tests/tasks.test.ts
 ```
 
 ### Run Frontend Linter & Production Build
@@ -181,7 +177,8 @@ For complete payload examples and schema documentation, see [`backend/README.md`
 
 ---
 
-## 🔮 Roadmap: Task 3 & Task 4
+## 🔮 Future Roadmap
 
-- **Task 3 (Database Integration):** Connect PostgreSQL / MongoDB via Prisma ORM to replace the in-memory repository with persistent storage.
-- **Task 4 (Authentication & AI Workflows):** JWT / OAuth authentication and AI-powered sprint task breakdown & workload recommendations.
+- **Database Integration:** Connect PostgreSQL / MongoDB via Prisma ORM for persistent database storage.
+- **Authentication & AI Workflows:** JWT / OAuth authentication and AI-powered sprint task breakdown & workload recommendations.
+

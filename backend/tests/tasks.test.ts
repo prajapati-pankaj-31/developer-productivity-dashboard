@@ -76,7 +76,7 @@ describe('Tasks API Endpoints (/api/v1/tasks)', () => {
     expect(res.status).toBe(201);
     expect(res.body.success).toBe(true);
     expect(res.body.data.id).toBeDefined();
-    expect(res.body.data.projectName).toBe('Innovation Hacks Internship / Developer Productivity Dashboard');
+    expect(res.body.data.projectName).toBe('Developer Productivity Dashboard Platform');
     expect(res.body.data.assignee.name).toBe('Pankaj Prajapati');
   });
 

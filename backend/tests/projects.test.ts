@@ -1,11 +1,11 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import request from 'supertest';
 import { app } from '../src/app.js';
-import { db } from '../src/data/mock-data.js';
+import { resetTestDatabase } from '../src/db/test-helper.js';
 
 describe('Projects API Endpoints (/api/v1/projects)', () => {
-  beforeEach(() => {
-    db.reset();
+  beforeEach(async () => {
+    await resetTestDatabase();
   });
 
   it('GET /api/v1/projects returns all projects with count', async () => {
@@ -13,7 +13,7 @@ describe('Projects API Endpoints (/api/v1/projects)', () => {
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
     expect(Array.isArray(res.body.data)).toBe(true);
-    expect(res.body.count).toBeGreaterThanOrEqual(5);
+    expect(res.body.count).toBeGreaterThanOrEqual(4);
   });
 
   it('GET /api/v1/projects?status=on_track filters projects by status', async () => {
@@ -22,11 +22,11 @@ describe('Projects API Endpoints (/api/v1/projects)', () => {
     expect(res.body.data.every((p: { status: string }) => p.status === 'on_track')).toBe(true);
   });
 
-  it('GET /api/v1/projects?search=appointment filters projects by keyword', async () => {
-    const res = await request(app).get('/api/v1/projects?search=appointment');
+  it('GET /api/v1/projects?search=productivity filters projects by keyword', async () => {
+    const res = await request(app).get('/api/v1/projects?search=productivity');
     expect(res.status).toBe(200);
     expect(res.body.data.length).toBeGreaterThanOrEqual(1);
-    expect(res.body.data[0].name).toContain('Appointment');
+    expect(res.body.data[0].name.toLowerCase()).toContain('productivity');
   });
 
   it('GET /api/v1/projects/:id returns single project', async () => {

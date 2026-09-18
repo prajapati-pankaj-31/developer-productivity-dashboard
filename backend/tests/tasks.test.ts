@@ -1,11 +1,11 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import request from 'supertest';
 import { app } from '../src/app.js';
-import { db } from '../src/data/mock-data.js';
+import { resetTestDatabase } from '../src/db/test-helper.js';
 
 describe('Tasks API Endpoints (/api/v1/tasks)', () => {
-  beforeEach(() => {
-    db.reset();
+  beforeEach(async () => {
+    await resetTestDatabase();
   });
 
   it('GET /api/v1/tasks returns all tasks with count', async () => {
@@ -28,17 +28,17 @@ describe('Tasks API Endpoints (/api/v1/tasks)', () => {
     expect(res.body.data.every((t: { priority: string }) => t.priority === 'urgent')).toBe(true);
   });
 
-  it('GET /api/v1/tasks?projectId=proj-saq filters by project', async () => {
-    const res = await request(app).get('/api/v1/tasks?projectId=proj-saq');
+  it('GET /api/v1/tasks?projectId=proj-dpd filters by project', async () => {
+    const res = await request(app).get('/api/v1/tasks?projectId=proj-dpd');
     expect(res.status).toBe(200);
-    expect(res.body.data.every((t: { projectId: string }) => t.projectId === 'proj-saq')).toBe(true);
+    expect(res.body.data.every((t: { projectId: string }) => t.projectId === 'proj-dpd')).toBe(true);
   });
 
-  it('GET /api/v1/tasks?search=algorithm filters by search keyword', async () => {
-    const res = await request(app).get('/api/v1/tasks?search=algorithm');
+  it('GET /api/v1/tasks?search=kanban filters by search keyword', async () => {
+    const res = await request(app).get('/api/v1/tasks?search=kanban');
     expect(res.status).toBe(200);
     expect(res.body.data.length).toBeGreaterThanOrEqual(1);
-    expect(res.body.data[0].title.toLowerCase()).toContain('algorithm');
+    expect(res.body.data[0].title.toLowerCase()).toContain('kanban');
   });
 
   it('GET /api/v1/tasks/:id returns specific task', async () => {

@@ -1,11 +1,11 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import request from 'supertest';
 import { app } from '../src/app.js';
-import { db } from '../src/data/mock-data.js';
+import { resetTestDatabase } from '../src/db/test-helper.js';
 
 describe('Analytics, Activities & Subtask Toggle Endpoints', () => {
-  beforeEach(() => {
-    db.reset();
+  beforeEach(async () => {
+    await resetTestDatabase();
   });
 
   it('GET /api/v1/analytics/metrics returns 4 KPI metrics', async () => {
@@ -37,7 +37,7 @@ describe('Analytics, Activities & Subtask Toggle Endpoints', () => {
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
     expect(Array.isArray(res.body.data)).toBe(true);
-    expect(res.body.data.length).toBeGreaterThanOrEqual(6);
+    expect(res.body.data.length).toBeGreaterThanOrEqual(5);
   });
 
   it('POST /api/v1/activities creates a new engineering telemetry event', async () => {

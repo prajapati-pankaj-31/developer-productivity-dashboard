@@ -1,11 +1,11 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import request from 'supertest';
 import { app } from '../src/app.js';
-import { db } from '../src/data/mock-data.js';
+import { resetTestDatabase } from '../src/db/test-helper.js';
 
 describe('Users API Endpoints (/api/v1/users)', () => {
-  beforeEach(() => {
-    db.reset();
+  beforeEach(async () => {
+    await resetTestDatabase();
   });
 
   it('GET /api/v1/users returns all users with count', async () => {

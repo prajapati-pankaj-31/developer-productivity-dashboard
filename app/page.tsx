@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
-import { TabType, Task, Project, TaskStatus, TaskFilterState, User } from '@/types';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import { TabType, Task, Project, TaskStatus, TaskFilterState, User, ProductivityMetric, DailyProductivity, ActivityItem } from '@/types';
 import {
   CURRENT_USER,
   TEAM_MEMBERS,
@@ -11,6 +11,7 @@ import {
   MOCK_TASKS,
   RECENT_ACTIVITIES,
 } from '@/lib/mock-data';
+import { ApiClient } from '@/lib/api-client';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { Header } from '@/components/layout/Header';
 import { MobileNav } from '@/components/layout/MobileNav';
@@ -39,9 +40,13 @@ export default function DashboardPage() {
   // State
   const [activeTab, setActiveTab] = useState<TabType>('overview');
   const [currentUser, setCurrentUser] = useState<User>(CURRENT_USER);
-  const [projects] = useState<Project[]>(MOCK_PROJECTS);
+  const [projects, setProjects] = useState<Project[]>(MOCK_PROJECTS);
   const [tasks, setTasks] = useState<Task[]>(MOCK_TASKS);
+  const [activities, setActivities] = useState<ActivityItem[]>(RECENT_ACTIVITIES);
+  const [metrics, setMetrics] = useState<ProductivityMetric[]>(PRODUCTIVITY_METRICS);
+  const [weeklyData, setWeeklyData] = useState<DailyProductivity[]>(WEEKLY_PRODUCTIVITY_DATA);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [isLiveDbConnected, setIsLiveDbConnected] = useState<boolean>(false);
 
   // Modals & Drawers
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
@@ -51,6 +56,37 @@ export default function DashboardPage() {
   const [isShortcutsModalOpen, setIsShortcutsModalOpen] = useState(false);
   const [workspaceSettings, setWorkspaceSettings] = useState<WorkspaceSettings>(defaultSettings);
   const [isLoadingState, setIsLoadingState] = useState(false);
+
+  // Load Real-time Data from Backend REST API
+  const refreshBackendData = useCallback(async () => {
+    const isAlive = await ApiClient.checkHealth();
+    setIsLiveDbConnected(isAlive);
+
+    if (isAlive) {
+      try {
+        const [fetchedProjects, fetchedTasks, fetchedActivities, overview] = await Promise.all([
+          ApiClient.getProjects(),
+          ApiClient.getTasks(),
+          ApiClient.getActivities(),
+          ApiClient.getAnalyticsOverview(),
+        ]);
+
+        if (fetchedProjects && fetchedProjects.length > 0) setProjects(fetchedProjects);
+        if (fetchedTasks && fetchedTasks.length > 0) setTasks(fetchedTasks);
+        if (fetchedActivities && fetchedActivities.length > 0) setActivities(fetchedActivities);
+        if (overview?.metrics && overview.metrics.length > 0) setMetrics(overview.metrics);
+        if (overview?.weeklyProductivity && overview.weeklyProductivity.length > 0) {
+          setWeeklyData(overview.weeklyProductivity);
+        }
+      } catch (err) {
+        console.warn('⚠️ [Live DB] Error refreshing data, using cache:', err);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    refreshBackendData();
+  }, [refreshBackendData]);
 
   // Filters
   const [filters, setFilters] = useState<TaskFilterState>({
@@ -73,7 +109,7 @@ export default function DashboardPage() {
     });
   };
 
-  // Task Actions
+  // Task Actions (Optimistic UI + Real Database Sync)
   const handleStatusChange = (taskId: string, newStatus: TaskStatus) => {
     setTasks((prevTasks) =>
       prevTasks.map((t) => {
@@ -89,6 +125,11 @@ export default function DashboardPage() {
         return t;
       })
     );
+
+    // Sync directly to backend database
+    ApiClient.updateTaskStatus(taskId, newStatus).catch((err) => {
+      console.warn('Backend status sync warning:', err);
+    });
   };
 
   const handleToggleSubtask = (taskId: string, subtaskId: string) => {
@@ -117,10 +158,38 @@ export default function DashboardPage() {
         return t;
       })
     );
+
+    // Sync directly to backend database
+    ApiClient.toggleSubtask(taskId, subtaskId).catch((err) => {
+      console.warn('Backend subtask toggle warning:', err);
+    });
   };
 
-  const handleAddTask = (newTask: Task) => {
+  const handleAddTask = async (newTask: Task) => {
+    // Optimistic UI update
     setTasks((prev) => [newTask, ...prev]);
+
+    try {
+      const created = await ApiClient.createTask({
+        title: newTask.title,
+        description: newTask.description,
+        projectId: newTask.projectId,
+        priority: newTask.priority,
+        status: newTask.status,
+        assigneeId: newTask.assignee.id,
+        dueDate: newTask.dueDate,
+        estimatedHours: newTask.estimatedHours,
+        tags: newTask.tags,
+        branchName: newTask.branchName,
+        prNumber: newTask.prNumber,
+        subtasks: newTask.subtasks.map((st) => ({ title: st.title, completed: st.completed })),
+      });
+
+      // Update with server ID
+      setTasks((prev) => prev.map((t) => (t.id === newTask.id ? created : t)));
+    } catch (err) {
+      console.warn('Backend task create warning:', err);
+    }
   };
 
   const handleFilterByProject = (projectId: string) => {
@@ -130,6 +199,9 @@ export default function DashboardPage() {
 
   const handleUserStatusChange = (newStatus: User['status']) => {
     setCurrentUser((prev) => ({ ...prev, status: newStatus }));
+    ApiClient.updateUser(currentUser.id, { status: newStatus }).catch((err) => {
+      console.warn('User status sync warning:', err);
+    });
   };
 
   // Filtered Tasks
@@ -185,6 +257,9 @@ export default function DashboardPage() {
   // User & Workspace Settings Handlers
   const handleSaveUser = (updatedUser: Partial<User>) => {
     setCurrentUser((prev) => ({ ...prev, ...updatedUser }));
+    ApiClient.updateUser(currentUser.id, updatedUser).catch((err) => {
+      console.warn('User profile sync warning:', err);
+    });
   };
 
   const handleSaveSettings = (newSettings: WorkspaceSettings) => {
@@ -195,7 +270,7 @@ export default function DashboardPage() {
   };
 
   // Keyboard Shortcuts Listener
-  React.useEffect(() => {
+  useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement;
       if (
@@ -272,6 +347,7 @@ export default function DashboardPage() {
           isLoadingState={isLoadingState}
           onToggleLoadingState={() => setIsLoadingState(!isLoadingState)}
           onStatusChange={handleUserStatusChange}
+          isLiveDbConnected={isLiveDbConnected}
           onOpenProfile={() => setIsProfileModalOpen(true)}
           onOpenSettings={() => setIsSettingsModalOpen(true)}
           onOpenShortcuts={() => setIsShortcutsModalOpen(true)}
@@ -330,7 +406,7 @@ export default function DashboardPage() {
                   Productivity Metrics
                 </h2>
                 <OverviewMetrics
-                  metrics={PRODUCTIVITY_METRICS}
+                  metrics={metrics}
                   isLoading={isLoadingState}
                 />
               </section>
@@ -338,7 +414,7 @@ export default function DashboardPage() {
               {/* 2. Visual Charts & Deep Work Timer Grid */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2">
-                  <ProductivityChart data={WEEKLY_PRODUCTIVITY_DATA} />
+                  <ProductivityChart data={weeklyData} />
                 </div>
                 <div className="lg:col-span-1">
                   <FocusTimerCard />
@@ -406,7 +482,7 @@ export default function DashboardPage() {
               {/* 5. Live Activity Feed */}
               <section aria-labelledby="activity-heading" className="pt-2">
                 <ActivityFeed
-                  activities={RECENT_ACTIVITIES}
+                  activities={activities}
                   title="Team Activity Stream"
                 />
               </section>
@@ -497,7 +573,7 @@ export default function DashboardPage() {
               </div>
 
               <ActivityFeed
-                activities={RECENT_ACTIVITIES}
+                activities={activities}
                 title="Full Engineering Activity Log"
               />
             </div>

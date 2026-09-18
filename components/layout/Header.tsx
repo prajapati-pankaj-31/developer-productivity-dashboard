@@ -25,6 +25,7 @@ interface HeaderProps {
   isLoadingState: boolean;
   onToggleLoadingState: () => void;
   onStatusChange: (status: User['status']) => void;
+  isLiveDbConnected?: boolean;
   onOpenProfile?: () => void;
   onOpenSettings?: () => void;
   onOpenShortcuts?: () => void;
@@ -39,6 +40,7 @@ export const Header: React.FC<HeaderProps> = ({
   isLoadingState,
   onToggleLoadingState,
   onStatusChange,
+  isLiveDbConnected = false,
   onOpenProfile,
   onOpenSettings,
   onOpenShortcuts,
@@ -130,13 +132,27 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Right Actions */}
       <div className="flex items-center gap-2 sm:gap-3">
-        {/* Subtle Indicator for Prototype / Simulated Data */}
+        {/* Live Database Sync Indicator */}
         <div
-          className="hidden xl:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-indigo-950/40 border border-indigo-800/30 text-indigo-300 text-[11px] font-medium select-none shadow-2xs"
-          title="Interactive prototype telemetry and metrics are simulated for demonstration"
+          className={cn(
+            'hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium select-none shadow-2xs border transition-colors',
+            isLiveDbConnected
+              ? 'bg-emerald-950/40 border-emerald-800/40 text-emerald-300'
+              : 'bg-zinc-900/60 border-zinc-800 text-zinc-400'
+          )}
+          title={
+            isLiveDbConnected
+              ? 'Connected to Express + Prisma REST API (Live Database)'
+              : 'Operating in Local Cache Mode'
+          }
         >
-          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-          <span>Demo Telemetry</span>
+          <span
+            className={cn(
+              'h-1.5 w-1.5 rounded-full',
+              isLiveDbConnected ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'
+            )}
+          />
+          <span>{isLiveDbConnected ? 'Live DB Sync' : 'Local Cache'}</span>
         </div>
 
         {/* Toggle skeleton loading state preview */}

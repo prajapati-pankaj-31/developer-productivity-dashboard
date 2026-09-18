@@ -1,0 +1,137 @@
+// Prisma Schema for Developer Productivity Dashboard
+// Task 3: Persistent Data Layer & Relational Database Integration
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id                   String          @id @default(uuid())
+  name                 String
+  email                String          @unique
+  role                 String
+  avatarUrl            String
+  initials             String
+  status               String          @default("available") // flow | available | in_review | away
+  statusMessage        String?
+  weeklyFocusGoalHours Int             @default(40)
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
+
+  // Relationships
+  ledProjects          Project[]       @relation("ProjectLead")
+  projectMemberships   ProjectMember[]
+  assignedTasks        Task[]          @relation("TaskAssignee")
+  activities           Activity[]
+
+  @@map("users")
+}
+
+model Project {
+  id           String          @id @default(uuid())
+  name         String
+  key          String          @unique
+  description  String
+  status       String          @default("on_track") // on_track | at_risk | delayed | completed
+  progress     Int             @default(0)
+  deadline     String
+  repository   String
+  techStack    String          @default("[]") // JSON array string
+  color        String          @default("indigo")
+  leadId       String
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  // Relationships
+  lead         User            @relation("ProjectLead", fields: [leadId], references: [id], onDelete: Restrict)
+  members      ProjectMember[]
+  tasks        Task[]
+
+  @@map("projects")
+}
+
+model ProjectMember {
+  id        String   @id @default(uuid())
+  projectId String
+  userId    String
+  role      String   @default("developer")
+  joinedAt  DateTime @default(now())
+
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, userId])
+  @@map("project_members")
+}
+
+model Task {
+  id             String    @id @default(uuid())
+  title          String
+  description    String
+  projectId      String
+  priority       String    @default("medium") // urgent | high | medium | low
+  status         String    @default("backlog") // backlog | in_progress | in_review | completed
+  assigneeId     String
+  dueDate        String
+  estimatedHours Float     @default(0)
+  loggedHours    Float     @default(0)
+  tags           String    @default("[]") // JSON array string
+  branchName     String?
+  prNumber       Int?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  // Relationships
+  project        Project   @relation(fields: [projectId], references: [id], onDelete: Restrict)
+  assignee       User      @relation("TaskAssignee", fields: [assigneeId], references: [id], onDelete: Restrict)
+  subtasks       Subtask[]
+
+  @@map("tasks")
+}
+
+model Subtask {
+  id        String  @id @default(uuid())
+  title     String
+  completed Boolean @default(false)
+  taskId    String
+
+  task      Task    @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@map("subtasks")
+}
+
+model Activity {
+  id          String   @id @default(uuid())
+  type        String   // commit | pr_merged | pr_review | task_completed | deployment | comment
+  title       String
+  description String
+  timestamp   String
+  userId      String
+  projectKey  String
+  badgeText   String?
+  createdAt   DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("activities")
+}
+
+model DailyProductivity {
+  id                String   @id @default(uuid())
+  day               String
+  shortDay          String
+  focusHours        Float    @default(0)
+  commitCount       Int      @default(0)
+  pullRequestsCount Int      @default(0)
+  tasksCompleted    Int      @default(0)
+  isToday           Boolean  @default(false)
+  createdAt         DateTime @default(now())
+
+  @@map("daily_productivity")
+}

@@ -1,4 +1,4 @@
-import { db } from '../data/mock-data.js';
+import { prisma } from '../db/prisma.js';
 import { User } from '../types/index.js';
 import { NotFoundError, BadRequestError } from '../utils/errors.js';
 import { CreateUserInput, UpdateUserInput } from '../validators/user.validator.js';
@@ -14,87 +14,111 @@ const getInitials = (name: string): string => {
 };
 
 export class UserService {
-  public static getAllUsers(): User[] {
-    return db.getUsers();
+  public static async getAllUsers(): Promise<User[]> {
+    const users = await prisma.user.findMany({
+      orderBy: { createdAt: 'asc' },
+    });
+    return users as User[];
   }
 
-  public static getUserById(id: string): User {
-    const user = db.getUserById(id);
+  public static async getUserById(id: string): Promise<User> {
+    const user = await prisma.user.findUnique({
+      where: { id },
+    });
     if (!user) {
       throw new NotFoundError(`User with id '${id}' not found.`);
     }
-    return user;
+    return user as User;
   }
 
-  public static createUser(data: CreateUserInput): User {
-    const existingUsers = db.getUsers();
-    const id = `usr-${Date.now()}`;
+  public static async createUser(data: CreateUserInput): Promise<User> {
     const initials = getInitials(data.name);
     const email =
       data.email ||
       `${data.name.toLowerCase().replace(/\s+/g, '.')}@devhub.io`;
 
     // Check duplicate email
-    if (existingUsers.some((u) => u.email.toLowerCase() === email.toLowerCase())) {
+    const existing = await prisma.user.findUnique({
+      where: { email },
+    });
+    if (existing) {
       throw new BadRequestError(`User with email '${email}' already exists.`);
     }
 
-    const newUser: User = {
-      id,
-      name: data.name,
-      email,
-      role: data.role,
-      avatarUrl: data.avatarUrl || '/pankaj.jpg',
-      initials,
-      status: data.status,
-      statusMessage: data.statusMessage,
-      weeklyFocusGoalHours: data.weeklyFocusGoalHours ?? 35,
-    };
+    const newUser = await prisma.user.create({
+      data: {
+        id: `usr-${Date.now()}`,
+        name: data.name,
+        email,
+        role: data.role,
+        avatarUrl: data.avatarUrl || '/pankaj.jpg',
+        initials,
+        status: data.status,
+        statusMessage: data.statusMessage,
+        weeklyFocusGoalHours: data.weeklyFocusGoalHours ?? 35,
+      },
+    });
 
-    return db.addUser(newUser);
+    return newUser as User;
   }
 
-  public static updateUser(id: string, data: UpdateUserInput): User {
-    const user = this.getUserById(id);
-
-    const updatePayload: Partial<User> = { ...data };
-    if (data.name) {
-      updatePayload.initials = getInitials(data.name);
-    }
+  public static async updateUser(id: string, data: UpdateUserInput): Promise<User> {
+    const user = await this.getUserById(id);
 
     if (data.email && data.email !== user.email) {
-      const emailTaken = db.getUsers().some(
-        (u) => u.id !== id && u.email.toLowerCase() === data.email!.toLowerCase()
-      );
+      const emailTaken = await prisma.user.findFirst({
+        where: {
+          email: data.email,
+          NOT: { id },
+        },
+      });
       if (emailTaken) {
         throw new BadRequestError(`Email '${data.email}' is already in use by another user.`);
       }
     }
 
-    const updated = db.updateUser(id, updatePayload);
-    if (!updated) {
-      throw new NotFoundError(`User with id '${id}' not found.`);
+    const updatePayload: any = { ...data };
+    if (data.name) {
+      updatePayload.initials = getInitials(data.name);
     }
-    return updated;
+
+    const updated = await prisma.user.update({
+      where: { id },
+      data: updatePayload,
+    });
+
+    return updated as User;
   }
 
-  public static deleteUser(id: string): void {
-    this.getUserById(id);
+  public static async deleteUser(id: string): Promise<void> {
+    await this.getUserById(id);
 
     // Relational safety check: cannot delete user if assigned to active tasks
-    const activeAssignedTasks = db
-      .getTasks()
-      .filter((t) => t.assignee.id === id && t.status !== 'completed');
+    const activeTasksCount = await prisma.task.count({
+      where: {
+        assigneeId: id,
+        NOT: { status: 'completed' },
+      },
+    });
 
-    if (activeAssignedTasks.length > 0) {
+    if (activeTasksCount > 0) {
       throw new BadRequestError(
-        `Cannot delete user '${id}' because they are currently assigned to ${activeAssignedTasks.length} active task(s). Reassign tasks before deleting.`
+        `Cannot delete user '${id}' because they are currently assigned to ${activeTasksCount} active task(s). Reassign tasks before deleting.`
       );
     }
 
-    const deleted = db.deleteUser(id);
-    if (!deleted) {
-      throw new NotFoundError(`User with id '${id}' not found.`);
+    // Relational safety check: cannot delete user if they lead any project
+    const ledProjectsCount = await prisma.project.count({
+      where: { leadId: id },
+    });
+    if (ledProjectsCount > 0) {
+      throw new BadRequestError(
+        `Cannot delete user '${id}' because they are the lead of ${ledProjectsCount} project(s). Reassign project leads before deleting.`
+      );
     }
+
+    await prisma.user.delete({
+      where: { id },
+    });
   }
 }

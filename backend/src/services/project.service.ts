@@ -1,4 +1,4 @@
-import { db } from '../data/mock-data.js';
+import { prisma } from '../db/prisma.js';
 import { Project, User } from '../types/index.js';
 import { NotFoundError, BadRequestError, ConflictError } from '../utils/errors.js';
 import {
@@ -8,129 +8,217 @@ import {
 } from '../validators/project.validator.js';
 import { UserService } from './user.service.js';
 
-export class ProjectService {
-  public static getAllProjects(filters?: ProjectQueryParams): Project[] {
-    let projects = db.getProjects();
-
-    if (!filters) return projects;
-
-    if (filters.status) {
-      projects = projects.filter((p) => p.status === filters.status);
-    }
-
-    if (filters.search) {
-      const q = filters.search.toLowerCase();
-      projects = projects.filter(
-        (p) =>
-          p.name.toLowerCase().includes(q) ||
-          p.key.toLowerCase().includes(q) ||
-          p.description.toLowerCase().includes(q) ||
-          p.techStack.some((tech) => tech.toLowerCase().includes(q))
-      );
-    }
-
-    return projects;
+const formatProject = (p: any): Project => {
+  let techStack: string[] = [];
+  try {
+    techStack = typeof p.techStack === 'string' ? JSON.parse(p.techStack) : (p.techStack || []);
+  } catch {
+    techStack = [];
   }
 
-  public static getProjectById(id: string): Project {
-    const project = db.getProjectById(id);
+  const tasks = p.tasks || [];
+  const totalTasks = tasks.length;
+  const completedTasks = tasks.filter((t: any) => t.status === 'completed').length;
+  const progress =
+    p.progress !== undefined && p.progress !== null
+      ? p.progress
+      : totalTasks > 0
+        ? Math.round((completedTasks / totalTasks) * 100)
+        : 0;
+
+  const members: User[] = (p.members || []).map((m: any) => m.user as User).filter(Boolean);
+
+  return {
+    id: p.id,
+    name: p.name,
+    key: p.key,
+    description: p.description,
+    status: p.status,
+    progress,
+    totalTasks,
+    completedTasks,
+    deadline: p.deadline,
+    repository: p.repository,
+    techStack,
+    lead: p.lead as User,
+    members,
+    color: p.color,
+  };
+};
+
+export class ProjectService {
+  public static async getAllProjects(filters?: ProjectQueryParams): Promise<Project[]> {
+    const where: any = {};
+
+    if (filters?.status) {
+      where.status = filters.status;
+    }
+
+    if (filters?.search) {
+      const q = filters.search;
+      where.OR = [
+        { name: { contains: q } },
+        { key: { contains: q } },
+        { description: { contains: q } },
+      ];
+    }
+
+    const projects = await prisma.project.findMany({
+      where,
+      include: {
+        lead: true,
+        members: {
+          include: { user: true },
+        },
+        tasks: true,
+      },
+      orderBy: { createdAt: 'asc' },
+    });
+
+    return projects.map(formatProject);
+  }
+
+  public static async getProjectById(id: string): Promise<Project> {
+    const project = await prisma.project.findUnique({
+      where: { id },
+      include: {
+        lead: true,
+        members: {
+          include: { user: true },
+        },
+        tasks: true,
+      },
+    });
+
     if (!project) {
       throw new NotFoundError(`Project with id '${id}' not found.`);
     }
-    return project;
+
+    return formatProject(project);
   }
 
-  public static createProject(data: CreateProjectInput): Project {
+  public static async createProject(data: CreateProjectInput): Promise<Project> {
     // Validate lead user exists
-    const leadUser = UserService.getUserById(data.leadId);
-
-    // Validate members exist
-    const members: User[] = [leadUser];
-    if (data.memberIds && data.memberIds.length > 0) {
-      for (const mId of data.memberIds) {
-        if (mId !== data.leadId && !members.some((m) => m.id === mId)) {
-          const member = UserService.getUserById(mId);
-          members.push(member);
-        }
-      }
-    }
+    const leadUser = await UserService.getUserById(data.leadId);
 
     // Check project key uniqueness
-    const existingProjects = db.getProjects();
-    if (existingProjects.some((p) => p.key.toUpperCase() === data.key.toUpperCase())) {
+    const existing = await prisma.project.findUnique({
+      where: { key: data.key.toUpperCase() },
+    });
+    if (existing) {
       throw new ConflictError(`Project with key '${data.key}' already exists.`);
     }
 
     const id = `proj-${data.key.toLowerCase()}`;
-    const newProject: Project = {
-      id,
-      name: data.name,
-      key: data.key.toUpperCase(),
-      description: data.description,
-      status: data.status,
-      progress: 0,
-      totalTasks: 0,
-      completedTasks: 0,
-      deadline: data.deadline,
-      repository: data.repository,
-      techStack: data.techStack,
-      lead: leadUser,
-      members,
-      color: data.color,
-    };
+    const techStackJson = JSON.stringify(data.techStack || []);
 
-    return db.addProject(newProject);
+    const createdProject = await prisma.project.create({
+      data: {
+        id,
+        name: data.name,
+        key: data.key.toUpperCase(),
+        description: data.description,
+        status: data.status,
+        progress: 0,
+        deadline: data.deadline,
+        repository: data.repository,
+        techStack: techStackJson,
+        leadId: leadUser.id,
+        color: data.color,
+      },
+    });
+
+    // Add lead as member
+    const memberIds = new Set<string>([leadUser.id]);
+    if (data.memberIds && data.memberIds.length > 0) {
+      for (const mId of data.memberIds) {
+        await UserService.getUserById(mId); // ensure member user exists
+        memberIds.add(mId);
+      }
+    }
+
+    for (const mId of Array.from(memberIds)) {
+      await prisma.projectMember.create({
+        data: {
+          projectId: createdProject.id,
+          userId: mId,
+          role: mId === leadUser.id ? 'lead' : 'developer',
+        },
+      });
+    }
+
+    return this.getProjectById(createdProject.id);
   }
 
-  public static updateProject(id: string, data: UpdateProjectInput): Project {
-    const project = this.getProjectById(id);
+  public static async updateProject(id: string, data: UpdateProjectInput): Promise<Project> {
+    const project = await this.getProjectById(id);
     const { leadId, memberIds, ...rest } = data;
-    const updatePayload: Partial<Project> = { ...rest };
+    const updateData: any = { ...rest };
 
     if (data.key && data.key.toUpperCase() !== project.key) {
-      const keyConflict = db
-        .getProjects()
-        .some((p) => p.id !== id && p.key.toUpperCase() === data.key!.toUpperCase());
+      const keyConflict = await prisma.project.findFirst({
+        where: {
+          key: data.key.toUpperCase(),
+          NOT: { id },
+        },
+      });
       if (keyConflict) {
         throw new ConflictError(`Project with key '${data.key}' already exists.`);
       }
-      updatePayload.key = data.key.toUpperCase();
+      updateData.key = data.key.toUpperCase();
+    }
+
+    if (data.techStack) {
+      updateData.techStack = JSON.stringify(data.techStack);
     }
 
     if (leadId) {
-      const leadUser = UserService.getUserById(leadId);
-      updatePayload.lead = leadUser;
+      await UserService.getUserById(leadId);
+      updateData.leadId = leadId;
     }
+
+    await prisma.project.update({
+      where: { id },
+      data: updateData,
+    });
 
     if (memberIds) {
-      const members: User[] = [];
-      for (const mId of memberIds) {
-        members.push(UserService.getUserById(mId));
+      // Re-sync project members
+      await prisma.projectMember.deleteMany({ where: { projectId: id } });
+
+      const currentLeadId = leadId || project.lead.id;
+      const allMembers = new Set<string>([currentLeadId, ...memberIds]);
+
+      for (const mId of Array.from(allMembers)) {
+        await UserService.getUserById(mId);
+        await prisma.projectMember.create({
+          data: {
+            projectId: id,
+            userId: mId,
+            role: mId === currentLeadId ? 'lead' : 'developer',
+          },
+        });
       }
-      updatePayload.members = members;
     }
 
-    const updated = db.updateProject(id, updatePayload);
-    if (!updated) {
-      throw new NotFoundError(`Project with id '${id}' not found.`);
-    }
-    return updated;
+    return this.getProjectById(id);
   }
 
-  public static deleteProject(id: string): void {
-    this.getProjectById(id);
+  public static async deleteProject(id: string): Promise<void> {
+    await this.getProjectById(id);
 
     // Relational safety check: cannot delete project with associated tasks
-    const associatedTasks = db.getTasks().filter((t) => t.projectId === id);
-    if (associatedTasks.length > 0) {
+    const activeTasksCount = await prisma.task.count({
+      where: { projectId: id },
+    });
+    if (activeTasksCount > 0) {
       throw new BadRequestError(
-        `Cannot delete project '${id}' because it has ${associatedTasks.length} associated task(s). Delete or reassign tasks first.`
+        `Cannot delete project '${id}' because it has ${activeTasksCount} associated task(s). Delete or reassign tasks first.`
       );
     }
 
-    const deleted = db.deleteProject(id);
-    if (!deleted) {
-      throw new NotFoundError(`Project with id '${id}' not found.`);
-    }
+    await prisma.project.delete({
+      where: { id },
+    });
   }
 }

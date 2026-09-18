@@ -26,9 +26,9 @@
 ---
 
 ## 1. Overview
-This backend provides clean, modular, and type-safe REST APIs powering the Developer Productivity Dashboard frontend, including Users, Engineering Projects, Sprint Tasks, and real-time Status transitions.
+This backend provides clean, modular, and type-safe REST APIs powering the Developer Productivity Dashboard frontend, including Users, Engineering Projects, Sprint Tasks, real-time Status transitions, and Engineering Activity telemetry.
 
-The service uses an in-memory repository designed to decouple business logic from the storage layer, allowing persistent databases (PostgreSQL/MongoDB via Prisma/Mongoose) to be connected seamlessly.
+Data persistence is powered by **Prisma ORM** with full support for local SQLite development and cloud/production PostgreSQL (Supabase, Neon, AWS RDS, Docker).
 
 ---
 
@@ -36,9 +36,10 @@ The service uses an in-memory repository designed to decouple business logic fro
 - **Runtime:** Node.js (v20+)
 - **Framework:** Express.js (v4.21+)
 - **Language:** TypeScript (v5.7+, Strict Mode)
+- **Database & ORM:** Prisma ORM (v6+), SQLite (Local Dev) / PostgreSQL (Prod)
 - **Validation Engine:** Zod (v3.24+)
 - **Security:** Helmet, CORS, Body Limits
-- **Testing:** Vitest & Supertest (35 passing automated test suites)
+- **Testing:** Vitest & Supertest (41 passing automated integration tests)
 - **Dev Execution:** `tsx` (TypeScript Execute & Hot Watcher)
 
 ---
@@ -47,22 +48,32 @@ The service uses an in-memory repository designed to decouple business logic fro
 
 ```
 backend/
+├── prisma/
+│   ├── schema.prisma           # Prisma Data Models & Relations
+│   └── seed.ts                 # Database Seed Entrypoint
+│
 ├── src/
-│   ├── controllers/            # HTTP Request/Response Orchestration
+│   ├── controllers/            # HTTP Request/Response Orchestration (async/await)
 │   │   ├── user.controller.ts
 │   │   ├── project.controller.ts
-│   │   └── task.controller.ts
+│   │   ├── task.controller.ts
+│   │   ├── analytics.controller.ts
+│   │   └── activity.controller.ts
 │   │
 │   ├── routes/                 # Express Router Endpoints & Middlewares
 │   │   ├── index.ts            # Root API v1 Router
 │   │   ├── user.routes.ts
 │   │   ├── project.routes.ts
-│   │   └── task.routes.ts
+│   │   ├── task.routes.ts
+│   │   ├── analytics.routes.ts
+│   │   └── activity.routes.ts
 │   │
-│   ├── services/               # Core Business Logic & Relational Validation
+│   ├── services/               # Core Business Logic & Prisma Queries
 │   │   ├── user.service.ts
 │   │   ├── project.service.ts
-│   │   └── task.service.ts
+│   │   ├── task.service.ts
+│   │   ├── analytics.service.ts
+│   │   └── activity.service.ts
 │   │
 │   ├── validators/             # Zod Input Validation Schemas
 │   │   ├── user.validator.ts
@@ -74,8 +85,10 @@ backend/
 │   │   ├── validation.middleware.ts # Zod Schema Validator
 │   │   └── notFound.middleware.ts   # 404 Route Handler
 │   │
-│   ├── data/                   # Initial Seed Data & In-Memory Store
-│   │   └── mock-data.ts
+│   ├── db/                     # Prisma Client Singleton & Seed Logic
+│   │   ├── prisma.ts           # PrismaClient Instance
+│   │   ├── seed.ts             # Seeding Logic
+│   │   └── test-helper.ts      # Test Database Seeder
 │   │
 │   ├── types/                  # TypeScript Data Contracts & Interfaces
 │   │   └── index.ts
@@ -87,11 +100,12 @@ backend/
 │   ├── app.ts                  # Express App Instance Configuration
 │   └── server.ts               # HTTP Server Entrypoint & Graceful Shutdown
 │
-├── tests/                      # Automated Integration Test Suites
+├── tests/                      # Automated Integration Test Suites (41 tests)
 │   ├── health.test.ts
 │   ├── users.test.ts
 │   ├── projects.test.ts
-│   └── tasks.test.ts
+│   ├── tasks.test.ts
+│   └── analytics.test.ts
 │
 ├── api.http                    # VS Code / IDE REST Client File
 ├── .env.example                # Sample Environment Variables
@@ -116,6 +130,7 @@ PORT=5000
 NODE_ENV=development
 API_PREFIX=/api/v1
 FRONTEND_URL=http://localhost:3000
+DATABASE_URL="file:./dev.db"
 ```
 
 ---
@@ -415,11 +430,12 @@ The backend includes full integration test coverage using **Vitest** and **Super
 npm test
 ```
 
-### Test Coverage Summary:
-- ✅ **`health.test.ts`**: Verifies `/health`, root `/`, and 404 handler responses.
-- ✅ **`users.test.ts`**: Verifies user listing, retrieval, creation, partial patch, deletion, and active-task protection.
-- ✅ **`projects.test.ts`**: Verifies project listing, status/search filtering, key conflict rejection, and lead relational lookup.
-- ✅ **`tasks.test.ts`**: Verifies task retrieval, multi-parameter filtering (`status`, `priority`, `projectId`, `search`), relational validation (`projectId`/`assigneeId`), dedicated `/status` transition, and invalid enum rejection.
+### Test Coverage Summary (41 passing tests):
+- ✅ **`health.test.ts`** (3 tests): Verifies `/health`, root `/`, and 404 handler responses.
+- ✅ **`users.test.ts`** (9 tests): Verifies user listing, retrieval, creation, partial patch, deletion, and active-task protection.
+- ✅ **`projects.test.ts`** (10 tests): Verifies project listing, status/search filtering, key conflict rejection, and lead relational lookup.
+- ✅ **`tasks.test.ts`** (13 tests): Verifies task retrieval, multi-parameter filtering (`status`, `priority`, `projectId`, `search`), relational validation (`projectId`/`assigneeId`), dedicated `/status` transition, and invalid enum rejection.
+- ✅ **`analytics.test.ts`** (6 tests): Verifies KPI metrics, 7-day velocity aggregation, summary overview, subtask toggle, and engineering activity recording.
 
 ---
 
@@ -431,22 +447,29 @@ npm test
 
 ---
 
-## 12. Roadmap & Database Transition
+## 12. Database Management & Prisma Commands
 
-```
-┌─────────────────────────────────────────────────────────┐
-│               Next.js Frontend (Client)                 │
-└───────────────────────────▲─────────────────────────────┘
-                            │ REST API Calls (CORS enabled)
-┌───────────────────────────▼─────────────────────────────┐
-│       Express + TypeScript REST API Layer               │
-│  (Controllers ➔ Services ➔ Validators ➔ Middlewares)   │
-└───────────────────────────▲─────────────────────────────┘
-                            │
-              ┌─────────────┴─────────────┐
-              ▼                           ▼
-        In-Memory Store          Persistent Storage
-      (Fast Mock Data)     (PostgreSQL / MongoDB / Prisma)
+```bash
+# Push Prisma schema to database (auto-generates tables & client)
+npm run db:push
+
+# Seed database with initial users, projects, tasks, and metrics
+npm run db:seed
+
+# Launch Prisma Studio GUI (interactive visual browser at http://localhost:5555)
+npm run db:studio
+
+# Reset database cleanly
+npm run db:reset
 ```
 
-The `InMemoryStore` in `src/data/mock-data.ts` can be seamlessly replaced with database repositories without requiring any changes to Controllers, Routes, or Validators.
+### Switching to PostgreSQL in Production:
+To use PostgreSQL (e.g. Supabase, Neon, AWS RDS, Docker), update `backend/prisma/schema.prisma`:
+```prisma
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+```
+And set your `DATABASE_URL="postgresql://user:password@host:5432/dbname?schema=public"` in `.env`.
+

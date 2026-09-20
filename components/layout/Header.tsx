@@ -22,6 +22,7 @@ interface HeaderProps {
   isAuthenticated?: boolean;
   onOpenMobileNav: () => void;
   onNewTaskClick: () => void;
+  onOpenAICopilot?: () => void;
   searchQuery: string;
   onSearchChange: (query: string) => void;
   onStatusChange: (status: User['status']) => void;
@@ -37,6 +38,7 @@ export const Header: React.FC<HeaderProps> = ({
   currentUser,
   onOpenMobileNav,
   onNewTaskClick,
+  onOpenAICopilot,
   searchQuery,
   onSearchChange,
   onStatusChange,

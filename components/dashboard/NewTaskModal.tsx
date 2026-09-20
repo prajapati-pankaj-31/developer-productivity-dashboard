@@ -5,6 +5,8 @@ import { Project, Task, TaskPriority, User } from '@/types';
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
 import { Select, SelectOption } from '@/components/ui/Select';
+import { ApiClient } from '@/lib/api-client';
+import { Sparkles, Wand2, Loader2 } from 'lucide-react';
 
 interface NewTaskModalProps {
   isOpen: boolean;
@@ -32,6 +34,14 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
   const [assigneeId, setAssigneeId] = useState(currentUserId || teamMembers[0]?.id || '');
   const [dueDate, setDueDate] = useState('2026-09-10');
   const [error, setError] = useState('');
+  const [generatedSubtasks, setGeneratedSubtasks] = useState<Array<{ title: string; completed: boolean }>>([
+    { title: 'Initial setup and requirements review', completed: false },
+    { title: 'Core implementation & tests', completed: false },
+  ]);
+
+  // AI prompt generation state
+  const [aiPrompt, setAiPrompt] = useState('');
+  const [isAILoading, setIsAILoading] = useState(false);
 
   React.useEffect(() => {
     if (isOpen) {
@@ -42,6 +52,31 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
       }
     }
   }, [isOpen, currentUserId, teamMembers]);
+
+  const handleAIGenerate = async (customPrompt?: string) => {
+    const promptToUse = customPrompt || aiPrompt;
+    if (!promptToUse.trim()) return;
+
+    setIsAILoading(true);
+    setError('');
+    try {
+      const selectedProj = projects.find((p) => p.id === projectId);
+      const aiResult = await ApiClient.generateAITask(promptToUse.trim(), selectedProj?.key);
+      setTitle(aiResult.title);
+      setDescription(aiResult.description);
+      setPriority(aiResult.suggestedPriority);
+      setEstimatedHours(String(aiResult.estimatedHours));
+      setTagsInput(aiResult.tags.join(', '));
+      if (aiResult.subtasks && aiResult.subtasks.length > 0) {
+        setGeneratedSubtasks(aiResult.subtasks);
+      }
+      setAiPrompt('');
+    } catch (err: any) {
+      setError(err?.message || 'AI generation encountered an issue');
+    } finally {
+      setIsAILoading(false);
+    }
+  };
 
   const projectOptions: SelectOption[] = projects.map((p) => ({
     value: p.id,
@@ -78,6 +113,12 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
       .map((t) => t.trim())
       .filter(Boolean);
 
+    const subtasks = generatedSubtasks.map((st, i) => ({
+      id: `sub-${Date.now()}-${i + 1}`,
+      title: st.title,
+      completed: st.completed,
+    }));
+
     const newTask: Task = {
       id: `task-${Date.now().toString().slice(-4)}`,
       title: title.trim(),
@@ -90,10 +131,7 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
       dueDate: dueDate || new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0],
       estimatedHours: parseFloat(estimatedHours) || 4,
       loggedHours: 0,
-      subtasks: [
-        { id: `sub-${Date.now()}-1`, title: 'Initial setup and requirements review', completed: false },
-        { id: `sub-${Date.now()}-2`, title: 'Core implementation & tests', completed: false },
-      ],
+      subtasks,
       tags: tags.length > 0 ? tags : ['Engineering', 'Feature'],
       createdAt: new Date().toISOString().split('T')[0],
     };
@@ -119,6 +157,65 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
             {error}
           </div>
         )}
+
+        {/* AI Prompt Auto-Fill Section (TASK 4) */}
+        <div className="rounded-xl border border-indigo-500/30 bg-gradient-to-r from-indigo-950/40 via-purple-950/30 to-indigo-950/40 p-3 shadow-[0_0_15px_rgba(99,102,241,0.08)]">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-bold text-indigo-300 flex items-center gap-1.5">
+              <Sparkles className="h-3.5 w-3.5 text-indigo-400" />
+              <span>✨ AI Smart Task & Subtask Generator</span>
+            </span>
+            <span className="text-[10px] text-zinc-400">Type idea & click Generate</span>
+          </div>
+
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={aiPrompt}
+              onChange={(e) => setAiPrompt(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  handleAIGenerate();
+                }
+              }}
+              placeholder="e.g. Stripe checkout payment gateway with webhook verification"
+              className="flex-1 rounded-lg border border-indigo-900/60 bg-[#070a1a] px-2.5 py-1.5 text-xs text-zinc-100 placeholder-zinc-500 focus:border-indigo-500 focus:outline-none"
+            />
+            <Button
+              type="button"
+              size="sm"
+              disabled={isAILoading || !aiPrompt.trim()}
+              onClick={() => handleAIGenerate()}
+              className="bg-indigo-600 hover:bg-indigo-500 text-white font-medium flex items-center gap-1 shrink-0 px-3 py-1 h-8"
+            >
+              {isAILoading ? (
+                <Loader2 className="h-3 w-3 animate-spin" />
+              ) : (
+                <Wand2 className="h-3 w-3 text-indigo-200" />
+              )}
+              <span>{isAILoading ? 'Generating...' : 'Auto-Fill'}</span>
+            </Button>
+          </div>
+
+          {/* Quick AI Chips */}
+          <div className="flex flex-wrap items-center gap-1.5 mt-2">
+            <span className="text-[10px] text-zinc-400">Quick suggestions:</span>
+            {['Redis Rate Limiter', 'Docker K8s Deployment', 'OAuth 2.0 Google Login'].map((chip) => (
+              <button
+                key={chip}
+                type="button"
+                onClick={() => {
+                  setAiPrompt(chip);
+                  handleAIGenerate(chip);
+                }}
+                className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-white/[0.06] hover:bg-indigo-500/20 text-zinc-300 hover:text-indigo-200 border border-white/[0.08] transition-colors cursor-pointer"
+              >
+                + {chip}
+              </button>
+            ))}
+          </div>
+        </div>
 
         {/* Task Title */}
         <div>

@@ -5,6 +5,7 @@ import projectRoutes from './project.routes.js';
 import taskRoutes from './task.routes.js';
 import analyticsRoutes from './analytics.routes.js';
 import activityRoutes from './activity.routes.js';
+import aiRoutes from './ai.routes.js';
 
 const apiRouter = Router();
 
@@ -49,6 +50,12 @@ apiRouter.get('/', (_req: Request, res: Response) => {
         toggleSubtask: 'PATCH /api/v1/tasks/:id/subtasks/:subtaskId/toggle',
         delete: 'DELETE /api/v1/tasks/:id',
       },
+      ai: {
+        generateTask: 'POST /api/v1/ai/generate-task',
+        generateRoadmap: 'POST /api/v1/ai/generate-roadmap',
+        standupSummary: 'POST /api/v1/ai/standup-summary',
+        summarizeTask: 'POST /api/v1/ai/summarize-task',
+      },
       analytics: {
         metrics: 'GET /api/v1/analytics/metrics',
         weekly: 'GET /api/v1/analytics/weekly',
@@ -66,8 +73,8 @@ apiRouter.use('/auth', authRoutes);
 apiRouter.use('/users', userRoutes);
 apiRouter.use('/projects', projectRoutes);
 apiRouter.use('/tasks', taskRoutes);
+apiRouter.use('/ai', aiRoutes);
 apiRouter.use('/analytics', analyticsRoutes);
 apiRouter.use('/activities', activityRoutes);
-
 
 export default apiRouter;

@@ -30,6 +30,7 @@ import { EditProjectModal } from '@/components/dashboard/EditProjectModal';
 import { ProfileModal } from '@/components/dashboard/ProfileModal';
 import { SettingsModal, WorkspaceSettings, defaultSettings } from '@/components/dashboard/SettingsModal';
 import { KeyboardShortcutsModal } from '@/components/dashboard/KeyboardShortcutsModal';
+import { AISprintCopilotModal } from '@/components/dashboard/AISprintCopilotModal';
 import { AuthModal } from '@/components/auth/AuthModal';
 import { useAuth } from '@/context/auth-context';
 import { DynamicBackground } from '@/components/ui/DynamicBackground';
@@ -41,6 +42,7 @@ import {
   FolderPlus,
   CheckSquare,
   Download,
+  Bot,
 } from 'lucide-react';
 
 export default function DashboardPage() {
@@ -69,6 +71,7 @@ export default function DashboardPage() {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isShortcutsModalOpen, setIsShortcutsModalOpen] = useState(false);
+  const [isAICopilotOpen, setIsAICopilotOpen] = useState(false);
   const [workspaceSettings, setWorkspaceSettings] = useState<WorkspaceSettings>(defaultSettings);
   const [isLoadingState, setIsLoadingState] = useState(false);
 
@@ -610,6 +613,7 @@ export default function DashboardPage() {
           isAuthenticated={isAuthenticated}
           onOpenMobileNav={() => setIsMobileNavOpen(true)}
           onNewTaskClick={() => setIsNewTaskModalOpen(true)}
+          onOpenAICopilot={() => setIsAICopilotOpen(true)}
           searchQuery={filters.searchQuery}
           onSearchChange={(q) => handleFilterChange({ searchQuery: q })}
           onStatusChange={handleUserStatusChange}
@@ -651,7 +655,15 @@ export default function DashboardPage() {
             </div>
 
             {/* Quick action buttons */}
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <Button
+                size="sm"
+                onClick={() => setIsAICopilotOpen(true)}
+                className="bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 hover:from-indigo-500 hover:to-purple-500 text-white font-semibold shadow-[0_0_15px_rgba(99,102,241,0.25)] border border-indigo-400/30 flex items-center gap-1.5"
+              >
+                <Sparkles className="h-3.5 w-3.5 text-amber-300 animate-pulse" />
+                <span>AI Copilot</span>
+              </Button>
               <Button
                 variant={activeTab === 'overview' ? 'primary' : 'outline'}
                 size="sm"
@@ -985,6 +997,15 @@ export default function DashboardPage() {
       <KeyboardShortcutsModal
         isOpen={isShortcutsModalOpen}
         onClose={() => setIsShortcutsModalOpen(false)}
+      />
+
+      {/* AI Sprint Copilot & Daily Standup Modal (TASK 4) */}
+      <AISprintCopilotModal
+        isOpen={isAICopilotOpen}
+        onClose={() => setIsAICopilotOpen(false)}
+        currentUser={authUser}
+        tasks={tasks}
+        weeklyFocusHours={weeklyData.find((d) => d.isToday)?.focusHours || 6.5}
       />
 
       {/* Authentication (Login / Signup) Modal */}

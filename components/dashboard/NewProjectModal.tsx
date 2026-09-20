@@ -5,7 +5,8 @@ import { Project, ProjectStatus, User } from '@/types';
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
 import { Select, SelectOption } from '@/components/ui/Select';
-import { FolderPlus, Tag } from 'lucide-react';
+import { FolderPlus, Tag, Sparkles, Wand2, Loader2 } from 'lucide-react';
+import { ApiClient } from '@/lib/api-client';
 
 interface NewProjectModalProps {
   isOpen: boolean;
@@ -52,6 +53,7 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({
   const [leadId, setLeadId] = useState(currentUserId || teamMembers[0]?.id || '');
   const [selectedColor, setSelectedColor] = useState(presetColors[0]);
   const [error, setError] = useState('');
+  const [isAIRoadmapLoading, setIsAIRoadmapLoading] = useState(false);
 
   React.useEffect(() => {
     if (isOpen) {
@@ -62,6 +64,27 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({
       }
     }
   }, [isOpen, currentUserId, teamMembers]);
+
+  const handleAIGenerateRoadmap = async () => {
+    if (!name.trim()) {
+      setError('Please enter a Project Name first to generate AI roadmap');
+      return;
+    }
+
+    setIsAIRoadmapLoading(true);
+    setError('');
+    try {
+      const result = await ApiClient.generateAIRoadmap(name.trim(), description.trim() || name.trim());
+      setDescription(result.description);
+      if (result.suggestedTechStack && result.suggestedTechStack.length > 0) {
+        setTechStackInput(result.suggestedTechStack.join(', '));
+      }
+    } catch (err: any) {
+      setError(err?.message || 'AI Roadmap generator error');
+    } finally {
+      setIsAIRoadmapLoading(false);
+    }
+  };
 
   const leadOptions: SelectOption[] = teamMembers.map((m) => {
     const isMe = currentUserId && m.id === currentUserId;
@@ -192,9 +215,24 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({
 
         {/* Description */}
         <div>
-          <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">
-            Description <span className="text-rose-500">*</span>
-          </label>
+          <div className="flex items-center justify-between mb-1">
+            <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300">
+              Description & Roadmap <span className="text-rose-500">*</span>
+            </label>
+            <button
+              type="button"
+              disabled={isAIRoadmapLoading || !name.trim()}
+              onClick={handleAIGenerateRoadmap}
+              className="text-[11px] text-indigo-400 hover:text-indigo-300 font-medium flex items-center gap-1 cursor-pointer disabled:opacity-40"
+            >
+              {isAIRoadmapLoading ? (
+                <Loader2 className="h-3 w-3 animate-spin" />
+              ) : (
+                <Sparkles className="h-3 w-3 text-indigo-400" />
+              )}
+              <span>{isAIRoadmapLoading ? 'Synthesizing Roadmap...' : '✨ AI Suggest Roadmap & Stack'}</span>
+            </button>
+          </div>
           <textarea
             rows={2}
             required

@@ -1,9 +1,50 @@
+import Groq from 'groq-sdk';
+import { GoogleGenAI } from '@google/genai';
 import {
   GenerateTasksInput,
   GenerateRoadmapInput,
   StandupSummaryInput,
   SummarizeTaskInput,
 } from '../validators/ai.validator.js';
+
+function getGroqClient(): Groq | null {
+  const apiKey = process.env.GROQ_API_KEY;
+  if (!apiKey || apiKey.trim() === '' || apiKey.includes('your-groq-api-key')) {
+    return null;
+  }
+  try {
+    return new Groq({ apiKey: apiKey.trim() });
+  } catch {
+    return null;
+  }
+}
+
+function getGeminiClient(): GoogleGenAI | null {
+  const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
+  if (!apiKey || apiKey.trim() === '' || apiKey.includes('your-gemini-api-key')) {
+    return null;
+  }
+  try {
+    return new GoogleGenAI({ apiKey });
+  } catch {
+    return null;
+  }
+}
+
+function extractJson<T>(rawText: string | null): T | null {
+  if (!rawText) return null;
+  try {
+    let cleaned = rawText.trim();
+    if (cleaned.startsWith('```json')) {
+      cleaned = cleaned.replace(/^```json\s*/i, '').replace(/```\s*$/, '');
+    } else if (cleaned.startsWith('```')) {
+      cleaned = cleaned.replace(/^```\s*/i, '').replace(/```\s*$/, '');
+    }
+    return JSON.parse(cleaned) as T;
+  } catch {
+    return null;
+  }
+}
 
 export interface AIGeneratedTask {
   title: string;
@@ -50,9 +91,82 @@ export class AIService {
    * Generates a technical sprint task with acceptance criteria & subtasks from a prompt
    */
   public static async generateTask(data: GenerateTasksInput): Promise<AIGeneratedTask> {
+    // 1. Primary: Groq LPU Engine (Llama 3.3 70B Versatile)
+    const groq = getGroqClient();
+    if (groq) {
+      try {
+        const completion = await groq.chat.completions.create({
+          model: 'llama-3.3-70b-versatile',
+          messages: [
+            {
+              role: 'system',
+              content:
+                'You are an expert full-stack engineering lead and sprint planner. You MUST respond with valid JSON matching the exact schema: { "title": string, "description": string, "suggestedPriority": "urgent"|"high"|"medium"|"low", "estimatedHours": number, "tags": string[], "subtasks": [{ "title": string, "completed": false }] }',
+            },
+            {
+              role: 'user',
+              content: `Generate a structured sprint task for prompt: "${data.prompt}". Project: ${data.projectKey || 'General'}. Priority hint: ${data.priority || 'auto'}.`,
+            },
+          ],
+          response_format: { type: 'json_object' },
+          temperature: 0.2,
+        });
+
+        const content = completion.choices[0]?.message?.content;
+        const parsed = extractJson<AIGeneratedTask>(content);
+        if (parsed && parsed.title && Array.isArray(parsed.subtasks)) {
+          return {
+            title: parsed.title,
+            description: parsed.description || `Implement ${parsed.title}`,
+            suggestedPriority: parsed.suggestedPriority || 'medium',
+            estimatedHours: Number(parsed.estimatedHours) || 4,
+            tags: Array.isArray(parsed.tags) ? parsed.tags : ['Engineering', 'Feature'],
+            subtasks: parsed.subtasks.map((st: any) => ({
+              title: typeof st === 'string' ? st : st.title || 'Task item',
+              completed: false,
+            })),
+          };
+        }
+      } catch (err) {
+        console.warn('⚠️ [Groq API] Failed, checking secondary engine:', err);
+      }
+    }
+
+    // 2. Secondary: Google Gemini API
+    const ai = getGeminiClient();
+    if (ai) {
+      try {
+        const response = await ai.models.generateContent({
+          model: 'gemini-2.0-flash',
+          contents: `Generate a structured engineering sprint task JSON for this prompt: "${data.prompt}". Project: ${data.projectKey || 'General'}. Return JSON matching: { "title": string, "description": string, "suggestedPriority": "urgent"|"high"|"medium"|"low", "estimatedHours": number, "tags": string[], "subtasks": [{ "title": string, "completed": false }] }`,
+          config: {
+            responseMimeType: 'application/json',
+          },
+        });
+        if (response.text) {
+          const parsed = JSON.parse(response.text);
+          if (parsed.title && Array.isArray(parsed.subtasks)) {
+            return {
+              title: parsed.title,
+              description: parsed.description || `Implement ${parsed.title}`,
+              suggestedPriority: parsed.suggestedPriority || 'medium',
+              estimatedHours: Number(parsed.estimatedHours) || 4,
+              tags: Array.isArray(parsed.tags) ? parsed.tags : ['Engineering'],
+              subtasks: parsed.subtasks.map((st: any) => ({
+                title: typeof st === 'string' ? st : st.title || 'Task item',
+                completed: false,
+              })),
+            };
+          }
+        }
+      } catch (err) {
+        console.warn('⚠️ [Gemini API] Fallback to smart heuristic engine:', err);
+      }
+    }
+
+    // 3. Fallback: Built-in contextual heuristic engine
     const promptLower = data.prompt.toLowerCase();
 
-    // Contextual heuristics mapping
     let priority: 'urgent' | 'high' | 'medium' | 'low' = data.priority || 'medium';
     if (promptLower.includes('bug') || promptLower.includes('fix') || promptLower.includes('crash') || promptLower.includes('security') || promptLower.includes('auth')) {
       priority = 'high';
@@ -67,7 +181,6 @@ export class AIService {
       hours = 2;
     }
 
-    // Extract tags
     const tags: string[] = [];
     if (promptLower.includes('api') || promptLower.includes('backend') || promptLower.includes('endpoint') || promptLower.includes('webhook') || promptLower.includes('gateway')) tags.push('Backend', 'REST API');
     if (promptLower.includes('auth') || promptLower.includes('jwt') || promptLower.includes('login') || promptLower.includes('security')) tags.push('Security', 'Authentication');
@@ -77,15 +190,12 @@ export class AIService {
     if (promptLower.includes('docker') || promptLower.includes('ci') || promptLower.includes('deploy') || promptLower.includes('k8s')) tags.push('DevOps', 'CI/CD');
     if (tags.length === 0) tags.push('Engineering', 'Sprint');
 
-    // Title formatting
     let title = data.prompt.trim();
     if (!title.match(/^(build|implement|refactor|create|fix|add|optimize|integrate|setup)/i)) {
       title = `Implement ${title}`;
     }
-    // Capitalize first letter
     title = title.charAt(0).toUpperCase() + title.slice(1);
 
-    // Subtasks generation
     const subtasks = [
       { title: `Design technical schema and interface contract for ${data.prompt.slice(0, 30)}`, completed: false },
       { title: `Implement core logic with error boundary & validation handling`, completed: false },
@@ -117,6 +227,60 @@ export class AIService {
    * Generates a multi-phase project roadmap & tech stack
    */
   public static async generateProjectRoadmap(data: GenerateRoadmapInput): Promise<AIRoadmapResponse> {
+    // 1. Primary: Groq LPU Engine
+    const groq = getGroqClient();
+    if (groq) {
+      try {
+        const completion = await groq.chat.completions.create({
+          model: 'llama-3.3-70b-versatile',
+          messages: [
+            {
+              role: 'system',
+              content:
+                'You are an executive software architect. You MUST output a valid JSON object matching: { "projectName": string, "description": string, "suggestedTechStack": string[], "milestones": [{ "phase": string, "title": string, "duration": string, "deliverables": string[] }], "riskAssessment": string }',
+            },
+            {
+              role: 'user',
+              content: `Generate engineering roadmap for project "${data.projectName}" with concept: "${data.concept}".`,
+            },
+          ],
+          response_format: { type: 'json_object' },
+          temperature: 0.2,
+        });
+
+        const content = completion.choices[0]?.message?.content;
+        const parsed = extractJson<AIRoadmapResponse>(content);
+        if (parsed && parsed.projectName && Array.isArray(parsed.milestones)) {
+          return parsed;
+        }
+      } catch (err) {
+        console.warn('⚠️ [Groq API] Roadmap failed, checking secondary:', err);
+      }
+    }
+
+    // 2. Secondary: Google Gemini API
+    const ai = getGeminiClient();
+    if (ai) {
+      try {
+        const response = await ai.models.generateContent({
+          model: 'gemini-2.0-flash',
+          contents: `Generate a software engineering roadmap JSON for project "${data.projectName}" with concept "${data.concept}". Return JSON matching: { "projectName": string, "description": string, "suggestedTechStack": string[], "milestones": [{ "phase": string, "title": string, "duration": string, "deliverables": string[] }], "riskAssessment": string }`,
+          config: {
+            responseMimeType: 'application/json',
+          },
+        });
+        if (response.text) {
+          const parsed = JSON.parse(response.text);
+          if (parsed.projectName && Array.isArray(parsed.milestones)) {
+            return parsed;
+          }
+        }
+      } catch (err) {
+        console.warn('⚠️ [Gemini API] Roadmap fallback to smart engine:', err);
+      }
+    }
+
+    // 3. Fallback heuristic roadmap
     const techStack = data.techStack && data.techStack.length > 0
       ? data.techStack
       : ['Next.js 16', 'TypeScript', 'Tailwind CSS', 'Express.js', 'PostgreSQL', 'Prisma'];
@@ -169,13 +333,66 @@ export class AIService {
    * Generates a daily / weekly standup report based on current user tasks and focus metrics
    */
   public static async generateStandupSummary(data: StandupSummaryInput): Promise<AIStandupResponse> {
+    // 1. Primary: Groq LPU Engine
+    const groq = getGroqClient();
+    if (groq) {
+      try {
+        const completion = await groq.chat.completions.create({
+          model: 'llama-3.3-70b-versatile',
+          messages: [
+            {
+              role: 'system',
+              content:
+                'You are an agile engineering manager and AI sprint copilot. You MUST respond with a valid JSON object matching: { "greeting": string, "yesterday": string[], "today": string[], "blockers": string[], "productivityScore": number, "smartSuggestions": string[], "formattedSlackText": string }',
+            },
+            {
+              role: 'user',
+              content: `Generate a daily engineering standup report JSON for developer "${data.userName || 'Developer'}". Tasks: ${JSON.stringify(data.tasks || [])}. Deep focus hours: ${data.focusHours || 6.5}.`,
+            },
+          ],
+          response_format: { type: 'json_object' },
+          temperature: 0.2,
+        });
+
+        const content = completion.choices[0]?.message?.content;
+        const parsed = extractJson<AIStandupResponse>(content);
+        if (parsed && Array.isArray(parsed.yesterday) && Array.isArray(parsed.today)) {
+          return parsed;
+        }
+      } catch (err) {
+        console.warn('⚠️ [Groq API] Standup failed, checking secondary:', err);
+      }
+    }
+
+    // 2. Secondary: Google Gemini API
+    const ai = getGeminiClient();
+    if (ai) {
+      try {
+        const response = await ai.models.generateContent({
+          model: 'gemini-2.0-flash',
+          contents: `Generate a daily engineering standup report JSON for developer "${data.userName || 'Developer'}". Tasks: ${JSON.stringify(data.tasks || [])}. Deep focus hours: ${data.focusHours || 6.5}. Return JSON matching: { "greeting": string, "yesterday": string[], "today": string[], "blockers": string[], "productivityScore": number, "smartSuggestions": string[], "formattedSlackText": string }`,
+          config: {
+            responseMimeType: 'application/json',
+          },
+        });
+        if (response.text) {
+          const parsed = JSON.parse(response.text);
+          if (Array.isArray(parsed.yesterday) && Array.isArray(parsed.today)) {
+            return parsed;
+          }
+        }
+      } catch (err) {
+        console.warn('⚠️ [Gemini API] Standup fallback to smart engine:', err);
+      }
+    }
+
+    // 3. Fallback heuristic standup
     const name = data.userName || 'Developer';
     const tasks = data.tasks || [];
     const focusHours = data.focusHours || 6.5;
 
     const completedTasks = tasks.filter((t) => t.status === 'completed' || t.status === 'done');
     const inProgressTasks = tasks.filter((t) => t.status === 'in_progress' || t.status === 'in_review');
-    const backlogTasks = tasks.filter((t) => t.status === 'backlog');
 
     const yesterday = completedTasks.length > 0
       ? completedTasks.map((t) => `Completed "${t.title}" (${t.projectName || 'Core'})`)

@@ -98,4 +98,24 @@ export interface TaskFilterState {
   priority: string;
   status: string;
   assigneeId?: string;
+  onlyMyTasks?: boolean;
 }
+
+export interface LoginCredentials {
+  email: string;
+  password: string;
+}
+
+export interface SignupCredentials {
+  name: string;
+  email: string;
+  password: string;
+  role?: string;
+  weeklyFocusGoalHours?: number;
+}
+
+export interface AuthResponse {
+  user: User;
+  token: string;
+}
+

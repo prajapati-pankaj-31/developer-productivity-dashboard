@@ -12,6 +12,8 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+import { AuthProvider } from "@/context/auth-context";
+
 export const metadata: Metadata = {
   title: "DevPulse - Developer Productivity Dashboard",
   description: "High-performance developer productivity dashboard tracking focus hours, active sprint tasks, engineering metrics, and repository workflows.",
@@ -27,7 +29,9 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100">{children}</body>
+      <body className="min-h-full flex flex-col bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100">
+        <AuthProvider>{children}</AuthProvider>
+      </body>
     </html>
   );
 }

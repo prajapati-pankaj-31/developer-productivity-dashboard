@@ -79,7 +79,6 @@ export default function DashboardPage() {
   const [workspaceSettings, setWorkspaceSettings] = useState<WorkspaceSettings>(defaultSettings);
   const [isLoadingState, setIsLoadingState] = useState(false);
 
-  // Load Real-time Data from Backend REST API
   const refreshBackendData = useCallback(async () => {
     setIsLoadingState(true);
     const isAlive = await ApiClient.checkHealth();
@@ -104,7 +103,7 @@ export default function DashboardPage() {
           setWeeklyData(overview.weeklyProductivity);
         }
       } catch (err) {
-        console.warn('⚠️ [Live DB] Error refreshing data, using cache:', err);
+        console.warn('Error refreshing data:', err);
       } finally {
         setIsLoadingState(false);
       }
@@ -117,7 +116,6 @@ export default function DashboardPage() {
     refreshBackendData();
   }, [refreshBackendData, authUser?.id]);
 
-  // Filters
   const [filters, setFilters] = useState<TaskFilterState>({
     searchQuery: '',
     projectId: 'all',
@@ -138,12 +136,10 @@ export default function DashboardPage() {
     });
   };
 
-  // Task Actions (Optimistic UI + Real Database Sync)
   const handleStatusChange = (taskId: string, newStatus: TaskStatus) => {
     setTasks((prevTasks) =>
       prevTasks.map((t) => {
         if (t.id === taskId) {
-          // If manually marked completed, auto-complete all subtasks
           const updatedSubtasks =
             newStatus === 'completed'
               ? t.subtasks.map((st) => ({ ...st, completed: true }))
@@ -155,9 +151,8 @@ export default function DashboardPage() {
       })
     );
 
-    // Sync directly to backend database
     ApiClient.updateTaskStatus(taskId, newStatus).catch((err) => {
-      console.warn('Backend status sync warning:', err);
+      console.warn('Backend status sync error:', err);
     });
   };
 
@@ -188,14 +183,12 @@ export default function DashboardPage() {
       })
     );
 
-    // Sync directly to backend database
     ApiClient.toggleSubtask(taskId, subtaskId).catch((err) => {
-      console.warn('Backend subtask toggle warning:', err);
+      console.warn('Backend subtask toggle error:', err);
     });
   };
 
   const handleAddTask = async (newTask: Task) => {
-    // Optimistic UI update
     setTasks((prev) => [newTask, ...prev]);
 
     try {
@@ -214,10 +207,9 @@ export default function DashboardPage() {
         subtasks: newTask.subtasks.map((st) => ({ title: st.title, completed: st.completed })),
       });
 
-      // Update with server ID
       setTasks((prev) => prev.map((t) => (t.id === newTask.id ? created : t)));
     } catch (err) {
-      console.warn('Backend task create warning:', err);
+      console.warn('Backend task create error:', err);
     }
   };
 
@@ -227,7 +219,6 @@ export default function DashboardPage() {
   };
 
   const handleEditTask = async (updatedTask: Task) => {
-    // Optimistic UI update
     setTasks((prev) => prev.map((t) => (t.id === updatedTask.id ? updatedTask : t)));
 
     try {
@@ -248,23 +239,21 @@ export default function DashboardPage() {
       });
       setTasks((prev) => prev.map((t) => (t.id === synced.id ? synced : t)));
     } catch (err) {
-      console.warn('Backend task update warning:', err);
+      console.warn('Backend task update error:', err);
     }
   };
 
   const handleDeleteTask = async (taskId: string) => {
-    // Optimistic UI update
     setTasks((prev) => prev.filter((t) => t.id !== taskId));
 
     try {
       await ApiClient.deleteTask(taskId);
     } catch (err) {
-      console.warn('Backend task deletion warning:', err);
+      console.warn('Backend task deletion error:', err);
     }
   };
 
   const handleCreateProject = async (newProject: Project) => {
-    // Optimistic UI update
     setProjects((prev) => [newProject, ...prev]);
 
     try {
@@ -282,7 +271,6 @@ export default function DashboardPage() {
 
       setProjects((prev) => prev.map((p) => (p.id === newProject.id ? created : p)));
 
-      // Record Activity
       const newAct: ActivityItem = {
         id: `act-${Date.now()}`,
         type: 'task_completed',
@@ -306,7 +294,7 @@ export default function DashboardPage() {
         }).catch(console.warn);
       }
     } catch (err) {
-      console.warn('Backend project create warning:', err);
+      console.warn('Backend project create error:', err);
     }
   };
 
@@ -316,7 +304,6 @@ export default function DashboardPage() {
   };
 
   const handleUpdateProject = async (updatedProj: Project) => {
-    // Optimistic UI update
     setProjects((prev) => prev.map((p) => (p.id === updatedProj.id ? updatedProj : p)));
     if (selectedProject?.id === updatedProj.id) {
       setSelectedProject(updatedProj);
@@ -338,12 +325,11 @@ export default function DashboardPage() {
         setSelectedProject(synced);
       }
     } catch (err) {
-      console.warn('Backend project update warning:', err);
+      console.warn('Backend project update error:', err);
     }
   };
 
   const handleDeleteProject = async (projectId: string) => {
-    // Optimistic UI update
     setProjects((prev) => prev.filter((p) => p.id !== projectId));
     if (selectedProject?.id === projectId) {
       setSelectedProject(null);
@@ -352,7 +338,7 @@ export default function DashboardPage() {
     try {
       await ApiClient.deleteProject(projectId);
     } catch (err) {
-      console.warn('Backend project deletion warning:', err);
+      console.warn('Backend project deletion error:', err);
     }
   };
 
@@ -435,12 +421,11 @@ export default function DashboardPage() {
     if (authUser) {
       updateUserLocal({ status: newStatus });
       ApiClient.updateUser(authUser.id, { status: newStatus }).catch((err) => {
-        console.warn('User status sync warning:', err);
+        console.warn('User status sync error:', err);
       });
     }
   };
 
-  // Dynamic Team Directory (Database users + logged in user prioritized at top)
   const availableTeamMembers = useMemo(() => {
     if (!authUser) return teamUsers;
     const exists = teamUsers.some(
@@ -457,7 +442,6 @@ export default function DashboardPage() {
     return [authUser, ...teamUsers];
   }, [teamUsers, authUser]);
 
-  // Filtered Tasks
   const myTasks = useMemo(() => {
     if (!authUser) return [];
     return tasks.filter(
@@ -469,7 +453,6 @@ export default function DashboardPage() {
 
   const filteredTasks = useMemo(() => {
     return tasks.filter((task) => {
-      // Only My Tasks filter
       if (filters.onlyMyTasks && authUser) {
         const isMine =
           task.assignee.id === authUser.id ||
@@ -478,7 +461,6 @@ export default function DashboardPage() {
           return false;
         }
       }
-      // Search query
       if (filters.searchQuery) {
         const q = filters.searchQuery.toLowerCase();
         const matchesTitle = task.title.toLowerCase().includes(q);
@@ -489,15 +471,12 @@ export default function DashboardPage() {
           return false;
         }
       }
-      // Project
       if (filters.projectId !== 'all' && task.projectId !== filters.projectId) {
         return false;
       }
-      // Priority
       if (filters.priority !== 'all' && task.priority !== filters.priority) {
         return false;
       }
-      // Status
       if (filters.status !== 'all' && task.status !== filters.status) {
         return false;
       }
@@ -505,7 +484,6 @@ export default function DashboardPage() {
     });
   }, [tasks, filters, authUser]);
 
-  // Filtered Projects
   const filteredProjects = useMemo(() => {
     return projects.filter((project) => {
       if (filters.searchQuery) {
@@ -525,12 +503,11 @@ export default function DashboardPage() {
     });
   }, [projects, filters]);
 
-  // User & Workspace Settings Handlers
   const handleSaveUser = (updatedUser: Partial<User>) => {
     if (authUser) {
       updateUserLocal(updatedUser);
       ApiClient.updateUser(authUser.id, updatedUser).catch((err) => {
-        console.warn('User profile sync warning:', err);
+        console.warn('User profile sync error:', err);
       });
     }
   };
@@ -542,7 +519,6 @@ export default function DashboardPage() {
     }
   };
 
-  // Keyboard Shortcuts Listener
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement;
@@ -583,10 +559,8 @@ export default function DashboardPage() {
 
   return (
     <div className="relative flex h-screen w-full overflow-hidden bg-zinc-50 dark:bg-zinc-950 font-sans">
-      {/* Futuristic Dynamic Ambient Background */}
       <DynamicBackground />
 
-      {/* Mobile Drawer Navigation */}
       <MobileNav
         isOpen={isMobileNavOpen}
         onClose={() => setIsMobileNavOpen(false)}
@@ -597,7 +571,6 @@ export default function DashboardPage() {
         tasksCount={tasks.length}
       />
 
-      {/* Desktop Sidebar */}
       <Sidebar
         activeTab={activeTab}
         onTabChange={setActiveTab}
@@ -609,9 +582,7 @@ export default function DashboardPage() {
         onOpenAuthModal={() => setIsAuthModalOpen(true)}
       />
 
-      {/* Main Content Area */}
       <div className="relative z-10 flex flex-1 flex-col overflow-hidden">
-        {/* Top Header */}
         <Header
           currentUser={authUser}
           isAuthenticated={isAuthenticated}
@@ -629,9 +600,7 @@ export default function DashboardPage() {
           onLogout={authLogout}
         />
 
-        {/* Scrollable Dashboard View */}
         <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-6">
-          {/* Welcome Banner */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-zinc-200/80 dark:border-zinc-800">
             <div>
               <div className="flex items-center gap-2">
@@ -658,7 +627,6 @@ export default function DashboardPage() {
               </p>
             </div>
 
-            {/* Quick action buttons */}
             <div className="flex flex-wrap items-center gap-2">
               <Button
                 variant={activeTab === 'overview' ? 'primary' : 'outline'}
@@ -684,10 +652,8 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* TAB 1: OVERVIEW */}
           {activeTab === 'overview' && (
             <div className="space-y-6">
-              {/* 1. Overview KPI Summary Cards */}
               <section aria-labelledby="metrics-heading">
                 <h2 id="metrics-heading" className="sr-only">
                   Productivity Metrics
@@ -698,7 +664,6 @@ export default function DashboardPage() {
                 />
               </section>
 
-              {/* 2. Visual Charts & Deep Work Timer Grid */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2">
                   <ProductivityChart data={weeklyData} />
@@ -708,7 +673,6 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              {/* 3. Active Projects Preview */}
               <section aria-labelledby="active-projects-heading" className="space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -735,7 +699,6 @@ export default function DashboardPage() {
                 />
               </section>
 
-              {/* 4. Active Tasks & Sprint Work */}
               <section aria-labelledby="sprint-tasks-heading" className="space-y-3 pt-2">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -746,7 +709,6 @@ export default function DashboardPage() {
                   </div>
                 </div>
 
-                {/* Filter and Search controls */}
                 <TaskFilterBar
                   filters={filters}
                   onFilterChange={handleFilterChange}
@@ -758,7 +720,6 @@ export default function DashboardPage() {
                   onOpenAuthModal={() => setIsAuthModalOpen(true)}
                 />
 
-                {/* Task List Grid */}
                 <TaskList
                   tasks={filteredTasks}
                   isLoading={isLoadingState}
@@ -770,7 +731,6 @@ export default function DashboardPage() {
                 />
               </section>
 
-              {/* 5. Live Activity Feed */}
               <section aria-labelledby="activity-heading" className="pt-2">
                 <ActivityFeed
                   activities={activities}
@@ -780,7 +740,6 @@ export default function DashboardPage() {
             </div>
           )}
 
-          {/* TAB 2: PROJECTS */}
           {activeTab === 'projects' && (
             <div className="space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-zinc-200 dark:border-zinc-800">
@@ -808,7 +767,6 @@ export default function DashboardPage() {
                 </Button>
               </div>
 
-              {/* Search / Project Filter */}
               <TaskFilterBar
                 filters={filters}
                 onFilterChange={handleFilterChange}
@@ -829,7 +787,6 @@ export default function DashboardPage() {
             </div>
           )}
 
-          {/* TAB 3: TASKS */}
           {activeTab === 'tasks' && (
             <div className="space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-zinc-200 dark:border-zinc-800">
@@ -867,7 +824,6 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              {/* Filter controls */}
               <TaskFilterBar
                 filters={filters}
                 onFilterChange={handleFilterChange}
@@ -879,7 +835,6 @@ export default function DashboardPage() {
                 onOpenAuthModal={() => setIsAuthModalOpen(true)}
               />
 
-              {/* Task list with status tabs */}
               <TaskList
                 tasks={filteredTasks}
                 isLoading={isLoadingState}
@@ -892,7 +847,6 @@ export default function DashboardPage() {
             </div>
           )}
 
-          {/* TAB 4: ACTIVITY */}
           {activeTab === 'activity' && (
             <div className="space-y-4 max-w-4xl">
               <div className="pb-2 border-b border-zinc-200 dark:border-zinc-800">
@@ -912,7 +866,6 @@ export default function DashboardPage() {
             </div>
           )}
 
-          {/* TAB 5: AI COPILOT & ASSISTANT (MAIN PAGE VIEW) */}
           {activeTab === 'ai-assistant' && (
             <AIAssistantView
               currentUser={authUser}
@@ -923,7 +876,6 @@ export default function DashboardPage() {
             />
           )}
 
-          {/* TAB 6: DEVELOPER PROFILE & IDENTITY (MAIN PAGE VIEW) */}
           {activeTab === 'profile' && (
             <ProfileView
               user={authUser || CURRENT_USER}
@@ -936,7 +888,6 @@ export default function DashboardPage() {
         </main>
       </div>
 
-      {/* Project Detail Modal */}
       <ProjectDetailModal
         project={selectedProject}
         tasks={tasks}
@@ -947,7 +898,6 @@ export default function DashboardPage() {
         onDeleteProject={handleDeleteProject}
       />
 
-      {/* New Project Creation Modal */}
       <NewProjectModal
         isOpen={isNewProjectModalOpen}
         onClose={() => setIsNewProjectModalOpen(false)}
@@ -956,7 +906,6 @@ export default function DashboardPage() {
         onCreateProject={handleCreateProject}
       />
 
-      {/* Edit Project Modal */}
       <EditProjectModal
         isOpen={isEditProjectModalOpen}
         onClose={() => {
@@ -970,7 +919,6 @@ export default function DashboardPage() {
         onDeleteProject={handleDeleteProject}
       />
 
-      {/* New Task Creation Modal */}
       <NewTaskModal
         isOpen={isNewTaskModalOpen}
         onClose={() => setIsNewTaskModalOpen(false)}
@@ -980,7 +928,6 @@ export default function DashboardPage() {
         onAddTask={handleAddTask}
       />
 
-      {/* Edit Task Modal */}
       <EditTaskModal
         isOpen={isEditTaskModalOpen}
         onClose={() => {
@@ -995,7 +942,6 @@ export default function DashboardPage() {
         onDeleteTask={handleDeleteTask}
       />
 
-      {/* Developer Profile & Identity Modal */}
       <ProfileModal
         isOpen={isProfileModalOpen}
         onClose={() => setIsProfileModalOpen(false)}
@@ -1003,7 +949,6 @@ export default function DashboardPage() {
         onSaveUser={handleSaveUser}
       />
 
-      {/* Workspace & Developer Settings Modal */}
       <SettingsModal
         isOpen={isSettingsModalOpen}
         onClose={() => setIsSettingsModalOpen(false)}
@@ -1011,13 +956,11 @@ export default function DashboardPage() {
         onSaveSettings={handleSaveSettings}
       />
 
-      {/* Keyboard Shortcuts Sheet Modal */}
       <KeyboardShortcutsModal
         isOpen={isShortcutsModalOpen}
         onClose={() => setIsShortcutsModalOpen(false)}
       />
 
-      {/* AI Sprint Copilot & Daily Standup Modal (TASK 4) */}
       <AISprintCopilotModal
         isOpen={isAICopilotOpen}
         onClose={() => setIsAICopilotOpen(false)}
@@ -1026,13 +969,11 @@ export default function DashboardPage() {
         weeklyFocusHours={weeklyData.find((d) => d.isToday)?.focusHours || 6.5}
       />
 
-      {/* Authentication (Login / Signup) Modal */}
       <AuthModal
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
       />
 
-      {/* Floating AI Chatbot Assistant Widget */}
       <AIChatbotWidget
         currentUser={authUser}
         tasks={tasks}

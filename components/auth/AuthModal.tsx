@@ -210,7 +210,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="e.g. Pankaj Prajapati"
-                      className="w-full rounded-xl border border-zinc-800 bg-[#0a0d20] pl-9 pr-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                      className="w-full rounded-xl border border-indigo-900/60 bg-[#0c1026]/90 pl-9 pr-3 py-2 text-xs text-white placeholder-zinc-500 shadow-inner focus:border-indigo-500 focus:bg-[#101533] focus:outline-none focus:ring-2 focus:ring-indigo-500/25 transition-all"
                     />
                   </div>
                 </div>
@@ -226,7 +226,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                       value={role}
                       onChange={(e) => setRole(e.target.value)}
                       placeholder="e.g. AI & Full Stack Developer"
-                      className="w-full rounded-xl border border-zinc-800 bg-[#0a0d20] pl-9 pr-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                      className="w-full rounded-xl border border-indigo-900/60 bg-[#0c1026]/90 pl-9 pr-3 py-2 text-xs text-white placeholder-zinc-500 shadow-inner focus:border-indigo-500 focus:bg-[#101533] focus:outline-none focus:ring-2 focus:ring-indigo-500/25 transition-all"
                     />
                   </div>
                 </div>
@@ -245,7 +245,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="developer@devhub.io"
-                  className="w-full rounded-xl border border-zinc-800 bg-[#0a0d20] pl-9 pr-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  className="w-full rounded-xl border border-indigo-900/60 bg-[#0c1026]/90 pl-9 pr-3 py-2 text-xs text-white placeholder-zinc-500 shadow-inner focus:border-indigo-500 focus:bg-[#101533] focus:outline-none focus:ring-2 focus:ring-indigo-500/25 transition-all"
                 />
               </div>
             </div>
@@ -262,7 +262,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full rounded-xl border border-zinc-800 bg-[#0a0d20] pl-9 pr-10 py-2 text-xs text-white placeholder-zinc-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  className="w-full rounded-xl border border-indigo-900/60 bg-[#0c1026]/90 pl-9 pr-10 py-2 text-xs text-white placeholder-zinc-500 shadow-inner focus:border-indigo-500 focus:bg-[#101533] focus:outline-none focus:ring-2 focus:ring-indigo-500/25 transition-all"
                 />
                 <button
                   type="button"

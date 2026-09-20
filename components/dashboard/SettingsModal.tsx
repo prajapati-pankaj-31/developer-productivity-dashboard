@@ -153,7 +153,7 @@ const SettingsForm: React.FC<{
               value={formData.workspaceName}
               onChange={(e) => setFormData({ ...formData, workspaceName: e.target.value })}
               required
-              className="w-full rounded-lg bg-[#0a0d20] border border-indigo-950/80 px-3 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-colors"
+              className="w-full rounded-xl bg-zinc-50/90 dark:bg-[#0c1026]/90 border border-zinc-300/80 dark:border-indigo-900/60 shadow-inner px-3.5 py-2 text-xs text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:bg-white dark:focus:bg-[#101533] focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/25 transition-all"
             />
             <p className="text-[11px] text-zinc-500 mt-1">
               Shown on top of the sidebar and in your dashboard title.
@@ -207,7 +207,7 @@ const SettingsForm: React.FC<{
                 onChange={(e) =>
                   setFormData({ ...formData, pomodoroWorkDuration: Number(e.target.value) || 25 })
                 }
-                className="w-full rounded-lg bg-[#0a0d20] border border-indigo-950/80 px-3 py-2 text-xs text-zinc-100 font-mono focus:border-indigo-500 focus:outline-none"
+                className="w-full rounded-xl bg-zinc-50/90 dark:bg-[#0c1026]/90 border border-zinc-300/80 dark:border-indigo-900/60 shadow-inner px-3 py-2 text-xs text-zinc-900 dark:text-zinc-100 font-mono focus:bg-white dark:focus:bg-[#101533] focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/25 transition-all"
               />
             </div>
             <div>
@@ -222,7 +222,7 @@ const SettingsForm: React.FC<{
                 onChange={(e) =>
                   setFormData({ ...formData, shortBreakDuration: Number(e.target.value) || 5 })
                 }
-                className="w-full rounded-lg bg-[#0a0d20] border border-indigo-950/80 px-3 py-2 text-xs text-zinc-100 font-mono focus:border-indigo-500 focus:outline-none"
+                className="w-full rounded-xl bg-zinc-50/90 dark:bg-[#0c1026]/90 border border-zinc-300/80 dark:border-indigo-900/60 shadow-inner px-3 py-2 text-xs text-zinc-900 dark:text-zinc-100 font-mono focus:bg-white dark:focus:bg-[#101533] focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/25 transition-all"
               />
             </div>
             <div>
@@ -237,7 +237,7 @@ const SettingsForm: React.FC<{
                 onChange={(e) =>
                   setFormData({ ...formData, longBreakDuration: Number(e.target.value) || 15 })
                 }
-                className="w-full rounded-lg bg-[#0a0d20] border border-indigo-950/80 px-3 py-2 text-xs text-zinc-100 font-mono focus:border-indigo-500 focus:outline-none"
+                className="w-full rounded-xl bg-zinc-50/90 dark:bg-[#0c1026]/90 border border-zinc-300/80 dark:border-indigo-900/60 shadow-inner px-3 py-2 text-xs text-zinc-900 dark:text-zinc-100 font-mono focus:bg-white dark:focus:bg-[#101533] focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/25 transition-all"
               />
             </div>
           </div>

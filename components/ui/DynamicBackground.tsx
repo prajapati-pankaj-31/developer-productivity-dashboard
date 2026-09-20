@@ -52,7 +52,6 @@ export const DynamicBackground: React.FC = () => {
         } as React.CSSProperties
       }
     >
-      {/* 1. Deep Atmospheric Ambient Lighting (Clearly visible across sidebar & main content) */}
       <div
         className="absolute inset-0 opacity-90"
         style={{
@@ -61,10 +60,8 @@ export const DynamicBackground: React.FC = () => {
         }}
       />
 
-      {/* 2. Developer Coordinate Grid Pattern */}
       <div className="absolute inset-0 bg-dev-grid opacity-50" />
 
-      {/* 3. Full-Viewport High-Fidelity SVG Constellation & Network Lines */}
       <svg
         className="absolute inset-0 w-full h-full"
         viewBox="0 0 1440 900"
@@ -73,7 +70,6 @@ export const DynamicBackground: React.FC = () => {
         xmlns="http://www.w3.org/2000/svg"
       >
         <defs>
-          {/* Multi-Stop Network Line Gradients */}
           <linearGradient id="purple-line-grad" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#d946ef" stopOpacity="0.7" />
             <stop offset="50%" stopColor="#a855f7" stopOpacity="0.55" />
@@ -93,7 +89,6 @@ export const DynamicBackground: React.FC = () => {
             <stop offset="100%" stopColor="#a855f7" stopOpacity="0.4" />
           </linearGradient>
 
-          {/* Node Glow Filters */}
           <filter id="node-glow-violet" x="-50%" y="-50%" width="200%" height="200%">
             <feGaussianBlur in="SourceGraphic" stdDeviation="3.5" result="blur1" />
             <feMerge>
@@ -111,11 +106,7 @@ export const DynamicBackground: React.FC = () => {
           </filter>
         </defs>
 
-        {/* ========================================================================= */}
-        {/* A. LEFT / SIDEBAR CONSTELLATION NETWORK (Clearly visible in lower/mid area) */}
-        {/* ========================================================================= */}
         <g className="animate-constellation" filter="url(#node-glow-violet)">
-          {/* Connecting Lines */}
           <g stroke="url(#purple-line-grad)" strokeWidth="1" strokeLinecap="round" opacity="0.85">
             <line x1="35" y1="480" x2="95" y2="430" />
             <line x1="95" y1="430" x2="175" y2="410" />
@@ -141,7 +132,6 @@ export const DynamicBackground: React.FC = () => {
             <line x1="270" y1="820" x2="380" y2="790" strokeDasharray="3 4" opacity="0.65" />
           </g>
 
-          {/* Glowing Constellation Nodes */}
           <circle cx="95" cy="430" r="3.5" fill="#e879f9" className="animate-node-twinkle" />
           <circle cx="95" cy="430" r="8" fill="#e879f9" fillOpacity="0.25" />
 
@@ -171,9 +161,6 @@ export const DynamicBackground: React.FC = () => {
           <circle cx="270" cy="820" r="2.8" fill="#00f0ff" />
         </g>
 
-        {/* ========================================================================= */}
-        {/* B. MID-LEFT TO CENTER WEB (Between Sidebar & Cards Area)                   */}
-        {/* ========================================================================= */}
         <g opacity="0.8" filter="url(#node-glow-violet)">
           <g stroke="url(#purple-line-grad)" strokeWidth="0.9" strokeDasharray="3 4">
             <line x1="310" y1="210" x2="390" y2="160" />
@@ -196,9 +183,6 @@ export const DynamicBackground: React.FC = () => {
           <circle cx="550" cy="310" r="3.2" fill="#38bdf8" className="animate-node-twinkle" style={{ animationDelay: '1.4s' }} />
         </g>
 
-        {/* ========================================================================= */}
-        {/* C. TOP-RIGHT & HEADER CONSTELLATION (Visible in upper right atmosphere)   */}
-        {/* ========================================================================= */}
         <g filter="url(#node-glow-cyan)" opacity="0.9">
           <g stroke="url(#cyan-line-grad)" strokeWidth="0.95" strokeLinecap="round">
             <line x1="1080" y1="80" x2="1160" y2="40" />
@@ -231,9 +215,6 @@ export const DynamicBackground: React.FC = () => {
           <circle cx="1370" cy="170" r="3" fill="#00f0ff" />
         </g>
 
-        {/* ========================================================================= */}
-        {/* D. CENTER-RIGHT MATRIX WEB (Visible in space between timer & project cards)*/}
-        {/* ========================================================================= */}
         <g opacity="0.8" filter="url(#node-glow-violet)">
           <g stroke="url(#purple-line-grad)" strokeWidth="0.85" strokeDasharray="4 4">
             <line x1="1120" y1="360" x2="1210" y2="320" />
@@ -259,9 +240,6 @@ export const DynamicBackground: React.FC = () => {
           <circle cx="1330" cy="500" r="3.2" fill="#38bdf8" />
         </g>
 
-        {/* ========================================================================= */}
-        {/* E. BOTTOM DIGITAL FLOWING MESH WAVES (Electric Cyan / Indigo Stream)      */}
-        {/* ========================================================================= */}
         <g className="animate-mesh-bottom">
           <path
             d="M 30,830 C 300,760 560,880 920,800 C 1140,750 1320,830 1520,780"
@@ -289,7 +267,6 @@ export const DynamicBackground: React.FC = () => {
             fill="none"
           />
 
-          {/* Wave Nodes */}
           <circle cx="280" cy="790" r="3" fill="#00f0ff" className="animate-node-twinkle" />
           <circle cx="280" cy="790" r="7" fill="#00f0ff" fillOpacity="0.25" />
           <circle cx="560" cy="840" r="2.8" fill="#38bdf8" />
@@ -299,9 +276,6 @@ export const DynamicBackground: React.FC = () => {
           <circle cx="1440" cy="780" r="2.5" fill="#38bdf8" />
         </g>
 
-        {/* ========================================================================= */}
-        {/* F. RIGHT-SIDE NEON LIGHT RAY & GLOWING STAR                               */}
-        {/* ========================================================================= */}
         <g transform="translate(1415, 395)" className="animate-ray-pulse" filter="url(#node-glow-cyan)">
           <circle cx="0" cy="0" r="4" fill="#00f0ff" />
           <circle cx="0" cy="0" r="12" fill="#00f0ff" fillOpacity="0.25" />
@@ -310,7 +284,6 @@ export const DynamicBackground: React.FC = () => {
         </g>
       </svg>
 
-      {/* 4. Scattered Floating Micro-Particles across the Viewport */}
       <div className="absolute top-[18%] left-[8%] w-1.5 h-1.5 rounded-full bg-purple-400/50 blur-[0.5px] animate-particle-float" />
       <div className="absolute top-[35%] left-[22%] w-1 h-1 rounded-full bg-cyan-400/45 blur-[0.5px] animate-subtle-particle" style={{ animationDelay: '3s' }} />
       <div className="absolute top-[60%] left-[14%] w-1.5 h-1.5 rounded-full bg-indigo-400/50 blur-[0.5px] animate-particle-float" style={{ animationDelay: '5s' }} />
@@ -322,7 +295,6 @@ export const DynamicBackground: React.FC = () => {
       <div className="absolute top-[75%] right-[8%] w-1.5 h-1.5 rounded-full bg-cyan-400/55 blur-[0.5px] animate-subtle-particle" style={{ animationDelay: '6s' }} />
       <div className="absolute top-[88%] right-[32%] w-1.5 h-1.5 rounded-full bg-indigo-400/45 blur-[0.5px] animate-particle-float" style={{ animationDelay: '3.8s' }} />
 
-      {/* 5. Interactive Desktop Mouse Spotlight */}
       <div
         className="absolute inset-0 transition-opacity duration-300 hidden md:block"
         style={{

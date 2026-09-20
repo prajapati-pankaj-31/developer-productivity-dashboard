@@ -130,10 +130,9 @@ export interface AISummaryResponse {
 
 export class AIService {
   /**
-   * Generates a technical sprint task with acceptance criteria & subtasks from a prompt
+   * Generates a structured sprint task with subtasks from a prompt.
    */
   public static async generateTask(data: GenerateTasksInput): Promise<AIGeneratedTask> {
-    // 1. Primary: Groq LPU Engine
     const groq = getGroqClient();
     if (groq) {
       try {
@@ -168,11 +167,10 @@ export class AIService {
           };
         }
       } catch (err) {
-        console.warn('⚠️ [Groq API] Failed, checking secondary engine:', err);
+        console.warn('Groq generation error:', err);
       }
     }
 
-    // 2. Secondary: Google Gemini API
     const ai = getGeminiClient();
     if (ai) {
       try {
@@ -200,11 +198,10 @@ export class AIService {
           }
         }
       } catch (err) {
-        console.warn('⚠️ [Gemini API] Fallback to smart heuristic engine:', err);
+        console.warn('Gemini generation error:', err);
       }
     }
 
-    // 3. Fallback: Built-in contextual heuristic engine
     const promptLower = data.prompt.toLowerCase();
 
     let priority: 'urgent' | 'high' | 'medium' | 'low' = data.priority || 'medium';
@@ -264,10 +261,9 @@ export class AIService {
   }
 
   /**
-   * Generates a multi-phase project roadmap & tech stack
+   * Generates a multi-phase project roadmap & tech stack.
    */
   public static async generateProjectRoadmap(data: GenerateRoadmapInput): Promise<AIRoadmapResponse> {
-    // 1. Primary: Groq LPU Engine
     const groq = getGroqClient();
     if (groq) {
       try {
@@ -292,11 +288,10 @@ export class AIService {
           return parsed;
         }
       } catch (err) {
-        console.warn('⚠️ [Groq API] Roadmap failed, checking secondary:', err);
+        console.warn('Groq roadmap error:', err);
       }
     }
 
-    // 2. Secondary: Google Gemini API
     const ai = getGeminiClient();
     if (ai) {
       try {
@@ -314,11 +309,10 @@ export class AIService {
           }
         }
       } catch (err) {
-        console.warn('⚠️ [Gemini API] Roadmap fallback to smart engine:', err);
+        console.warn('Gemini roadmap error:', err);
       }
     }
 
-    // 3. Fallback heuristic roadmap
     const techStack = data.techStack && data.techStack.length > 0
       ? data.techStack
       : ['Next.js 16', 'TypeScript', 'Tailwind CSS', 'Express.js', 'PostgreSQL', 'Prisma'];
@@ -368,10 +362,9 @@ export class AIService {
   }
 
   /**
-   * Generates a daily / weekly standup report based on current user tasks and focus metrics
+   * Generates a daily or weekly standup report based on tasks and focus hours.
    */
   public static async generateStandupSummary(data: StandupSummaryInput): Promise<AIStandupResponse> {
-    // 1. Primary: Groq LPU Engine
     const groq = getGroqClient();
     if (groq) {
       try {
@@ -396,11 +389,10 @@ export class AIService {
           return parsed;
         }
       } catch (err) {
-        console.warn('⚠️ [Groq API] Standup failed, checking secondary:', err);
+        console.warn('Groq standup error:', err);
       }
     }
 
-    // 2. Secondary: Google Gemini API
     const ai = getGeminiClient();
     if (ai) {
       try {
@@ -418,11 +410,10 @@ export class AIService {
           }
         }
       } catch (err) {
-        console.warn('⚠️ [Gemini API] Standup fallback to smart engine:', err);
+        console.warn('Gemini standup error:', err);
       }
     }
 
-    // 3. Fallback heuristic standup
     const name = data.userName || 'Developer';
     const tasks = data.tasks || [];
     const focusHours = data.focusHours || 6.5;
@@ -470,7 +461,7 @@ export class AIService {
   }
 
   /**
-   * Summarizes a task or PR description into executive bullets
+   * Summarizes a task or PR into concise bullet points.
    */
   public static async summarizeTask(data: SummarizeTaskInput): Promise<AISummaryResponse> {
     const totalSubtasks = data.subtasks?.length || 0;
@@ -488,7 +479,7 @@ export class AIService {
   }
 
   /**
-   * Conversational AI Assistant Chatbot (Groq LPU / Gemini Core)
+   * Handles conversational AI assistant queries with developer context.
    */
   public static async chat(data: ChatInput): Promise<AIChatResponse> {
     const userName = data.context?.userName || 'Developer';
@@ -498,7 +489,6 @@ User Context: Name: ${userName}, Role: ${data.context?.userRole || 'Full Stack E
 Help the user with coding, architecture planning, sprint workload optimization, debugging, SQL queries, Docker, Next.js, TypeScript, PostgreSQL, and technical roadmap advice.
 Keep answers concise, clear, well-structured, formatted with GitHub-flavored markdown and code blocks when applicable.`;
 
-    // 1. Try Groq LPU API
     const groq = getGroqClient();
     if (groq) {
       try {
@@ -526,11 +516,10 @@ Keep answers concise, clear, well-structured, formatted with GitHub-flavored mar
           };
         }
       } catch (err) {
-        console.warn('⚠️ [Groq Chat] Error, falling back to secondary:', err);
+        console.warn('Groq chat error:', err);
       }
     }
 
-    // 2. Try Google Gemini API
     const ai = getGeminiClient();
     if (ai) {
       try {
@@ -549,11 +538,10 @@ Keep answers concise, clear, well-structured, formatted with GitHub-flavored mar
           };
         }
       } catch (err) {
-        console.warn('⚠️ [Gemini Chat] Error, falling back:', err);
+        console.warn('Gemini chat error:', err);
       }
     }
 
-    // 3. Fallback Heuristic Response
     const lastMsg = data.messages[data.messages.length - 1]?.content.toLowerCase() || '';
     let reply = `Hello ${userName}! I am your AI Engineering Copilot. How can I assist with your sprint architecture or code today?`;
 

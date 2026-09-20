@@ -165,7 +165,7 @@ const ProfileForm: React.FC<{
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
-            className="w-full rounded-lg bg-[#0a0d20] border border-indigo-950/80 px-3 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-colors"
+            className="w-full rounded-xl bg-zinc-50/90 dark:bg-[#0c1026]/90 border border-zinc-300/80 dark:border-indigo-900/60 shadow-inner px-3.5 py-2 text-xs text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:bg-white dark:focus:bg-[#101533] focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/25 transition-all"
           />
         </div>
 
@@ -178,7 +178,7 @@ const ProfileForm: React.FC<{
             value={role}
             onChange={(e) => setRole(e.target.value)}
             required
-            className="w-full rounded-lg bg-[#0a0d20] border border-indigo-950/80 px-3 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-colors"
+            className="w-full rounded-xl bg-zinc-50/90 dark:bg-[#0c1026]/90 border border-zinc-300/80 dark:border-indigo-900/60 shadow-inner px-3.5 py-2 text-xs text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:bg-white dark:focus:bg-[#101533] focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/25 transition-all"
           />
         </div>
 
@@ -191,7 +191,7 @@ const ProfileForm: React.FC<{
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="w-full rounded-lg bg-[#0a0d20] border border-indigo-950/80 px-3 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-colors"
+            className="w-full rounded-xl bg-zinc-50/90 dark:bg-[#0c1026]/90 border border-zinc-300/80 dark:border-indigo-900/60 shadow-inner px-3.5 py-2 text-xs text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:bg-white dark:focus:bg-[#101533] focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/25 transition-all"
           />
         </div>
 
@@ -218,7 +218,7 @@ const ProfileForm: React.FC<{
             max="80"
             value={weeklyFocusGoal}
             onChange={(e) => setWeeklyFocusGoal(e.target.value)}
-            className="w-full rounded-lg bg-[#0a0d20] border border-indigo-950/80 px-3 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-colors font-mono"
+            className="w-full rounded-xl bg-zinc-50/90 dark:bg-[#0c1026]/90 border border-zinc-300/80 dark:border-indigo-900/60 shadow-inner px-3.5 py-2 text-xs text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:bg-white dark:focus:bg-[#101533] focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/25 transition-all font-mono"
           />
         </div>
 
@@ -230,7 +230,7 @@ const ProfileForm: React.FC<{
             type="text"
             value={github}
             onChange={(e) => setGithub(e.target.value)}
-            className="w-full rounded-lg bg-[#0a0d20] border border-indigo-950/80 px-3 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-colors font-mono"
+            className="w-full rounded-xl bg-zinc-50/90 dark:bg-[#0c1026]/90 border border-zinc-300/80 dark:border-indigo-900/60 shadow-inner px-3.5 py-2 text-xs text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:bg-white dark:focus:bg-[#101533] focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/25 transition-all font-mono"
           />
         </div>
       </div>
@@ -244,7 +244,7 @@ const ProfileForm: React.FC<{
           value={bio}
           onChange={(e) => setBio(e.target.value)}
           rows={2}
-          className="w-full rounded-lg bg-[#0a0d20] border border-indigo-950/80 px-3 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-colors resize-none"
+          className="w-full rounded-xl bg-zinc-50/90 dark:bg-[#0c1026]/90 border border-zinc-300/80 dark:border-indigo-900/60 shadow-inner px-3.5 py-2 text-xs text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:bg-white dark:focus:bg-[#101533] focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/25 transition-all resize-none"
         />
       </div>
 
@@ -256,7 +256,7 @@ const ProfileForm: React.FC<{
           </span>
           <span className="text-[11px] text-zinc-500 font-normal">Press Enter to add</span>
         </label>
-        <div className="flex flex-wrap gap-1.5 mb-2 p-2.5 rounded-lg bg-[#0a0d20] border border-indigo-950/80 min-h-[42px]">
+        <div className="flex flex-wrap gap-1.5 mb-2 p-2.5 rounded-xl bg-zinc-50/90 dark:bg-[#0c1026]/90 border border-zinc-300/80 dark:border-indigo-900/60 shadow-inner min-h-[42px]">
           {skills.map((skill) => (
             <span
               key={skill}
@@ -278,7 +278,7 @@ const ProfileForm: React.FC<{
             value={newSkill}
             onChange={(e) => setNewSkill(e.target.value)}
             onKeyDown={handleAddSkill}
-            className="flex-1 min-w-[90px] bg-transparent text-xs text-zinc-100 placeholder-zinc-600 focus:outline-none px-1"
+            className="flex-1 min-w-[90px] bg-transparent text-xs text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-600 focus:outline-none px-1"
           />
         </div>
       </div>

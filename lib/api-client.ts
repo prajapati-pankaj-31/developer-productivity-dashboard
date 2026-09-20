@@ -72,7 +72,6 @@ export class ApiClient {
     return getStoredToken();
   }
 
-  // --- AUTH ---
   public static async login(credentials: LoginCredentials): Promise<AuthResponse> {
     const res = await fetchWithTimeout(`${API_BASE_URL}/auth/login`, {
       method: 'POST',
@@ -133,16 +132,14 @@ export class ApiClient {
     }
   }
 
-  // --- USERS ---
   public static async getUsers(): Promise<User[]> {
-
     try {
       const res = await fetchWithTimeout(`${API_BASE_URL}/users`);
       if (!res.ok) throw new Error('Failed to fetch users');
       const json = await res.json();
       return json.data || [];
     } catch (err) {
-      console.warn('⚠️ [API] Users endpoint unreachable, using fallback cache:', err);
+      console.warn('Users endpoint unreachable, using fallback:', err);
       return [CURRENT_USER];
     }
   }
@@ -157,12 +154,11 @@ export class ApiClient {
       const json = await res.json();
       return json.data;
     } catch (err) {
-      console.warn('⚠️ [API] updateUser failed, updating locally:', err);
+      console.warn('updateUser failed, updating locally:', err);
       return { ...CURRENT_USER, ...data } as User;
     }
   }
 
-  // --- PROJECTS ---
   public static async getProjects(): Promise<Project[]> {
     try {
       const res = await fetchWithTimeout(`${API_BASE_URL}/projects`);
@@ -170,7 +166,7 @@ export class ApiClient {
       const json = await res.json();
       return json.data || [];
     } catch (err) {
-      console.warn('⚠️ [API] Projects endpoint unreachable, using fallback cache:', err);
+      console.warn('Projects endpoint unreachable, using fallback:', err);
       return MOCK_PROJECTS;
     }
   }
@@ -208,7 +204,7 @@ export class ApiClient {
     });
     if (!res.ok) {
       const errJson = await res.json().catch(() => ({}));
-      throw new Error(errJson.error?.message || 'Failed to update project in database');
+      throw new Error(errJson.error?.message || 'Failed to update project');
     }
     const json = await res.json();
     return json.data;
@@ -220,11 +216,10 @@ export class ApiClient {
     });
     if (!res.ok) {
       const errJson = await res.json().catch(() => ({}));
-      throw new Error(errJson.error?.message || 'Failed to delete project from database');
+      throw new Error(errJson.error?.message || 'Failed to delete project');
     }
   }
 
-  // --- TASKS ---
   public static async getTasks(): Promise<Task[]> {
     try {
       const res = await fetchWithTimeout(`${API_BASE_URL}/tasks`);
@@ -232,7 +227,7 @@ export class ApiClient {
       const json = await res.json();
       return json.data || [];
     } catch (err) {
-      console.warn('⚠️ [API] Tasks endpoint unreachable, using fallback cache:', err);
+      console.warn('Tasks endpoint unreachable, using fallback:', err);
       return MOCK_TASKS;
     }
   }
@@ -257,7 +252,7 @@ export class ApiClient {
     });
     if (!res.ok) {
       const errJson = await res.json().catch(() => ({}));
-      throw new Error(errJson.error?.message || 'Failed to create task in database');
+      throw new Error(errJson.error?.message || 'Failed to create task');
     }
     const json = await res.json();
     return json.data;
@@ -292,7 +287,7 @@ export class ApiClient {
     });
     if (!res.ok) {
       const errJson = await res.json().catch(() => ({}));
-      throw new Error(errJson.error?.message || 'Failed to update task in database');
+      throw new Error(errJson.error?.message || 'Failed to update task');
     }
     const json = await res.json();
     return json.data;
@@ -305,7 +300,7 @@ export class ApiClient {
     });
     if (!res.ok) {
       const errJson = await res.json().catch(() => ({}));
-      throw new Error(errJson.error?.message || 'Failed to update task status in database');
+      throw new Error(errJson.error?.message || 'Failed to update task status');
     }
     const json = await res.json();
     return json.data;
@@ -318,7 +313,7 @@ export class ApiClient {
     );
     if (!res.ok) {
       const errJson = await res.json().catch(() => ({}));
-      throw new Error(errJson.error?.message || 'Failed to toggle subtask in database');
+      throw new Error(errJson.error?.message || 'Failed to toggle subtask');
     }
     const json = await res.json();
     return json.data;
@@ -330,11 +325,10 @@ export class ApiClient {
     });
     if (!res.ok) {
       const errJson = await res.json().catch(() => ({}));
-      throw new Error(errJson.error?.message || 'Failed to delete task from database');
+      throw new Error(errJson.error?.message || 'Failed to delete task');
     }
   }
 
-  // --- ANALYTICS & METRICS ---
   public static async getAnalyticsOverview(): Promise<{
     metrics: ProductivityMetric[];
     weeklyProductivity: DailyProductivity[];
@@ -353,7 +347,7 @@ export class ApiClient {
       const json = await res.json();
       return json.data;
     } catch (err) {
-      console.warn('⚠️ [API] Analytics endpoint unreachable, using fallback cache:', err);
+      console.warn('Analytics endpoint unreachable, using fallback:', err);
       return {
         metrics: PRODUCTIVITY_METRICS,
         weeklyProductivity: WEEKLY_PRODUCTIVITY_DATA,
@@ -369,7 +363,6 @@ export class ApiClient {
     }
   }
 
-  // --- ACTIVITIES ---
   public static async getActivities(): Promise<ActivityItem[]> {
     try {
       const res = await fetchWithTimeout(`${API_BASE_URL}/activities`);
@@ -377,7 +370,7 @@ export class ApiClient {
       const json = await res.json();
       return json.data || [];
     } catch (err) {
-      console.warn('⚠️ [API] Activities endpoint unreachable, using fallback cache:', err);
+      console.warn('Activities endpoint unreachable, using fallback:', err);
       return RECENT_ACTIVITIES;
     }
   }
@@ -402,7 +395,6 @@ export class ApiClient {
     return json.data;
   }
 
-  // --- AI CAPABILITIES (TASK 4) ---
   public static async generateAITask(
     prompt: string,
     projectKey?: string,

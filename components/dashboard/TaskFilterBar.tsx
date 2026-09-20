@@ -71,7 +71,7 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
           value={filters.searchQuery}
           onChange={(e) => onFilterChange({ searchQuery: e.target.value })}
           placeholder="Filter by title, tag, or branch..."
-          className="w-full rounded-lg border border-zinc-700/80 bg-[#0a0d20]/80 pl-9 pr-8 py-1.5 text-xs sm:text-sm text-zinc-100 placeholder-zinc-500 focus:border-indigo-500 focus:bg-[#0d1028] focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03)]"
+          className="w-full rounded-lg border border-zinc-300/80 dark:border-indigo-900/60 bg-zinc-50/90 dark:bg-[#0c1026]/90 pl-9 pr-8 py-1.5 text-xs sm:text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 shadow-inner focus:border-indigo-500 focus:bg-white dark:focus:bg-[#101533] focus:outline-none focus:ring-2 focus:ring-indigo-500/25 transition-all"
         />
         {filters.searchQuery && (
           <button
@@ -100,7 +100,7 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
             'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all cursor-pointer select-none',
             filters.onlyMyTasks
               ? 'bg-gradient-to-r from-indigo-500/25 to-purple-500/25 border-indigo-500/60 text-indigo-200 shadow-[0_0_12px_rgba(99,102,241,0.25)]'
-              : 'border-zinc-700/80 bg-[#0a0d20]/80 text-zinc-400 hover:text-zinc-200 hover:border-zinc-600'
+              : 'border-zinc-300/80 dark:border-indigo-900/60 bg-zinc-50/90 dark:bg-[#0c1026]/90 text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100 hover:border-indigo-500/50'
           )}
           title={authUser ? `Filter tasks assigned to ${authUser.name}` : 'Sign in to filter your tasks'}
         >

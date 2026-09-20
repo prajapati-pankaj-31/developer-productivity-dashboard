@@ -190,7 +190,7 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({
               if (error) setError('');
             }}
             placeholder="e.g. Implement edge rate limiting on Auth Gateway"
-            className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+            className="w-full rounded-lg border border-zinc-300/80 dark:border-indigo-900/60 bg-zinc-50/90 dark:bg-[#0c1026]/90 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 shadow-inner focus:border-indigo-500 focus:bg-white dark:focus:bg-[#101533] focus:outline-none focus:ring-2 focus:ring-indigo-500/25 transition-all"
           />
         </div>
 
@@ -258,7 +258,7 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({
               type="date"
               value={dueDate}
               onChange={(e) => setDueDate(e.target.value)}
-              className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-2.5 py-1.5 text-xs text-zinc-900 dark:text-zinc-100 focus:border-indigo-500 focus:outline-none"
+              className="w-full rounded-lg border border-zinc-300/80 dark:border-indigo-900/60 bg-zinc-50/90 dark:bg-[#0c1026]/90 px-2.5 py-1.5 text-xs text-zinc-900 dark:text-zinc-100 shadow-inner focus:border-indigo-500 focus:bg-white dark:focus:bg-[#101533] focus:outline-none focus:ring-2 focus:ring-indigo-500/25 transition-all"
             />
           </div>
 
@@ -272,7 +272,7 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({
               step="0.5"
               value={loggedHours}
               onChange={(e) => setLoggedHours(e.target.value)}
-              className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-2.5 py-1.5 text-xs text-zinc-900 dark:text-zinc-100 focus:border-indigo-500 focus:outline-none"
+              className="w-full rounded-lg border border-zinc-300/80 dark:border-indigo-900/60 bg-zinc-50/90 dark:bg-[#0c1026]/90 px-2.5 py-1.5 text-xs text-zinc-900 dark:text-zinc-100 shadow-inner focus:border-indigo-500 focus:bg-white dark:focus:bg-[#101533] focus:outline-none focus:ring-2 focus:ring-indigo-500/25 transition-all"
             />
           </div>
 
@@ -286,7 +286,7 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({
               step="0.5"
               value={estimatedHours}
               onChange={(e) => setEstimatedHours(e.target.value)}
-              className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-2.5 py-1.5 text-xs text-zinc-900 dark:text-zinc-100 focus:border-indigo-500 focus:outline-none"
+              className="w-full rounded-lg border border-zinc-300/80 dark:border-indigo-900/60 bg-zinc-50/90 dark:bg-[#0c1026]/90 px-2.5 py-1.5 text-xs text-zinc-900 dark:text-zinc-100 shadow-inner focus:border-indigo-500 focus:bg-white dark:focus:bg-[#101533] focus:outline-none focus:ring-2 focus:ring-indigo-500/25 transition-all"
             />
           </div>
         </div>
@@ -302,7 +302,7 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({
               value={branchName}
               onChange={(e) => setBranchName(e.target.value)}
               placeholder="feat/auth-rate-limit"
-              className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-1.5 text-xs text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:border-indigo-500 focus:outline-none font-mono"
+              className="w-full rounded-lg border border-zinc-300/80 dark:border-indigo-900/60 bg-zinc-50/90 dark:bg-[#0c1026]/90 px-3 py-1.5 text-xs text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 shadow-inner focus:border-indigo-500 focus:bg-white dark:focus:bg-[#101533] focus:outline-none focus:ring-2 focus:ring-indigo-500/25 font-mono transition-all"
             />
           </div>
 
@@ -316,7 +316,7 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({
               value={prNumber}
               onChange={(e) => setPrNumber(e.target.value)}
               placeholder="104"
-              className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-1.5 text-xs text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:border-indigo-500 focus:outline-none font-mono"
+              className="w-full rounded-lg border border-zinc-300/80 dark:border-indigo-900/60 bg-zinc-50/90 dark:bg-[#0c1026]/90 px-3 py-1.5 text-xs text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 shadow-inner focus:border-indigo-500 focus:bg-white dark:focus:bg-[#101533] focus:outline-none focus:ring-2 focus:ring-indigo-500/25 font-mono transition-all"
             />
           </div>
         </div>
@@ -331,7 +331,7 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Add context, acceptance criteria, or technical references..."
-            className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2 text-xs text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 resize-none"
+            className="w-full rounded-lg border border-zinc-300/80 dark:border-indigo-900/60 bg-zinc-50/90 dark:bg-[#0c1026]/90 px-3 py-2 text-xs text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 shadow-inner focus:border-indigo-500 focus:bg-white dark:focus:bg-[#101533] focus:outline-none focus:ring-2 focus:ring-indigo-500/25 resize-none transition-all"
           />
         </div>
 
@@ -345,7 +345,7 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({
             value={tagsInput}
             onChange={(e) => setTagsInput(e.target.value)}
             placeholder="Security, Redis, API, Performance"
-            className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-1.5 text-xs text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:border-indigo-500 focus:outline-none"
+            className="w-full rounded-lg border border-zinc-300/80 dark:border-indigo-900/60 bg-zinc-50/90 dark:bg-[#0c1026]/90 px-3 py-1.5 text-xs text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 shadow-inner focus:border-indigo-500 focus:bg-white dark:focus:bg-[#101533] focus:outline-none focus:ring-2 focus:ring-indigo-500/25 transition-all"
           />
         </div>
 
@@ -358,7 +358,7 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({
             {subtasks.map((st) => (
               <div
                 key={st.id}
-                className="flex items-center justify-between gap-2 p-2 rounded-lg bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200/60 dark:border-zinc-700/60 text-xs"
+                className="flex items-center justify-between gap-2 p-2 rounded-lg bg-zinc-100/80 dark:bg-[#0a0e24] border border-zinc-200/80 dark:border-indigo-950/60 text-xs"
               >
                 <label className="flex items-center gap-2 cursor-pointer flex-1 min-w-0">
                   <input
@@ -402,7 +402,7 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({
                 }
               }}
               placeholder="Add new subtask item..."
-              className="flex-1 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-1.5 text-xs text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:border-indigo-500 focus:outline-none"
+              className="flex-1 rounded-lg border border-zinc-300/80 dark:border-indigo-900/60 bg-zinc-50/90 dark:bg-[#0c1026]/90 px-3 py-1.5 text-xs text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 shadow-inner focus:border-indigo-500 focus:bg-white dark:focus:bg-[#101533] focus:outline-none focus:ring-2 focus:ring-indigo-500/25 transition-all"
             />
             <Button
               variant="outline"

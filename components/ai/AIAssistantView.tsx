@@ -102,7 +102,6 @@ export const AIAssistantView: React.FC<AIAssistantViewProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState<AITab>('chat');
 
-  // --- CHAT STATE ---
   const [chatInput, setChatInput] = useState('');
   const [isChatTyping, setIsChatTyping] = useState(false);
   const [copiedCodeId, setCopiedCodeId] = useState<string | null>(null);
@@ -124,7 +123,6 @@ export const AIAssistantView: React.FC<AIAssistantViewProps> = ({
   const chatEndRef = useRef<HTMLDivElement>(null);
   const chatInputRef = useRef<HTMLTextAreaElement>(null);
 
-  // --- STANDUP STATE ---
   const [isGeneratingStandup, setIsGeneratingStandup] = useState(false);
   const [isCopiedStandup, setIsCopiedStandup] = useState(false);
   const [standupData, setStandupData] = useState<{
@@ -137,14 +135,12 @@ export const AIAssistantView: React.FC<AIAssistantViewProps> = ({
     formattedSlackText: string;
   } | null>(null);
 
-  // --- ROADMAP STATE ---
   const [roadmapProjectName, setRoadmapProjectName] = useState('Developer Productivity Hub');
   const [roadmapConcept, setRoadmapConcept] = useState('Real-time agile workspace with AI sprint planning & velocity analytics');
   const [roadmapTechStack, setRoadmapTechStack] = useState('Next.js 16, TypeScript, Tailwind CSS, Express, PostgreSQL, Prisma');
   const [isGeneratingRoadmap, setIsGeneratingRoadmap] = useState(false);
   const [roadmapData, setRoadmapData] = useState<any | null>(null);
 
-  // --- TASK GENERATOR STATE ---
   const [taskPrompt, setTaskPrompt] = useState('');
   const [taskPriorityHint, setTaskPriorityHint] = useState<'urgent' | 'high' | 'medium' | 'low'>('medium');
   const [isGeneratingTask, setIsGeneratingTask] = useState(false);
@@ -160,7 +156,6 @@ export const AIAssistantView: React.FC<AIAssistantViewProps> = ({
     }
   }, [activeTab, chatMessages, isChatTyping]);
 
-  // --- SEND CHAT MESSAGE ---
   const handleSendChatMessage = async (textToSend?: string) => {
     const query = (textToSend || chatInput).trim();
     if (!query || isChatTyping) return;
@@ -836,7 +831,7 @@ export const AIAssistantView: React.FC<AIAssistantViewProps> = ({
                   value={roadmapProjectName}
                   onChange={(e) => setRoadmapProjectName(e.target.value)}
                   placeholder="e.g. Distributed Notification Engine"
-                  className="mt-1 w-full rounded-xl border border-zinc-800 bg-[#070919] px-3.5 py-2 text-xs text-zinc-100 focus:border-indigo-500 focus:outline-none"
+                  className="mt-1 w-full rounded-xl border border-indigo-900/60 bg-[#0c1026]/90 shadow-inner px-3.5 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:bg-[#101533] focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/25 transition-all"
                 />
               </div>
 
@@ -847,7 +842,7 @@ export const AIAssistantView: React.FC<AIAssistantViewProps> = ({
                   value={roadmapTechStack}
                   onChange={(e) => setRoadmapTechStack(e.target.value)}
                   placeholder="Next.js 16, TypeScript, Redis, PostgreSQL"
-                  className="mt-1 w-full rounded-xl border border-zinc-800 bg-[#070919] px-3.5 py-2 text-xs text-zinc-100 focus:border-indigo-500 focus:outline-none"
+                  className="mt-1 w-full rounded-xl border border-indigo-900/60 bg-[#0c1026]/90 shadow-inner px-3.5 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:bg-[#101533] focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/25 transition-all"
                 />
               </div>
 
@@ -858,7 +853,7 @@ export const AIAssistantView: React.FC<AIAssistantViewProps> = ({
                   onChange={(e) => setRoadmapConcept(e.target.value)}
                   rows={2}
                   placeholder="Describe what the system solves, throughput, and target users..."
-                  className="mt-1 w-full rounded-xl border border-zinc-800 bg-[#070919] px-3.5 py-2 text-xs text-zinc-100 focus:border-indigo-500 focus:outline-none"
+                  className="mt-1 w-full rounded-xl border border-indigo-900/60 bg-[#0c1026]/90 shadow-inner px-3.5 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:bg-[#101533] focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/25 transition-all resize-none"
                 />
               </div>
             </div>
@@ -941,7 +936,7 @@ export const AIAssistantView: React.FC<AIAssistantViewProps> = ({
                   value={taskPrompt}
                   onChange={(e) => setTaskPrompt(e.target.value)}
                   placeholder="e.g. Implement OAuth 2.0 Google login with session refresh rotation"
-                  className="mt-1 w-full rounded-xl border border-zinc-800 bg-[#070919] px-3.5 py-2 text-xs text-zinc-100 focus:border-indigo-500 focus:outline-none"
+                  className="mt-1 w-full rounded-xl border border-indigo-900/60 bg-[#0c1026]/90 shadow-inner px-3.5 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:bg-[#101533] focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/25 transition-all"
                 />
               </div>
 

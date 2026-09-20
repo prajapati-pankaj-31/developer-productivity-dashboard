@@ -158,7 +158,7 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
           </div>
         )}
 
-        {/* AI Prompt Auto-Fill Section (TASK 4) */}
+        {/* AI Task Generation */}
         <div className="rounded-xl border border-indigo-500/30 bg-gradient-to-r from-indigo-950/40 via-purple-950/30 to-indigo-950/40 p-3 shadow-[0_0_15px_rgba(99,102,241,0.08)]">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-bold text-indigo-300 flex items-center gap-1.5">
@@ -231,7 +231,7 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
               if (error) setError('');
             }}
             placeholder="e.g. Implement edge rate limiting on Auth Gateway"
-            className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+            className="w-full rounded-lg border border-zinc-300/80 dark:border-indigo-900/60 bg-zinc-50/90 dark:bg-[#0c1026]/90 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 shadow-inner focus:border-indigo-500 focus:bg-white dark:focus:bg-[#101533] focus:outline-none focus:ring-2 focus:ring-indigo-500/25 transition-all"
           />
         </div>
 
@@ -285,7 +285,7 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
                 type="date"
                 value={dueDate}
                 onChange={(e) => setDueDate(e.target.value)}
-                className="w-2/3 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-2.5 py-1.5 text-xs text-zinc-900 dark:text-zinc-100 focus:border-indigo-500 focus:outline-none"
+                className="w-2/3 rounded-lg border border-zinc-300/80 dark:border-indigo-900/60 bg-zinc-50/90 dark:bg-[#0c1026]/90 px-2.5 py-1.5 text-xs text-zinc-900 dark:text-zinc-100 shadow-inner focus:border-indigo-500 focus:bg-white dark:focus:bg-[#101533] focus:outline-none focus:ring-2 focus:ring-indigo-500/25 transition-all"
               />
               <input
                 type="number"
@@ -294,7 +294,7 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
                 value={estimatedHours}
                 onChange={(e) => setEstimatedHours(e.target.value)}
                 placeholder="Hrs"
-                className="w-1/3 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-2 py-1.5 text-xs text-zinc-900 dark:text-zinc-100 focus:border-indigo-500 focus:outline-none text-center"
+                className="w-1/3 rounded-lg border border-zinc-300/80 dark:border-indigo-900/60 bg-zinc-50/90 dark:bg-[#0c1026]/90 px-2 py-1.5 text-xs text-zinc-900 dark:text-zinc-100 shadow-inner focus:border-indigo-500 focus:bg-white dark:focus:bg-[#101533] focus:outline-none focus:ring-2 focus:ring-indigo-500/25 text-center transition-all"
               />
             </div>
           </div>
@@ -310,7 +310,7 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Add context, acceptance criteria, or technical references..."
-            className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2 text-xs sm:text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 resize-none"
+            className="w-full rounded-lg border border-zinc-300/80 dark:border-indigo-900/60 bg-zinc-50/90 dark:bg-[#0c1026]/90 px-3 py-2 text-xs sm:text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 shadow-inner focus:border-indigo-500 focus:bg-white dark:focus:bg-[#101533] focus:outline-none focus:ring-2 focus:ring-indigo-500/25 resize-none transition-all"
           />
         </div>
 
@@ -324,7 +324,7 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
             value={tagsInput}
             onChange={(e) => setTagsInput(e.target.value)}
             placeholder="Security, Redis, API, Performance"
-            className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2 text-xs text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:border-indigo-500 focus:outline-none"
+            className="w-full rounded-lg border border-zinc-300/80 dark:border-indigo-900/60 bg-zinc-50/90 dark:bg-[#0c1026]/90 px-3 py-2 text-xs text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 shadow-inner focus:border-indigo-500 focus:bg-white dark:focus:bg-[#101533] focus:outline-none focus:ring-2 focus:ring-indigo-500/25 transition-all"
           />
         </div>
 

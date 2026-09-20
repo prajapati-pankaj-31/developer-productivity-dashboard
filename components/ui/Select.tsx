@@ -168,11 +168,11 @@ export function Select<T extends string = string>({
 
   const variantStyles = {
     default:
-      'bg-[#0a0d20]/90 dark:bg-[#0a0d20]/90 border border-zinc-700/70 dark:border-indigo-950/70 text-zinc-200 hover:border-indigo-500/50 hover:bg-[#0d1028] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03)]',
+      'bg-zinc-50/90 dark:bg-[#0c1026]/90 border border-zinc-300/80 dark:border-indigo-900/60 text-zinc-800 dark:text-zinc-200 hover:border-indigo-500/50 hover:bg-white dark:hover:bg-[#101533] shadow-inner',
     card:
-      'bg-[#0a0d20] border border-zinc-700/80 dark:border-zinc-700/70 text-zinc-200 hover:border-indigo-500/50 hover:bg-[#0d1028]',
+      'bg-zinc-50 dark:bg-[#0c1026] border border-zinc-300/80 dark:border-indigo-900/60 text-zinc-800 dark:text-zinc-200 hover:border-indigo-500/50 hover:bg-white dark:hover:bg-[#101533]',
     ghost:
-      'bg-transparent border border-transparent text-zinc-300 hover:bg-zinc-800/60 hover:text-white',
+      'bg-transparent border border-transparent text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800/60 hover:text-white',
   };
 
   return (
@@ -188,11 +188,11 @@ export function Select<T extends string = string>({
         aria-expanded={isOpen}
         aria-label={ariaLabel}
         className={cn(
-          'w-full flex items-center justify-between font-medium transition-all select-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500',
+          'w-full flex items-center justify-between font-medium transition-all select-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500/25 focus:border-indigo-500 focus:bg-white dark:focus:bg-[#101533]',
           sizeStyles[size],
           variantStyles[variant],
-          disabled && 'opacity-50 cursor-not-allowed hover:border-zinc-700 hover:bg-[#0a0d20]',
-          isOpen && 'border-indigo-500 ring-2 ring-indigo-500/20'
+          disabled && 'opacity-50 cursor-not-allowed hover:border-zinc-700 hover:bg-[#0c1026]',
+          isOpen && 'border-indigo-500 ring-2 ring-indigo-500/20 bg-white dark:bg-[#101533]'
         )}
       >
         <span className="flex items-center gap-1.5 truncate text-left">
@@ -210,7 +210,7 @@ export function Select<T extends string = string>({
       {isOpen && (
         <div
           className={cn(
-            'absolute z-50 mt-1.5 w-full min-w-[200px] rounded-lg bg-gradient-to-b from-[#0e1227] to-[#080a1a] border border-indigo-950/80 p-1 shadow-[0_15px_30px_-5px_rgba(0,0,0,0.8),0_0_20px_rgba(99,102,241,0.15)] backdrop-blur-xl animate-in fade-in zoom-in-95 duration-100 select-none',
+            'absolute z-50 mt-1.5 w-full min-w-[200px] rounded-lg bg-gradient-to-b from-[#0e132e] to-[#070919] border border-indigo-900/80 p-1 shadow-[0_15px_35px_-5px_rgba(0,0,0,0.8),0_0_25px_rgba(99,102,241,0.2)] backdrop-blur-xl animate-in fade-in zoom-in-95 duration-100 select-none',
             align === 'right' ? 'right-0' : 'left-0',
             menuClassName
           )}

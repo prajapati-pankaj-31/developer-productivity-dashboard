@@ -52,7 +52,6 @@ export const AISprintCopilotModal: React.FC<AISprintCopilotModalProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState<CopilotTab>('chat');
 
-  // --- CHAT STATE ---
   const [chatInput, setChatInput] = useState('');
   const [isChatTyping, setIsChatTyping] = useState(false);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>(() => [
@@ -71,7 +70,6 @@ export const AISprintCopilotModal: React.FC<AISprintCopilotModalProps> = ({
   const [copiedCodeId, setCopiedCodeId] = useState<string | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
-  // --- STANDUP STATE ---
   const [isGeneratingStandup, setIsGeneratingStandup] = useState(false);
   const [isCopiedStandup, setIsCopiedStandup] = useState(false);
   const [standupData, setStandupData] = useState<{
@@ -84,7 +82,6 @@ export const AISprintCopilotModal: React.FC<AISprintCopilotModalProps> = ({
     formattedSlackText: string;
   } | null>(null);
 
-  // --- ROADMAP STATE ---
   const [roadmapProjectName, setRoadmapProjectName] = useState('Developer Productivity Hub');
   const [roadmapConcept, setRoadmapConcept] = useState('Real-time agile workspace with AI sprint planning & velocity analytics');
   const [isGeneratingRoadmap, setIsGeneratingRoadmap] = useState(false);

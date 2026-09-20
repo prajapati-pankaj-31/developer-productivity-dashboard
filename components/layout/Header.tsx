@@ -127,10 +127,10 @@ export const Header: React.FC<HeaderProps> = ({
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Search tasks, projects, branches (⌘K)..."
-            className="w-full rounded-lg border border-zinc-800/80 bg-[#0a0d20]/80 pl-9 pr-12 py-1.5 text-xs sm:text-sm text-zinc-100 placeholder-zinc-500 focus:border-indigo-500/60 focus:bg-[#0d1028] focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03)]"
+            className="w-full rounded-lg border border-zinc-300/80 dark:border-indigo-900/60 bg-zinc-50/90 dark:bg-[#0c1026]/90 pl-9 pr-12 py-1.5 text-xs sm:text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 shadow-inner focus:border-indigo-500 focus:bg-white dark:focus:bg-[#101533] focus:outline-none focus:ring-2 focus:ring-indigo-500/25 transition-all"
           />
           <div className="pointer-events-none absolute inset-y-0 right-0 hidden sm:flex items-center pr-2.5">
-            <kbd className="rounded border border-zinc-700 bg-zinc-800 px-1.5 py-0.5 text-[10px] font-mono font-medium text-zinc-400">
+            <kbd className="rounded border border-zinc-300 dark:border-indigo-950/80 bg-zinc-100 dark:bg-[#070919] px-1.5 py-0.5 text-[10px] font-mono font-medium text-zinc-500 dark:text-zinc-400 shadow-xs">
               ⌘K
             </kbd>
           </div>

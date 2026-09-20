@@ -252,7 +252,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
-                className="w-full rounded-xl bg-[#0a0d24] border border-indigo-950/80 px-3.5 py-2.5 text-xs sm:text-sm text-zinc-100 placeholder-zinc-500 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all"
+                className="w-full rounded-xl bg-zinc-50/90 dark:bg-[#0c1026]/90 border border-zinc-300/80 dark:border-indigo-900/60 shadow-inner px-3.5 py-2.5 text-xs sm:text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:bg-white dark:focus:bg-[#101533] focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/25 transition-all"
               />
             </div>
 
@@ -265,7 +265,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
                 required
-                className="w-full rounded-xl bg-[#0a0d24] border border-indigo-950/80 px-3.5 py-2.5 text-xs sm:text-sm text-zinc-100 placeholder-zinc-500 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all"
+                className="w-full rounded-xl bg-zinc-50/90 dark:bg-[#0c1026]/90 border border-zinc-300/80 dark:border-indigo-900/60 shadow-inner px-3.5 py-2.5 text-xs sm:text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:bg-white dark:focus:bg-[#101533] focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/25 transition-all"
               />
             </div>
 
@@ -278,7 +278,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full rounded-xl bg-[#0a0d24] border border-indigo-950/80 px-3.5 py-2.5 text-xs sm:text-sm text-zinc-100 placeholder-zinc-500 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all"
+                className="w-full rounded-xl bg-zinc-50/90 dark:bg-[#0c1026]/90 border border-zinc-300/80 dark:border-indigo-900/60 shadow-inner px-3.5 py-2.5 text-xs sm:text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:bg-white dark:focus:bg-[#101533] focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/25 transition-all"
               />
             </div>
 
@@ -308,7 +308,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                 max="80"
                 value={weeklyFocusGoal}
                 onChange={(e) => setWeeklyFocusGoal(e.target.value)}
-                className="w-full rounded-xl bg-[#0a0d24] border border-indigo-950/80 px-3.5 py-2.5 text-xs sm:text-sm text-zinc-100 placeholder-zinc-500 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all font-mono"
+                className="w-full rounded-xl bg-zinc-50/90 dark:bg-[#0c1026]/90 border border-zinc-300/80 dark:border-indigo-900/60 shadow-inner px-3.5 py-2.5 text-xs sm:text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:bg-white dark:focus:bg-[#101533] focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/25 transition-all font-mono"
               />
               <div className="mt-2 space-y-1">
                 <ProgressBar value={progressPercent} size="xs" variant="gradient" />
@@ -327,7 +327,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                 type="text"
                 value={github}
                 onChange={(e) => setGithub(e.target.value)}
-                className="w-full rounded-xl bg-[#0a0d24] border border-indigo-950/80 px-3.5 py-2.5 text-xs sm:text-sm text-zinc-100 placeholder-zinc-500 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all font-mono"
+                className="w-full rounded-xl bg-zinc-50/90 dark:bg-[#0c1026]/90 border border-zinc-300/80 dark:border-indigo-900/60 shadow-inner px-3.5 py-2.5 text-xs sm:text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:bg-white dark:focus:bg-[#101533] focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/25 transition-all font-mono"
               />
             </div>
           </div>
@@ -341,7 +341,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
               value={bio}
               onChange={(e) => setBio(e.target.value)}
               rows={3}
-              className="w-full rounded-xl bg-[#0a0d24] border border-indigo-950/80 px-3.5 py-2.5 text-xs sm:text-sm text-zinc-100 placeholder-zinc-500 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all resize-none"
+              className="w-full rounded-xl bg-zinc-50/90 dark:bg-[#0c1026]/90 border border-zinc-300/80 dark:border-indigo-900/60 shadow-inner px-3.5 py-2.5 text-xs sm:text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:bg-white dark:focus:bg-[#101533] focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/25 transition-all resize-none"
             />
           </div>
 
@@ -353,7 +353,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
               </span>
               <span className="text-[11px] text-zinc-500 font-normal">Press Enter ↵ to add</span>
             </label>
-            <div className="flex flex-wrap gap-2 p-3 rounded-xl bg-[#0a0d24] border border-indigo-950/80 min-h-[48px]">
+            <div className="flex flex-wrap gap-2 p-3 rounded-xl bg-zinc-50/90 dark:bg-[#0c1026]/90 border border-zinc-300/80 dark:border-indigo-900/60 shadow-inner min-h-[48px]">
               {skills.map((skill) => (
                 <span
                   key={skill}

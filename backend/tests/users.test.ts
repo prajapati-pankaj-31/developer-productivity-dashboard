@@ -1,10 +1,10 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeAll } from 'vitest';
 import request from 'supertest';
 import { app } from '../src/app.js';
 import { resetTestDatabase } from '../src/db/test-helper.js';
 
 describe('Users API Endpoints (/api/v1/users)', () => {
-  beforeEach(async () => {
+  beforeAll(async () => {
     await resetTestDatabase();
   });
 

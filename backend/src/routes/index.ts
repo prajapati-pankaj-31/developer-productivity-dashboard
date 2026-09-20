@@ -1,4 +1,5 @@
 import { Router, Request, Response } from 'express';
+import authRoutes from './auth.routes.js';
 import userRoutes from './user.routes.js';
 import projectRoutes from './project.routes.js';
 import taskRoutes from './task.routes.js';
@@ -14,6 +15,11 @@ apiRouter.get('/', (_req: Request, res: Response) => {
     version: '1.0.0',
     endpoints: {
       health: '/health',
+      auth: {
+        signup: 'POST /api/v1/auth/signup',
+        login: 'POST /api/v1/auth/login',
+        me: 'GET /api/v1/auth/me',
+      },
       users: {
         list: 'GET /api/v1/users',
         getById: 'GET /api/v1/users/:id',
@@ -56,10 +62,12 @@ apiRouter.get('/', (_req: Request, res: Response) => {
   });
 });
 
+apiRouter.use('/auth', authRoutes);
 apiRouter.use('/users', userRoutes);
 apiRouter.use('/projects', projectRoutes);
 apiRouter.use('/tasks', taskRoutes);
 apiRouter.use('/analytics', analyticsRoutes);
 apiRouter.use('/activities', activityRoutes);
+
 
 export default apiRouter;

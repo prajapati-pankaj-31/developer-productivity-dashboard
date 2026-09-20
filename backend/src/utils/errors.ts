@@ -36,3 +36,16 @@ export class ConflictError extends AppError {
     super(message, 409, code);
   }
 }
+
+export class UnauthorizedError extends AppError {
+  constructor(message = 'Unauthorized access', code = 'UNAUTHORIZED') {
+    super(message, 401, code);
+  }
+}
+
+export class ForbiddenError extends AppError {
+  constructor(message = 'Forbidden access', code = 'FORBIDDEN') {
+    super(message, 403, code);
+  }
+}
+

@@ -1,5 +1,6 @@
 import { prisma } from './prisma.js';
 import { PrismaClient } from '@prisma/client';
+import { hashPassword } from '../utils/password.js';
 
 const INITIAL_USERS = [
   {
@@ -312,8 +313,14 @@ export async function seed(client: PrismaClient = prisma): Promise<void> {
   await client.dailyProductivity.deleteMany({});
 
   // 1. Seed Users
+  const defaultPasswordHash = await hashPassword('DevPass123!');
   for (const user of INITIAL_USERS) {
-    await client.user.create({ data: user });
+    await client.user.create({
+      data: {
+        ...user,
+        passwordHash: defaultPasswordHash,
+      },
+    });
   }
 
   // 2. Seed Projects & Project Members

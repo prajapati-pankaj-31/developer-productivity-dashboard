@@ -119,3 +119,18 @@ export interface ProjectFilterParams {
   status?: string;
   search?: string;
 }
+
+export interface AuthUser {
+  userId: string;
+  email: string;
+  role: string;
+}
+
+declare global {
+  namespace Express {
+    interface Request {
+      user?: AuthUser;
+    }
+  }
+}
+

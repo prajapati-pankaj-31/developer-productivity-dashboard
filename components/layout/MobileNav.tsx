@@ -9,6 +9,7 @@ import {
   Activity,
   X,
   Code2,
+  Bot,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Avatar } from '@/components/ui/Avatar';
@@ -49,6 +50,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({
     { id: 'overview', label: 'Overview', icon: LayoutDashboard },
     { id: 'projects', label: 'Projects', icon: FolderGit2, badge: projectsCount !== undefined ? `${projectsCount}` : undefined },
     { id: 'tasks', label: 'Tasks & Sprints', icon: CheckSquare, badge: tasksCount !== undefined ? `${tasksCount}` : undefined },
+    { id: 'ai-assistant', label: 'AI Copilot', icon: Bot, badge: 'Groq AI' },
     { id: 'activity', label: 'Activity Feed', icon: Activity },
   ];
 

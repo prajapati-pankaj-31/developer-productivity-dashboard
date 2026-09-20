@@ -12,6 +12,8 @@ import {
   Code2,
   Settings,
   LogIn,
+  Bot,
+  Sparkles,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Avatar } from '@/components/ui/Avatar';
@@ -112,6 +114,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { id: 'overview', label: 'Overview', icon: LayoutDashboard },
     { id: 'projects', label: 'Projects', icon: FolderGit2, badge: projectsCount !== undefined ? `${projectsCount}` : undefined },
     { id: 'tasks', label: 'Tasks & Sprints', icon: CheckSquare, badge: tasksCount !== undefined ? `${tasksCount}` : undefined },
+    { id: 'ai-assistant', label: 'AI Copilot', icon: Bot, badge: 'Groq AI' },
     { id: 'activity', label: 'Activity Feed', icon: Activity },
   ];
 
@@ -247,18 +250,33 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <button
             type="button"
             onClick={onOpenProfile}
-            className="group/profile w-full flex items-center gap-3 px-2 py-1.5 rounded-lg hover:bg-white/[0.05] border border-transparent hover:border-indigo-500/30 transition-all text-left cursor-pointer"
-            title="Open Developer Profile & Settings"
+            className={cn(
+              'group/profile w-full flex items-center gap-3 px-2 py-1.5 rounded-lg border transition-all text-left cursor-pointer',
+              activeTab === 'profile'
+                ? 'bg-indigo-950/60 border-indigo-500/50 shadow-[0_0_15px_rgba(99,102,241,0.25)]'
+                : 'border-transparent hover:border-indigo-500/30 hover:bg-white/[0.05]'
+            )}
+            title="Open Developer Profile & Performance"
           >
             <Avatar user={currentUser} size="sm" showStatus />
             {!isCollapsed && (
               <div className="flex flex-col min-w-0 flex-1">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-zinc-100 group-hover/profile:text-indigo-300 transition-colors truncate">
+                  <span
+                    className={cn(
+                      'text-xs font-semibold truncate transition-colors',
+                      activeTab === 'profile' ? 'text-indigo-300' : 'text-zinc-100 group-hover/profile:text-indigo-300'
+                    )}
+                  >
                     {currentUser.name}
                   </span>
-                  <span className="text-[10px] text-zinc-500 group-hover/profile:text-indigo-400 opacity-0 group-hover/profile:opacity-100 transition-opacity">
-                    Edit ⚙️
+                  <span
+                    className={cn(
+                      'text-[10px] transition-opacity font-medium',
+                      activeTab === 'profile' ? 'text-indigo-400 opacity-100' : 'text-zinc-500 opacity-0 group-hover/profile:opacity-100'
+                    )}
+                  >
+                    Profile ⚙️
                   </span>
                 </div>
                 <span className="text-[11px] text-zinc-400 truncate flex items-center gap-1">

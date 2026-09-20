@@ -403,7 +403,11 @@ export class ApiClient {
   }
 
   // --- AI CAPABILITIES (TASK 4) ---
-  public static async generateAITask(prompt: string, projectKey?: string): Promise<{
+  public static async generateAITask(
+    prompt: string,
+    projectKey?: string,
+    priority?: 'urgent' | 'high' | 'medium' | 'low'
+  ): Promise<{
     title: string;
     description: string;
     suggestedPriority: 'urgent' | 'high' | 'medium' | 'low';
@@ -414,7 +418,7 @@ export class ApiClient {
     try {
       const res = await fetchWithTimeout(`${API_BASE_URL}/ai/generate-task`, {
         method: 'POST',
-        body: JSON.stringify({ prompt, projectKey }),
+        body: JSON.stringify({ prompt, projectKey, priority }),
       });
       if (!res.ok) throw new Error('AI generation service error');
       const json = await res.json();
@@ -424,7 +428,7 @@ export class ApiClient {
       return {
         title: prompt.charAt(0).toUpperCase() + prompt.slice(1),
         description: `### 🎯 Objective\nImplement **${prompt}** with high code quality and test coverage.\n\n### 📋 Acceptance Criteria\n- Complete logic implementation\n- Unit & integration tests\n- Zero performance regressions`,
-        suggestedPriority: 'medium',
+        suggestedPriority: priority || 'medium',
         estimatedHours: 4,
         tags: ['Engineering', 'Feature'],
         subtasks: [

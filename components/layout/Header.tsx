@@ -14,6 +14,8 @@ import {
   AlertTriangle,
   RotateCw,
   LogIn,
+  Bot,
+  Sparkles,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -227,6 +229,19 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           )}
         </div>
+
+        {/* AI Copilot Action Button */}
+        {onOpenAICopilot && (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={onOpenAICopilot}
+            className="border-indigo-500/40 bg-indigo-950/30 hover:bg-indigo-900/40 text-indigo-300 flex items-center gap-1.5 shadow-[0_0_15px_rgba(99,102,241,0.15)]"
+          >
+            <Bot className="h-3.5 w-3.5 text-indigo-400 animate-pulse" />
+            <span className="hidden sm:inline">AI Copilot</span>
+          </Button>
+        )}
 
         {/* New Task Action Button */}
         <Button size="sm" onClick={onNewTaskClick} className="shadow-sm">

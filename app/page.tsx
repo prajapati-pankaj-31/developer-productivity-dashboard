@@ -31,6 +31,7 @@ import { ProfileModal } from '@/components/dashboard/ProfileModal';
 import { SettingsModal, WorkspaceSettings, defaultSettings } from '@/components/dashboard/SettingsModal';
 import { KeyboardShortcutsModal } from '@/components/dashboard/KeyboardShortcutsModal';
 import { AISprintCopilotModal } from '@/components/dashboard/AISprintCopilotModal';
+import { AIChatbotWidget } from '@/components/ai/AIChatbotWidget';
 import { AuthModal } from '@/components/auth/AuthModal';
 import { useAuth } from '@/context/auth-context';
 import { DynamicBackground } from '@/components/ui/DynamicBackground';
@@ -1012,6 +1013,13 @@ export default function DashboardPage() {
       <AuthModal
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
+      />
+
+      {/* Floating AI Chatbot Assistant Widget */}
+      <AIChatbotWidget
+        currentUser={authUser}
+        tasks={tasks}
+        onOpenStandupModal={() => setIsAICopilotOpen(true)}
       />
     </div>
   );

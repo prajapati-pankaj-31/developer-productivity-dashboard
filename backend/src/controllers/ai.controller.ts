@@ -38,4 +38,14 @@ export class AIController {
       next(error);
     }
   }
+
+  public static async chat(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const result = await AIService.chat(req.body);
+      sendSuccess(res, result, 200);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
+

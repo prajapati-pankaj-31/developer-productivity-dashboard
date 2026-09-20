@@ -5,7 +5,49 @@ import {
   GenerateRoadmapInput,
   StandupSummaryInput,
   SummarizeTaskInput,
+  ChatInput,
 } from '../validators/ai.validator.js';
+
+export interface AIChatResponse {
+  reply: string;
+  suggestedActions?: string[];
+}
+
+const GROQ_CANDIDATE_MODELS = [
+  'openai/gpt-oss-120b',
+  'openai/gpt-oss-20b',
+  'qwen/qwen3.8-27b',
+  'groq/compound-mini',
+  'llama-3.3-70b-versatile',
+  'llama-3.1-70b-versatile',
+  'llama-3.1-8b-instant',
+];
+
+async function callGroqWithFallback(
+  groq: Groq,
+  messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }>,
+  options: { responseFormatJson?: boolean; temperature?: number; maxTokens?: number } = {}
+): Promise<string | null> {
+  for (const model of GROQ_CANDIDATE_MODELS) {
+    try {
+      const completion = await groq.chat.completions.create({
+        model,
+        messages,
+        temperature: options.temperature ?? 0.2,
+        max_tokens: options.maxTokens,
+        ...(options.responseFormatJson ? { response_format: { type: 'json_object' } } : {}),
+      });
+      const content = completion.choices[0]?.message?.content;
+      if (content) return content;
+    } catch (err: any) {
+      if (err?.status === 404 || err?.error?.code === 'model_not_found') {
+        continue;
+      }
+      console.warn(`⚠️ [Groq API - ${model}] error:`, err?.message || err);
+    }
+  }
+  return null;
+}
 
 function getGroqClient(): Groq | null {
   const apiKey = process.env.GROQ_API_KEY;
@@ -91,13 +133,13 @@ export class AIService {
    * Generates a technical sprint task with acceptance criteria & subtasks from a prompt
    */
   public static async generateTask(data: GenerateTasksInput): Promise<AIGeneratedTask> {
-    // 1. Primary: Groq LPU Engine (Llama 3.3 70B Versatile)
+    // 1. Primary: Groq LPU Engine
     const groq = getGroqClient();
     if (groq) {
       try {
-        const completion = await groq.chat.completions.create({
-          model: 'llama-3.3-70b-versatile',
-          messages: [
+        const content = await callGroqWithFallback(
+          groq,
+          [
             {
               role: 'system',
               content:
@@ -108,11 +150,9 @@ export class AIService {
               content: `Generate a structured sprint task for prompt: "${data.prompt}". Project: ${data.projectKey || 'General'}. Priority hint: ${data.priority || 'auto'}.`,
             },
           ],
-          response_format: { type: 'json_object' },
-          temperature: 0.2,
-        });
+          { responseFormatJson: true, temperature: 0.2 }
+        );
 
-        const content = completion.choices[0]?.message?.content;
         const parsed = extractJson<AIGeneratedTask>(content);
         if (parsed && parsed.title && Array.isArray(parsed.subtasks)) {
           return {
@@ -231,9 +271,9 @@ export class AIService {
     const groq = getGroqClient();
     if (groq) {
       try {
-        const completion = await groq.chat.completions.create({
-          model: 'llama-3.3-70b-versatile',
-          messages: [
+        const content = await callGroqWithFallback(
+          groq,
+          [
             {
               role: 'system',
               content:
@@ -244,11 +284,9 @@ export class AIService {
               content: `Generate engineering roadmap for project "${data.projectName}" with concept: "${data.concept}".`,
             },
           ],
-          response_format: { type: 'json_object' },
-          temperature: 0.2,
-        });
+          { responseFormatJson: true, temperature: 0.2 }
+        );
 
-        const content = completion.choices[0]?.message?.content;
         const parsed = extractJson<AIRoadmapResponse>(content);
         if (parsed && parsed.projectName && Array.isArray(parsed.milestones)) {
           return parsed;
@@ -337,9 +375,9 @@ export class AIService {
     const groq = getGroqClient();
     if (groq) {
       try {
-        const completion = await groq.chat.completions.create({
-          model: 'llama-3.3-70b-versatile',
-          messages: [
+        const content = await callGroqWithFallback(
+          groq,
+          [
             {
               role: 'system',
               content:
@@ -350,11 +388,9 @@ export class AIService {
               content: `Generate a daily engineering standup report JSON for developer "${data.userName || 'Developer'}". Tasks: ${JSON.stringify(data.tasks || [])}. Deep focus hours: ${data.focusHours || 6.5}.`,
             },
           ],
-          response_format: { type: 'json_object' },
-          temperature: 0.2,
-        });
+          { responseFormatJson: true, temperature: 0.2 }
+        );
 
-        const content = completion.choices[0]?.message?.content;
         const parsed = extractJson<AIStandupResponse>(content);
         if (parsed && Array.isArray(parsed.yesterday) && Array.isArray(parsed.today)) {
           return parsed;
@@ -450,4 +486,93 @@ export class AIService {
       riskFactor: completedSubtasks === totalSubtasks && totalSubtasks > 0 ? 'low' : 'medium',
     };
   }
+
+  /**
+   * Conversational AI Assistant Chatbot (Groq LPU / Gemini Core)
+   */
+  public static async chat(data: ChatInput): Promise<AIChatResponse> {
+    const userName = data.context?.userName || 'Developer';
+    const activeTasks = data.context?.activeTasksCount ?? 0;
+    const systemPrompt = `You are "DevHub AI Copilot", an elite AI software engineering lead and agile development assistant embedded directly inside the Developer Productivity Dashboard.
+User Context: Name: ${userName}, Role: ${data.context?.userRole || 'Full Stack Engineer'}, Active Sprint Tasks: ${activeTasks}.
+Help the user with coding, architecture planning, sprint workload optimization, debugging, SQL queries, Docker, Next.js, TypeScript, PostgreSQL, and technical roadmap advice.
+Keep answers concise, clear, well-structured, formatted with GitHub-flavored markdown and code blocks when applicable.`;
+
+    // 1. Try Groq LPU API
+    const groq = getGroqClient();
+    if (groq) {
+      try {
+        const messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }> = [
+          { role: 'system', content: systemPrompt },
+          ...data.messages.map((m) => ({
+            role: m.role as 'system' | 'user' | 'assistant',
+            content: m.content,
+          })),
+        ];
+
+        const reply = await callGroqWithFallback(groq, messages, {
+          temperature: 0.4,
+          maxTokens: 1024,
+        });
+
+        if (reply) {
+          return {
+            reply,
+            suggestedActions: [
+              'Break this down into subtasks',
+              'Draft an automated test suite',
+              'Estimate engineering effort',
+            ],
+          };
+        }
+      } catch (err) {
+        console.warn('⚠️ [Groq Chat] Error, falling back to secondary:', err);
+      }
+    }
+
+    // 2. Try Google Gemini API
+    const ai = getGeminiClient();
+    if (ai) {
+      try {
+        const lastUserMessage = data.messages[data.messages.length - 1]?.content || 'Hello';
+        const response = await ai.models.generateContent({
+          model: 'gemini-2.0-flash',
+          contents: `${systemPrompt}\n\nUser Question: ${lastUserMessage}`,
+        });
+        if (response.text) {
+          return {
+            reply: response.text,
+            suggestedActions: [
+              'Break this down into subtasks',
+              'Create a new sprint task',
+            ],
+          };
+        }
+      } catch (err) {
+        console.warn('⚠️ [Gemini Chat] Error, falling back:', err);
+      }
+    }
+
+    // 3. Fallback Heuristic Response
+    const lastMsg = data.messages[data.messages.length - 1]?.content.toLowerCase() || '';
+    let reply = `Hello ${userName}! I am your AI Engineering Copilot. How can I assist with your sprint architecture or code today?`;
+
+    if (lastMsg.includes('task') || lastMsg.includes('sprint') || lastMsg.includes('backlog')) {
+      reply = `You currently have **${activeTasks} tasks** in your active sprint backlog. Consider reviewing urgent items or running deep focus sessions to maintain high sprint velocity.`;
+    } else if (lastMsg.includes('optimize') || lastMsg.includes('database') || lastMsg.includes('query')) {
+      reply = `To optimize PostgreSQL performance:\n1. Ensure composite indexes are added on frequent \`WHERE\` and \`ORDER BY\` columns.\n2. Configure connection pool limits (\`connection_limit=5\`) in Prisma.\n3. Use projection filters (\`select: { id: true, title: true }\`) to avoid over-fetching.`;
+    } else if (lastMsg.includes('docker') || lastMsg.includes('deploy')) {
+      reply = `For production deployment:\n1. Use multi-stage Docker builds with Alpine Node images.\n2. Ensure all environment secrets are injected at runtime via environment variables.\n3. Enable health-check endpoints at \`/health\`.`;
+    }
+
+    return {
+      reply,
+      suggestedActions: [
+        'Analyze sprint velocity',
+        'Generate task with subtasks',
+        'Show database optimization tips',
+      ],
+    };
+  }
 }
+

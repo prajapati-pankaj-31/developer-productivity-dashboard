@@ -53,7 +53,28 @@ export const summarizeTaskSchema = z.object({
     .optional(),
 });
 
+export const chatSchema = z.object({
+  messages: z
+    .array(
+      z.object({
+        role: z.enum(['user', 'assistant', 'system']),
+        content: z.string().min(1, 'Message content cannot be empty'),
+      })
+    )
+    .min(1, 'At least one message is required'),
+  context: z
+    .object({
+      userName: z.string().optional(),
+      userRole: z.string().optional(),
+      activeTasksCount: z.number().optional(),
+      projectsCount: z.number().optional(),
+      recentTasks: z.array(z.string()).optional(),
+    })
+    .optional(),
+});
+
 export type GenerateTasksInput = z.infer<typeof generateTasksSchema>;
 export type GenerateRoadmapInput = z.infer<typeof generateRoadmapSchema>;
 export type StandupSummaryInput = z.infer<typeof standupSummarySchema>;
 export type SummarizeTaskInput = z.infer<typeof summarizeTaskSchema>;
+export type ChatInput = z.infer<typeof chatSchema>;

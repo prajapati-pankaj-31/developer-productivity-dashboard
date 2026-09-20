@@ -11,6 +11,7 @@ interface NewTaskModalProps {
   onClose: () => void;
   projects: Project[];
   teamMembers: User[];
+  currentUserId?: string;
   onAddTask: (task: Task) => void;
 }
 
@@ -19,6 +20,7 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
   onClose,
   projects,
   teamMembers,
+  currentUserId,
   onAddTask,
 }) => {
   const [title, setTitle] = useState('');
@@ -27,9 +29,19 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
   const [priority, setPriority] = useState<TaskPriority>('medium');
   const [estimatedHours, setEstimatedHours] = useState('4');
   const [tagsInput, setTagsInput] = useState('');
-  const [assigneeId, setAssigneeId] = useState(teamMembers[0]?.id || '');
+  const [assigneeId, setAssigneeId] = useState(currentUserId || teamMembers[0]?.id || '');
   const [dueDate, setDueDate] = useState('2026-09-10');
   const [error, setError] = useState('');
+
+  React.useEffect(() => {
+    if (isOpen) {
+      if (currentUserId && teamMembers.some((m) => m.id === currentUserId)) {
+        setAssigneeId(currentUserId);
+      } else if (teamMembers[0]?.id) {
+        setAssigneeId(teamMembers[0].id);
+      }
+    }
+  }, [isOpen, currentUserId, teamMembers]);
 
   const projectOptions: SelectOption[] = projects.map((p) => ({
     value: p.id,
@@ -43,10 +55,13 @@ export const NewTaskModal: React.FC<NewTaskModalProps> = ({
     { value: 'low', label: '⚪ Low' },
   ];
 
-  const assigneeOptions: SelectOption[] = teamMembers.map((m) => ({
-    value: m.id,
-    label: `${m.name} (${m.role.split(' ')[0]})`,
-  }));
+  const assigneeOptions: SelectOption[] = teamMembers.map((m) => {
+    const isMe = currentUserId && m.id === currentUserId;
+    return {
+      value: m.id,
+      label: isMe ? `⭐ You (${m.name} - ${m.role})` : `${m.name} (${m.role})`,
+    };
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

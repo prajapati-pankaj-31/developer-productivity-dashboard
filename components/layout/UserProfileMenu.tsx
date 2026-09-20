@@ -21,6 +21,7 @@ interface UserProfileMenuProps {
   onOpenProfile?: () => void;
   onOpenSettings?: () => void;
   onOpenShortcuts?: () => void;
+  onLogout?: () => void;
 }
 
 export const UserProfileMenu: React.FC<UserProfileMenuProps> = ({
@@ -29,6 +30,7 @@ export const UserProfileMenu: React.FC<UserProfileMenuProps> = ({
   onOpenProfile,
   onOpenSettings,
   onOpenShortcuts,
+  onLogout,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -176,12 +178,12 @@ export const UserProfileMenu: React.FC<UserProfileMenuProps> = ({
               type="button"
               onClick={() => {
                 setIsOpen(false);
-                if (onOpenSettings) onOpenSettings();
+                if (onLogout) onLogout();
               }}
               className="group/logout w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs text-rose-400/90 hover:text-rose-300 hover:bg-rose-500/10 border border-transparent hover:border-rose-500/20 transition-all duration-150 cursor-pointer"
             >
               <LogOut className="h-4 w-4 group-hover/logout:-translate-x-0.5 transition-transform duration-150" />
-              <span className="font-medium">Workspace Settings</span>
+              <span className="font-medium">Sign Out</span>
             </button>
           </div>
         </div>

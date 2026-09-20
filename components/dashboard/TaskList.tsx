@@ -15,6 +15,8 @@ interface TaskListProps {
   isLoading?: boolean;
   onStatusChange: (taskId: string, newStatus: TaskStatus) => void;
   onToggleSubtask?: (taskId: string, subtaskId: string) => void;
+  onEditTask?: (task: Task) => void;
+  onDeleteTask?: (taskId: string) => void;
   onResetFilters?: () => void;
 }
 
@@ -29,6 +31,8 @@ export const TaskList: React.FC<TaskListProps> = ({
   isLoading = false,
   onStatusChange,
   onToggleSubtask,
+  onEditTask,
+  onDeleteTask,
   onResetFilters,
 }) => {
   const [activeTab, setActiveTab] = useState<'all' | TaskStatus>('all');
@@ -148,6 +152,8 @@ export const TaskList: React.FC<TaskListProps> = ({
               task={task}
               onStatusChange={onStatusChange}
               onToggleSubtask={onToggleSubtask}
+              onEditTask={onEditTask}
+              onDeleteTask={onDeleteTask}
             />
           ))}
         </div>

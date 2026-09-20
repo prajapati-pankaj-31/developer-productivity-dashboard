@@ -176,7 +176,7 @@ export function Select<T extends string = string>({
   };
 
   return (
-    <div ref={containerRef} className={cn('relative inline-block text-left', isOpen ? 'z-30' : 'z-auto', className)}>
+    <div ref={containerRef} className={cn('relative inline-block text-left', isOpen ? 'z-50' : 'z-auto', className)}>
       <button
         ref={buttonRef}
         id={selectId}
@@ -210,7 +210,7 @@ export function Select<T extends string = string>({
       {isOpen && (
         <div
           className={cn(
-            'absolute z-30 mt-1.5 min-w-[160px] w-full max-w-[320px] rounded-lg bg-gradient-to-b from-[#0e1227] to-[#080a1a] border border-indigo-950/80 p-1 shadow-[0_10px_25px_-5px_rgba(0,0,0,0.6),0_0_15px_rgba(99,102,241,0.08)] backdrop-blur-xl animate-in fade-in zoom-in-95 duration-100 select-none',
+            'absolute z-50 mt-1.5 w-full min-w-[200px] rounded-lg bg-gradient-to-b from-[#0e1227] to-[#080a1a] border border-indigo-950/80 p-1 shadow-[0_15px_30px_-5px_rgba(0,0,0,0.8),0_0_20px_rgba(99,102,241,0.15)] backdrop-blur-xl animate-in fade-in zoom-in-95 duration-100 select-none',
             align === 'right' ? 'right-0' : 'left-0',
             menuClassName
           )}

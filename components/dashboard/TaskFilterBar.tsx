@@ -1,10 +1,11 @@
 'use client';
 
 import React from 'react';
-import { Project, TaskFilterState } from '@/types';
-import { Search, X, RotateCcw } from 'lucide-react';
+import { Project, TaskFilterState, User } from '@/types';
+import { Search, X, RotateCcw, UserCheck } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Select, SelectOption } from '@/components/ui/Select';
+import { cn } from '@/lib/utils';
 
 interface TaskFilterBarProps {
   filters: TaskFilterState;
@@ -13,6 +14,8 @@ interface TaskFilterBarProps {
   projects: Project[];
   totalResults: number;
   totalTasks: number;
+  authUser?: User | null;
+  onOpenAuthModal?: () => void;
 }
 
 export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
@@ -22,12 +25,15 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
   projects,
   totalResults,
   totalTasks,
+  authUser,
+  onOpenAuthModal,
 }) => {
   const hasActiveFilters =
     Boolean(filters.searchQuery) ||
     filters.projectId !== 'all' ||
     filters.priority !== 'all' ||
-    filters.status !== 'all';
+    filters.status !== 'all' ||
+    Boolean(filters.onlyMyTasks);
 
   const projectOptions: SelectOption[] = [
     { value: 'all', label: 'All Projects' },
@@ -80,6 +86,28 @@ export const TaskFilterBar: React.FC<TaskFilterBarProps> = ({
 
       {/* Custom Select Dropdown Filters */}
       <div className="flex flex-wrap items-center gap-2">
+        {/* Quick 'Assigned to Me' filter toggle */}
+        <button
+          type="button"
+          onClick={() => {
+            if (!authUser && onOpenAuthModal) {
+              onOpenAuthModal();
+              return;
+            }
+            onFilterChange({ onlyMyTasks: !filters.onlyMyTasks });
+          }}
+          className={cn(
+            'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all cursor-pointer select-none',
+            filters.onlyMyTasks
+              ? 'bg-gradient-to-r from-indigo-500/25 to-purple-500/25 border-indigo-500/60 text-indigo-200 shadow-[0_0_12px_rgba(99,102,241,0.25)]'
+              : 'border-zinc-700/80 bg-[#0a0d20]/80 text-zinc-400 hover:text-zinc-200 hover:border-zinc-600'
+          )}
+          title={authUser ? `Filter tasks assigned to ${authUser.name}` : 'Sign in to filter your tasks'}
+        >
+          <UserCheck className={cn('h-3.5 w-3.5', filters.onlyMyTasks ? 'text-indigo-400' : 'text-zinc-500')} />
+          <span>{authUser ? 'Assigned to Me' : 'My Tasks (Login)'}</span>
+        </button>
+
         {/* Project Selector */}
         <Select
           value={filters.projectId}

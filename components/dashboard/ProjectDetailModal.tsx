@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/Badge';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { Avatar } from '@/components/ui/Avatar';
 import { formatDate, getProjectStatusStyles } from '@/lib/utils';
-import { CheckCircle2 } from 'lucide-react';
+import { CheckCircle2, Pencil, Trash2, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 
 interface ProjectDetailModalProps {
@@ -16,6 +16,8 @@ interface ProjectDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
   onFilterByProject: (projectId: string) => void;
+  onEditProject?: (project: Project) => void;
+  onDeleteProject?: (projectId: string) => void;
 }
 
 export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
@@ -24,6 +26,8 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
   isOpen,
   onClose,
   onFilterByProject,
+  onEditProject,
+  onDeleteProject,
 }) => {
   if (!project) return null;
 
@@ -177,11 +181,45 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
           </div>
         </div>
 
-        {/* Action button */}
-        <div className="flex justify-end gap-2 pt-3 border-t border-zinc-100 dark:border-zinc-800">
-          <Button variant="outline" size="sm" onClick={onClose}>
-            Close
-          </Button>
+        {/* Action buttons */}
+        <div className="flex items-center justify-between gap-2 pt-3 border-t border-zinc-100 dark:border-zinc-800">
+          <div>
+            {onDeleteProject && (
+              <button
+                type="button"
+                onClick={() => {
+                  if (confirm(`Are you sure you want to delete project "${project.name}" [${project.key}]?`)) {
+                    onDeleteProject(project.id);
+                    onClose();
+                  }
+                }}
+                className="flex items-center gap-1.5 text-xs text-rose-500 hover:text-rose-400 font-medium px-2.5 py-1.5 rounded-lg hover:bg-rose-500/10 transition-colors cursor-pointer"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+                <span>Delete Project</span>
+              </button>
+            )}
+          </div>
+
+          <div className="flex items-center gap-2">
+            {onEditProject && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  onEditProject(project);
+                  onClose();
+                }}
+                className="flex items-center gap-1.5"
+              >
+                <Pencil className="h-3.5 w-3.5" />
+                <span>Edit Project</span>
+              </Button>
+            )}
+            <Button variant="primary" size="sm" onClick={onClose}>
+              Done
+            </Button>
+          </div>
         </div>
       </div>
     </Modal>

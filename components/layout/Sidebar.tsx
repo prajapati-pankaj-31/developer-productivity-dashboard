@@ -11,6 +11,7 @@ import {
   TrendingUp,
   Code2,
   Settings,
+  LogIn,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Avatar } from '@/components/ui/Avatar';
@@ -19,13 +20,14 @@ import { ProgressBar } from '@/components/ui/ProgressBar';
 interface SidebarProps {
   activeTab: TabType;
   onTabChange: (tab: TabType) => void;
-  currentUser: User;
+  currentUser: User | null;
   projectsCount?: number;
   tasksCount?: number;
   isCollapsed?: boolean;
   onToggleCollapse?: () => void;
   onOpenProfile?: () => void;
   onOpenSettings?: () => void;
+  onOpenAuthModal?: () => void;
 }
 
 const MIN_WIDTH = 240;
@@ -59,6 +61,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   isCollapsed = false,
   onOpenProfile,
   onOpenSettings,
+  onOpenAuthModal,
 }) => {
   const [width, setWidth] = useState<number>(getInitialWidth);
   const [isResizing, setIsResizing] = useState<boolean>(false);
@@ -240,30 +243,57 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       {/* User profile footer */}
       <div className="relative z-10 p-3 border-t border-indigo-950/50 bg-[#050611]/80 backdrop-blur-xs">
-        <button
-          type="button"
-          onClick={onOpenProfile}
-          className="group/profile w-full flex items-center gap-3 px-2 py-1.5 rounded-lg hover:bg-white/[0.05] border border-transparent hover:border-indigo-500/30 transition-all text-left cursor-pointer"
-          title="Open Developer Profile & Settings"
-        >
-          <Avatar user={currentUser} size="sm" showStatus />
-          {!isCollapsed && (
-            <div className="flex flex-col min-w-0 flex-1">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-zinc-100 group-hover/profile:text-indigo-300 transition-colors truncate">
-                  {currentUser.name}
-                </span>
-                <span className="text-[10px] text-zinc-500 group-hover/profile:text-indigo-400 opacity-0 group-hover/profile:opacity-100 transition-opacity">
-                  Edit ⚙️
+        {currentUser ? (
+          <button
+            type="button"
+            onClick={onOpenProfile}
+            className="group/profile w-full flex items-center gap-3 px-2 py-1.5 rounded-lg hover:bg-white/[0.05] border border-transparent hover:border-indigo-500/30 transition-all text-left cursor-pointer"
+            title="Open Developer Profile & Settings"
+          >
+            <Avatar user={currentUser} size="sm" showStatus />
+            {!isCollapsed && (
+              <div className="flex flex-col min-w-0 flex-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-zinc-100 group-hover/profile:text-indigo-300 transition-colors truncate">
+                    {currentUser.name}
+                  </span>
+                  <span className="text-[10px] text-zinc-500 group-hover/profile:text-indigo-400 opacity-0 group-hover/profile:opacity-100 transition-opacity">
+                    Edit ⚙️
+                  </span>
+                </div>
+                <span className="text-[11px] text-zinc-400 truncate flex items-center gap-1">
+                  <span
+                    className={cn(
+                      'h-1.5 w-1.5 rounded-full shrink-0',
+                      currentUser.status === 'flow' && 'bg-emerald-500',
+                      currentUser.status === 'available' && 'bg-blue-500',
+                      currentUser.status === 'in_review' && 'bg-purple-500',
+                      currentUser.status === 'away' && 'bg-zinc-400'
+                    )}
+                  />
+                  <span className="truncate capitalize">
+                    {currentUser.status === 'flow'
+                      ? 'Flow State Active'
+                      : currentUser.status === 'in_review'
+                      ? 'Reviewing PRs'
+                      : currentUser.status === 'away'
+                      ? 'Away'
+                      : 'Available'}
+                  </span>
                 </span>
               </div>
-              <span className="text-[11px] text-zinc-400 truncate flex items-center gap-1">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />
-                <span className="truncate">Flow Mode Active</span>
-              </span>
-            </div>
-          )}
-        </button>
+            )}
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={onOpenAuthModal}
+            className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-gradient-to-r from-indigo-600/80 to-purple-600/80 hover:from-indigo-600 hover:to-purple-600 text-white text-xs font-semibold shadow-md transition-all cursor-pointer"
+          >
+            <LogIn className="h-3.5 w-3.5" />
+            {!isCollapsed && <span>Sign In to DevHub</span>}
+          </button>
+        )}
       </div>
 
       {/* Resizable Handle / Border (Desktop only) */}

@@ -59,7 +59,7 @@ export const Modal: React.FC<ModalProps> = ({
       {/* Modal Dialog */}
       <div
         className={cn(
-          'relative w-full rounded-2xl bg-white dark:bg-gradient-to-b dark:from-[#0e1229] dark:to-[#070918] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9),0_0_35px_rgba(99,102,241,0.14)] border border-zinc-200/80 dark:border-indigo-950/80 p-6 sm:p-7 z-10 my-8 backdrop-blur-2xl animate-in fade-in zoom-in-95 duration-200 overflow-hidden',
+          'relative w-full rounded-2xl bg-white dark:bg-gradient-to-b dark:from-[#0e1229] dark:to-[#070918] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9),0_0_35px_rgba(99,102,241,0.14)] border border-zinc-200/80 dark:border-indigo-950/80 p-6 sm:p-7 z-10 my-8 backdrop-blur-2xl animate-in fade-in zoom-in-95 duration-200',
           maxWidthStyles[maxWidth]
         )}
         role="dialog"

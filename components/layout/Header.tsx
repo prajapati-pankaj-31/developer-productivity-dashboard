@@ -13,22 +13,24 @@ import {
   CheckCircle2,
   AlertTriangle,
   RotateCw,
+  LogIn,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface HeaderProps {
-  currentUser: User;
+  currentUser: User | null;
+  isAuthenticated?: boolean;
   onOpenMobileNav: () => void;
   onNewTaskClick: () => void;
   searchQuery: string;
   onSearchChange: (query: string) => void;
-  isLoadingState: boolean;
-  onToggleLoadingState: () => void;
   onStatusChange: (status: User['status']) => void;
   isLiveDbConnected?: boolean;
   onOpenProfile?: () => void;
   onOpenSettings?: () => void;
   onOpenShortcuts?: () => void;
+  onOpenAuthModal?: () => void;
+  onLogout?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -37,13 +39,14 @@ export const Header: React.FC<HeaderProps> = ({
   onNewTaskClick,
   searchQuery,
   onSearchChange,
-  isLoadingState,
-  onToggleLoadingState,
   onStatusChange,
   isLiveDbConnected = false,
   onOpenProfile,
   onOpenSettings,
   onOpenShortcuts,
+  onOpenAuthModal,
+  onLogout,
+  isAuthenticated = true,
 }) => {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const notifRef = useRef<HTMLDivElement>(null);
@@ -155,21 +158,6 @@ export const Header: React.FC<HeaderProps> = ({
           <span>{isLiveDbConnected ? 'Live DB Sync' : 'Local Cache'}</span>
         </div>
 
-        {/* Toggle skeleton loading state preview */}
-        <button
-          onClick={onToggleLoadingState}
-          className={cn(
-            'hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium border transition-colors cursor-pointer',
-            isLoadingState
-              ? 'bg-amber-500/10 text-amber-400 border-amber-700/60'
-              : 'text-zinc-400 border-zinc-800 hover:bg-zinc-800/60 hover:text-zinc-200'
-          )}
-          title="Toggle loading skeleton state for demonstration"
-        >
-          <RotateCw className={cn('h-3.5 w-3.5', isLoadingState && 'animate-spin text-amber-500')} />
-          <span>{isLoadingState ? 'Simulating Load...' : 'Simulate Loading'}</span>
-        </button>
-
         {/* Notifications Dropdown */}
         <div className="relative" ref={notifRef}>
           <button
@@ -244,14 +232,27 @@ export const Header: React.FC<HeaderProps> = ({
           <span className="hidden sm:inline">New Task</span>
         </Button>
 
-        {/* User Profile */}
-        <UserProfileMenu
-          user={currentUser}
-          onStatusChange={onStatusChange}
-          onOpenProfile={onOpenProfile}
-          onOpenSettings={onOpenSettings}
-          onOpenShortcuts={onOpenShortcuts}
-        />
+        {/* User Profile or Sign In */}
+        {currentUser ? (
+          <UserProfileMenu
+            user={currentUser}
+            onStatusChange={onStatusChange}
+            onOpenProfile={onOpenProfile}
+            onOpenSettings={onOpenSettings}
+            onOpenShortcuts={onOpenShortcuts}
+            onLogout={onLogout}
+          />
+        ) : (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={onOpenAuthModal}
+            className="border-indigo-500/40 hover:bg-indigo-500/10 text-indigo-300"
+          >
+            <LogIn className="h-3.5 w-3.5 mr-1" />
+            <span>Sign In</span>
+          </Button>
+        )}
       </div>
     </header>
   );

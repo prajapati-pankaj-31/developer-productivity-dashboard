@@ -11,6 +11,8 @@ import {
   GitPullRequest,
   Clock,
   CheckSquare,
+  Pencil,
+  Trash2,
 } from 'lucide-react';
 
 import { Select, SelectOption } from '@/components/ui/Select';
@@ -19,6 +21,8 @@ interface TaskCardProps {
   task: Task;
   onStatusChange: (taskId: string, newStatus: TaskStatus) => void;
   onToggleSubtask?: (taskId: string, subtaskId: string) => void;
+  onEditTask?: (task: Task) => void;
+  onDeleteTask?: (taskId: string) => void;
 }
 
 const statusOptions: SelectOption<TaskStatus>[] = [
@@ -32,6 +36,8 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   task,
   onStatusChange,
   onToggleSubtask,
+  onEditTask,
+  onDeleteTask,
 }) => {
   const priorityStyles = getPriorityStyles(task.priority);
 
@@ -42,7 +48,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   return (
     <div className="rounded-xl border border-zinc-200/80 dark:border-indigo-950/60 bg-white dark:bg-gradient-to-b dark:from-[#0b0e1e]/96 dark:to-[#070915]/98 backdrop-blur-md p-4 shadow-[0_4px_20px_rgba(0,0,0,0.3),inset_0_1px_0_0_rgba(255,255,255,0.03)] hover:border-indigo-500/40 hover:shadow-[0_8px_24px_rgba(99,102,241,0.08),inset_0_1px_0_0_rgba(255,255,255,0.05)] transition-all flex flex-col justify-between group">
       <div>
-        {/* Header: Project Key + Priority + Status selector */}
+        {/* Header: Project Key + Priority + Action Buttons & Status selector */}
         <div className="flex items-center justify-between gap-2 mb-2.5">
           <div className="flex items-center gap-1.5 flex-wrap">
             <span className="text-[11px] font-semibold text-zinc-700 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-800 border border-zinc-200/80 dark:border-zinc-700/80 px-2 py-0.5 rounded">
@@ -56,17 +62,50 @@ export const TaskCard: React.FC<TaskCardProps> = ({
             </span>
           </div>
 
-          {/* Interactive Custom Status Changer Dropdown */}
-          <Select
-            value={task.status}
-            onChange={(newStatus) => onStatusChange(task.id, newStatus)}
-            options={statusOptions}
-            size="xs"
-            align="right"
-            aria-label="Change task status"
-            className="min-w-[105px]"
-            menuClassName="w-36"
-          />
+          <div className="flex items-center gap-1">
+            {onEditTask && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEditTask(task);
+                }}
+                className="p-1 rounded-md text-zinc-400 hover:text-indigo-400 hover:bg-zinc-100 dark:hover:bg-zinc-800/80 transition-colors cursor-pointer"
+                title="Edit Task"
+                aria-label="Edit Task"
+              >
+                <Pencil className="h-3.5 w-3.5" />
+              </button>
+            )}
+            {onDeleteTask && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (confirm(`Are you sure you want to delete task "${task.title}"?`)) {
+                    onDeleteTask(task.id);
+                  }
+                }}
+                className="p-1 rounded-md text-zinc-400 hover:text-rose-400 hover:bg-zinc-100 dark:hover:bg-zinc-800/80 transition-colors cursor-pointer"
+                title="Delete Task"
+                aria-label="Delete Task"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+              </button>
+            )}
+
+            {/* Interactive Custom Status Changer Dropdown */}
+            <Select
+              value={task.status}
+              onChange={(newStatus) => onStatusChange(task.id, newStatus)}
+              options={statusOptions}
+              size="xs"
+              align="right"
+              aria-label="Change task status"
+              className="min-w-[105px]"
+              menuClassName="w-36"
+            />
+          </div>
         </div>
 
         {/* Task Title */}

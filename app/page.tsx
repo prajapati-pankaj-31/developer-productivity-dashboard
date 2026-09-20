@@ -24,33 +24,48 @@ import { TaskList } from '@/components/dashboard/TaskList';
 import { ActivityFeed } from '@/components/dashboard/ActivityFeed';
 import { ProjectDetailModal } from '@/components/dashboard/ProjectDetailModal';
 import { NewTaskModal } from '@/components/dashboard/NewTaskModal';
+import { EditTaskModal } from '@/components/dashboard/EditTaskModal';
+import { NewProjectModal } from '@/components/dashboard/NewProjectModal';
+import { EditProjectModal } from '@/components/dashboard/EditProjectModal';
 import { ProfileModal } from '@/components/dashboard/ProfileModal';
 import { SettingsModal, WorkspaceSettings, defaultSettings } from '@/components/dashboard/SettingsModal';
 import { KeyboardShortcutsModal } from '@/components/dashboard/KeyboardShortcutsModal';
+import { AuthModal } from '@/components/auth/AuthModal';
+import { useAuth } from '@/context/auth-context';
 import { DynamicBackground } from '@/components/ui/DynamicBackground';
 import { Button } from '@/components/ui/Button';
 import {
   Sparkles,
   ArrowRight,
   FolderGit2,
+  FolderPlus,
   CheckSquare,
+  Download,
 } from 'lucide-react';
 
 export default function DashboardPage() {
+  const { user: authUser, logout: authLogout, isAuthenticated, updateUserLocal } = useAuth();
+
   // State
   const [activeTab, setActiveTab] = useState<TabType>('overview');
-  const [currentUser, setCurrentUser] = useState<User>(CURRENT_USER);
   const [projects, setProjects] = useState<Project[]>(MOCK_PROJECTS);
   const [tasks, setTasks] = useState<Task[]>(MOCK_TASKS);
   const [activities, setActivities] = useState<ActivityItem[]>(RECENT_ACTIVITIES);
   const [metrics, setMetrics] = useState<ProductivityMetric[]>(PRODUCTIVITY_METRICS);
   const [weeklyData, setWeeklyData] = useState<DailyProductivity[]>(WEEKLY_PRODUCTIVITY_DATA);
+  const [teamUsers, setTeamUsers] = useState<User[]>(TEAM_MEMBERS);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isLiveDbConnected, setIsLiveDbConnected] = useState<boolean>(false);
 
   // Modals & Drawers
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isNewTaskModalOpen, setIsNewTaskModalOpen] = useState(false);
+  const [isNewProjectModalOpen, setIsNewProjectModalOpen] = useState(false);
+  const [editingProject, setEditingProject] = useState<Project | null>(null);
+  const [isEditProjectModalOpen, setIsEditProjectModalOpen] = useState(false);
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [isEditTaskModalOpen, setIsEditTaskModalOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isShortcutsModalOpen, setIsShortcutsModalOpen] = useState(false);
@@ -59,34 +74,41 @@ export default function DashboardPage() {
 
   // Load Real-time Data from Backend REST API
   const refreshBackendData = useCallback(async () => {
+    setIsLoadingState(true);
     const isAlive = await ApiClient.checkHealth();
     setIsLiveDbConnected(isAlive);
 
     if (isAlive) {
       try {
-        const [fetchedProjects, fetchedTasks, fetchedActivities, overview] = await Promise.all([
+        const [fetchedProjects, fetchedTasks, fetchedActivities, fetchedUsers, overview] = await Promise.all([
           ApiClient.getProjects(),
           ApiClient.getTasks(),
           ApiClient.getActivities(),
+          ApiClient.getUsers(),
           ApiClient.getAnalyticsOverview(),
         ]);
 
         if (fetchedProjects && fetchedProjects.length > 0) setProjects(fetchedProjects);
         if (fetchedTasks && fetchedTasks.length > 0) setTasks(fetchedTasks);
         if (fetchedActivities && fetchedActivities.length > 0) setActivities(fetchedActivities);
+        if (fetchedUsers && fetchedUsers.length > 0) setTeamUsers(fetchedUsers);
         if (overview?.metrics && overview.metrics.length > 0) setMetrics(overview.metrics);
         if (overview?.weeklyProductivity && overview.weeklyProductivity.length > 0) {
           setWeeklyData(overview.weeklyProductivity);
         }
       } catch (err) {
         console.warn('⚠️ [Live DB] Error refreshing data, using cache:', err);
+      } finally {
+        setIsLoadingState(false);
       }
+    } else {
+      setIsLoadingState(false);
     }
   }, []);
 
   useEffect(() => {
     refreshBackendData();
-  }, [refreshBackendData]);
+  }, [refreshBackendData, authUser?.id]);
 
   // Filters
   const [filters, setFilters] = useState<TaskFilterState>({
@@ -192,21 +214,263 @@ export default function DashboardPage() {
     }
   };
 
+  const handleOpenEditTask = (task: Task) => {
+    setEditingTask(task);
+    setIsEditTaskModalOpen(true);
+  };
+
+  const handleEditTask = async (updatedTask: Task) => {
+    // Optimistic UI update
+    setTasks((prev) => prev.map((t) => (t.id === updatedTask.id ? updatedTask : t)));
+
+    try {
+      const synced = await ApiClient.updateTask(updatedTask.id, {
+        title: updatedTask.title,
+        description: updatedTask.description,
+        projectId: updatedTask.projectId,
+        priority: updatedTask.priority,
+        status: updatedTask.status,
+        assigneeId: updatedTask.assignee.id,
+        dueDate: updatedTask.dueDate,
+        estimatedHours: updatedTask.estimatedHours,
+        loggedHours: updatedTask.loggedHours,
+        tags: updatedTask.tags,
+        branchName: updatedTask.branchName,
+        prNumber: updatedTask.prNumber,
+        subtasks: updatedTask.subtasks,
+      });
+      setTasks((prev) => prev.map((t) => (t.id === synced.id ? synced : t)));
+    } catch (err) {
+      console.warn('Backend task update warning:', err);
+    }
+  };
+
+  const handleDeleteTask = async (taskId: string) => {
+    // Optimistic UI update
+    setTasks((prev) => prev.filter((t) => t.id !== taskId));
+
+    try {
+      await ApiClient.deleteTask(taskId);
+    } catch (err) {
+      console.warn('Backend task deletion warning:', err);
+    }
+  };
+
+  const handleCreateProject = async (newProject: Project) => {
+    // Optimistic UI update
+    setProjects((prev) => [newProject, ...prev]);
+
+    try {
+      const created = await ApiClient.createProject({
+        name: newProject.name,
+        key: newProject.key,
+        description: newProject.description,
+        status: newProject.status,
+        deadline: newProject.deadline,
+        repository: newProject.repository,
+        techStack: newProject.techStack,
+        leadId: newProject.lead.id,
+        color: newProject.color,
+      });
+
+      setProjects((prev) => prev.map((p) => (p.id === newProject.id ? created : p)));
+
+      // Record Activity
+      const newAct: ActivityItem = {
+        id: `act-${Date.now()}`,
+        type: 'task_completed',
+        title: `Project Created: ${newProject.name}`,
+        description: `Initialized project key [${newProject.key}] and roadmap.`,
+        timestamp: 'Just now',
+        user: authUser || CURRENT_USER,
+        projectKey: newProject.key,
+        badgeText: 'New Project',
+      };
+      setActivities((prev) => [newAct, ...prev]);
+
+      if (authUser) {
+        ApiClient.createActivity({
+          type: 'task_completed',
+          title: `Project Created: ${newProject.name}`,
+          description: `Initialized project key [${newProject.key}] and roadmap.`,
+          userId: authUser.id,
+          projectKey: newProject.key,
+          badgeText: 'New Project',
+        }).catch(console.warn);
+      }
+    } catch (err) {
+      console.warn('Backend project create warning:', err);
+    }
+  };
+
+  const handleOpenEditProject = (proj: Project) => {
+    setEditingProject(proj);
+    setIsEditProjectModalOpen(true);
+  };
+
+  const handleUpdateProject = async (updatedProj: Project) => {
+    // Optimistic UI update
+    setProjects((prev) => prev.map((p) => (p.id === updatedProj.id ? updatedProj : p)));
+    if (selectedProject?.id === updatedProj.id) {
+      setSelectedProject(updatedProj);
+    }
+
+    try {
+      const synced = await ApiClient.updateProject(updatedProj.id, {
+        name: updatedProj.name,
+        description: updatedProj.description,
+        status: updatedProj.status,
+        deadline: updatedProj.deadline,
+        repository: updatedProj.repository,
+        techStack: updatedProj.techStack,
+        leadId: updatedProj.lead.id,
+        color: updatedProj.color,
+      });
+      setProjects((prev) => prev.map((p) => (p.id === synced.id ? synced : p)));
+      if (selectedProject?.id === synced.id) {
+        setSelectedProject(synced);
+      }
+    } catch (err) {
+      console.warn('Backend project update warning:', err);
+    }
+  };
+
+  const handleDeleteProject = async (projectId: string) => {
+    // Optimistic UI update
+    setProjects((prev) => prev.filter((p) => p.id !== projectId));
+    if (selectedProject?.id === projectId) {
+      setSelectedProject(null);
+    }
+
+    try {
+      await ApiClient.deleteProject(projectId);
+    } catch (err) {
+      console.warn('Backend project deletion warning:', err);
+    }
+  };
+
+  const handleExportSprintData = () => {
+    const dataToExport = {
+      exportTimestamp: new Date().toISOString(),
+      user: authUser?.name || 'Guest User',
+      metrics,
+      weeklyData,
+      projects: projects.map((p) => ({
+        key: p.key,
+        name: p.name,
+        progress: p.progress,
+        tasksCount: p.totalTasks,
+        completedTasks: p.completedTasks,
+        status: p.status,
+        techStack: p.techStack,
+      })),
+      tasks: tasks.map((t) => ({
+        title: t.title,
+        projectName: t.projectName,
+        priority: t.priority,
+        status: t.status,
+        assignee: t.assignee.name,
+        dueDate: t.dueDate,
+        loggedHours: t.loggedHours,
+        estimatedHours: t.estimatedHours,
+      })),
+    };
+
+    const blob = new Blob([JSON.stringify(dataToExport, null, 2)], {
+      type: 'application/json',
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `sprint-productivity-report-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleFocusSessionComplete = (minutes: number) => {
+    const focusDelta = +(minutes / 60).toFixed(1);
+    setWeeklyData((prev) =>
+      prev.map((d) => (d.isToday ? { ...d, focusHours: +(d.focusHours + focusDelta).toFixed(1) } : d))
+    );
+
+    const newAct: ActivityItem = {
+      id: `act-${Date.now()}`,
+      type: 'commit',
+      title: 'Deep Work Sprint Completed',
+      description: `Logged ${minutes}m of uninterrupted deep work flow.`,
+      timestamp: 'Just now',
+      user: authUser || CURRENT_USER,
+      projectKey: 'CORE',
+      badgeText: `+${minutes}m Focus`,
+    };
+    setActivities((prev) => [newAct, ...prev]);
+
+    if (authUser) {
+      ApiClient.createActivity({
+        type: 'commit',
+        title: 'Deep Work Sprint Completed',
+        description: `Logged ${minutes}m of uninterrupted deep work flow.`,
+        userId: authUser.id,
+        projectKey: 'CORE',
+        badgeText: `+${minutes}m Focus`,
+      }).catch(console.warn);
+    }
+  };
+
   const handleFilterByProject = (projectId: string) => {
     setFilters((prev) => ({ ...prev, projectId }));
     setActiveTab('tasks');
   };
 
   const handleUserStatusChange = (newStatus: User['status']) => {
-    setCurrentUser((prev) => ({ ...prev, status: newStatus }));
-    ApiClient.updateUser(currentUser.id, { status: newStatus }).catch((err) => {
-      console.warn('User status sync warning:', err);
-    });
+    if (authUser) {
+      updateUserLocal({ status: newStatus });
+      ApiClient.updateUser(authUser.id, { status: newStatus }).catch((err) => {
+        console.warn('User status sync warning:', err);
+      });
+    }
   };
 
+  // Dynamic Team Directory (Database users + logged in user prioritized at top)
+  const availableTeamMembers = useMemo(() => {
+    if (!authUser) return teamUsers;
+    const exists = teamUsers.some(
+      (u) => u.id === authUser.id || u.email.toLowerCase() === authUser.email.toLowerCase()
+    );
+    if (exists) {
+      return [
+        authUser,
+        ...teamUsers.filter(
+          (u) => u.id !== authUser.id && u.email.toLowerCase() !== authUser.email.toLowerCase()
+        ),
+      ];
+    }
+    return [authUser, ...teamUsers];
+  }, [teamUsers, authUser]);
+
   // Filtered Tasks
+  const myTasks = useMemo(() => {
+    if (!authUser) return [];
+    return tasks.filter(
+      (t) =>
+        t.assignee.id === authUser.id ||
+        t.assignee.email.toLowerCase() === authUser.email.toLowerCase()
+    );
+  }, [tasks, authUser]);
+
   const filteredTasks = useMemo(() => {
     return tasks.filter((task) => {
+      // Only My Tasks filter
+      if (filters.onlyMyTasks && authUser) {
+        const isMine =
+          task.assignee.id === authUser.id ||
+          task.assignee.email.toLowerCase() === authUser.email.toLowerCase();
+        if (!isMine) {
+          return false;
+        }
+      }
       // Search query
       if (filters.searchQuery) {
         const q = filters.searchQuery.toLowerCase();
@@ -232,7 +496,7 @@ export default function DashboardPage() {
       }
       return true;
     });
-  }, [tasks, filters]);
+  }, [tasks, filters, authUser]);
 
   // Filtered Projects
   const filteredProjects = useMemo(() => {
@@ -256,10 +520,12 @@ export default function DashboardPage() {
 
   // User & Workspace Settings Handlers
   const handleSaveUser = (updatedUser: Partial<User>) => {
-    setCurrentUser((prev) => ({ ...prev, ...updatedUser }));
-    ApiClient.updateUser(currentUser.id, updatedUser).catch((err) => {
-      console.warn('User profile sync warning:', err);
-    });
+    if (authUser) {
+      updateUserLocal(updatedUser);
+      ApiClient.updateUser(authUser.id, updatedUser).catch((err) => {
+        console.warn('User profile sync warning:', err);
+      });
+    }
   };
 
   const handleSaveSettings = (newSettings: WorkspaceSettings) => {
@@ -313,13 +579,13 @@ export default function DashboardPage() {
       {/* Futuristic Dynamic Ambient Background */}
       <DynamicBackground />
 
-      {/* Mobile Navigation Drawer */}
+      {/* Mobile Drawer Navigation */}
       <MobileNav
         isOpen={isMobileNavOpen}
         onClose={() => setIsMobileNavOpen(false)}
         activeTab={activeTab}
         onTabChange={setActiveTab}
-        currentUser={currentUser}
+        currentUser={authUser || CURRENT_USER}
         projectsCount={projects.length}
         tasksCount={tasks.length}
       />
@@ -328,29 +594,31 @@ export default function DashboardPage() {
       <Sidebar
         activeTab={activeTab}
         onTabChange={setActiveTab}
-        currentUser={currentUser}
+        currentUser={authUser}
         projectsCount={projects.length}
         tasksCount={tasks.length}
         onOpenProfile={() => setIsProfileModalOpen(true)}
         onOpenSettings={() => setIsSettingsModalOpen(true)}
+        onOpenAuthModal={() => setIsAuthModalOpen(true)}
       />
 
       {/* Main Content Area */}
       <div className="relative z-10 flex flex-1 flex-col overflow-hidden">
         {/* Top Header */}
         <Header
-          currentUser={currentUser}
+          currentUser={authUser}
+          isAuthenticated={isAuthenticated}
           onOpenMobileNav={() => setIsMobileNavOpen(true)}
           onNewTaskClick={() => setIsNewTaskModalOpen(true)}
           searchQuery={filters.searchQuery}
           onSearchChange={(q) => handleFilterChange({ searchQuery: q })}
-          isLoadingState={isLoadingState}
-          onToggleLoadingState={() => setIsLoadingState(!isLoadingState)}
           onStatusChange={handleUserStatusChange}
           isLiveDbConnected={isLiveDbConnected}
           onOpenProfile={() => setIsProfileModalOpen(true)}
           onOpenSettings={() => setIsSettingsModalOpen(true)}
           onOpenShortcuts={() => setIsShortcutsModalOpen(true)}
+          onOpenAuthModal={() => setIsAuthModalOpen(true)}
+          onLogout={authLogout}
         />
 
         {/* Scrollable Dashboard View */}
@@ -367,7 +635,18 @@ export default function DashboardPage() {
                 </span>
               </div>
               <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mt-1">
-                Welcome back, {currentUser.name}. You have delivered 38 story points this sprint.
+                {authUser ? (
+                  <>
+                    Welcome back, <span className="font-semibold text-zinc-200">{authUser.name}</span>{' '}
+                    <span className="text-indigo-400">({authUser.role || 'Developer'})</span>. You have{' '}
+                    <span className="font-semibold text-zinc-200">{myTasks.length}</span> task
+                    {myTasks.length === 1 ? '' : 's'} assigned to you (
+                    {myTasks.filter((t) => t.status === 'in_progress').length} in progress). Weekly focus
+                    goal: <span className="text-emerald-400 font-semibold">{authUser.weeklyFocusGoalHours || 35}h</span>.
+                  </>
+                ) : (
+                  '👤 Guest Mode: Viewing organization workspace. Sign in to view your assigned sprint tasks, log focus hours, and ship PRs.'
+                )}
               </p>
             </div>
 
@@ -417,7 +696,7 @@ export default function DashboardPage() {
                   <ProductivityChart data={weeklyData} />
                 </div>
                 <div className="lg:col-span-1">
-                  <FocusTimerCard />
+                  <FocusTimerCard onFocusSessionComplete={handleFocusSessionComplete} />
                 </div>
               </div>
 
@@ -443,7 +722,7 @@ export default function DashboardPage() {
                 <ProjectList
                   projects={filteredProjects}
                   isLoading={isLoadingState}
-                  onSelectProject={setSelectedProject}
+                  onSelectProject={handleOpenEditProject}
                   onResetFilters={handleResetFilters}
                 />
               </section>
@@ -467,6 +746,8 @@ export default function DashboardPage() {
                   projects={projects}
                   totalResults={filteredTasks.length}
                   totalTasks={tasks.length}
+                  authUser={authUser}
+                  onOpenAuthModal={() => setIsAuthModalOpen(true)}
                 />
 
                 {/* Task List Grid */}
@@ -475,6 +756,8 @@ export default function DashboardPage() {
                   isLoading={isLoadingState}
                   onStatusChange={handleStatusChange}
                   onToggleSubtask={handleToggleSubtask}
+                  onEditTask={handleOpenEditTask}
+                  onDeleteTask={handleDeleteTask}
                   onResetFilters={handleResetFilters}
                 />
               </section>
@@ -501,6 +784,20 @@ export default function DashboardPage() {
                     Active repositories, roadmap deliverables, and team assignments
                   </p>
                 </div>
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    if (!authUser) {
+                      setIsAuthModalOpen(true);
+                      return;
+                    }
+                    setIsNewProjectModalOpen(true);
+                  }}
+                  className="flex items-center gap-1.5"
+                >
+                  <FolderPlus className="h-4 w-4" />
+                  <span>+ Create Project</span>
+                </Button>
               </div>
 
               {/* Search / Project Filter */}
@@ -511,12 +808,14 @@ export default function DashboardPage() {
                 projects={projects}
                 totalResults={filteredProjects.length}
                 totalTasks={projects.length}
+                authUser={authUser}
+                onOpenAuthModal={() => setIsAuthModalOpen(true)}
               />
 
               <ProjectList
                 projects={filteredProjects}
                 isLoading={isLoadingState}
-                onSelectProject={setSelectedProject}
+                onSelectProject={handleOpenEditProject}
                 onResetFilters={handleResetFilters}
               />
             </div>
@@ -534,9 +833,30 @@ export default function DashboardPage() {
                     Track sprint deliverables, pull requests, and subtask completion
                   </p>
                 </div>
-                <Button size="sm" onClick={() => setIsNewTaskModalOpen(true)}>
-                  + Create Task
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleExportSprintData}
+                    className="flex items-center gap-1.5 text-xs"
+                  >
+                    <Download className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline">Export Sprint Report</span>
+                    <span className="sm:hidden">Export</span>
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={() => {
+                      if (!authUser) {
+                        setIsAuthModalOpen(true);
+                        return;
+                      }
+                      setIsNewTaskModalOpen(true);
+                    }}
+                  >
+                    + Create Task
+                  </Button>
+                </div>
               </div>
 
               {/* Filter controls */}
@@ -547,6 +867,8 @@ export default function DashboardPage() {
                 projects={projects}
                 totalResults={filteredTasks.length}
                 totalTasks={tasks.length}
+                authUser={authUser}
+                onOpenAuthModal={() => setIsAuthModalOpen(true)}
               />
 
               {/* Task list with status tabs */}
@@ -555,6 +877,8 @@ export default function DashboardPage() {
                 isLoading={isLoadingState}
                 onStatusChange={handleStatusChange}
                 onToggleSubtask={handleToggleSubtask}
+                onEditTask={handleOpenEditTask}
+                onDeleteTask={handleDeleteTask}
                 onResetFilters={handleResetFilters}
               />
             </div>
@@ -575,6 +899,7 @@ export default function DashboardPage() {
               <ActivityFeed
                 activities={activities}
                 title="Full Engineering Activity Log"
+                showFilters={true}
               />
             </div>
           )}
@@ -588,6 +913,31 @@ export default function DashboardPage() {
         isOpen={Boolean(selectedProject)}
         onClose={() => setSelectedProject(null)}
         onFilterByProject={handleFilterByProject}
+        onEditProject={handleOpenEditProject}
+        onDeleteProject={handleDeleteProject}
+      />
+
+      {/* New Project Creation Modal */}
+      <NewProjectModal
+        isOpen={isNewProjectModalOpen}
+        onClose={() => setIsNewProjectModalOpen(false)}
+        teamMembers={availableTeamMembers}
+        currentUserId={authUser?.id}
+        onCreateProject={handleCreateProject}
+      />
+
+      {/* Edit Project Modal */}
+      <EditProjectModal
+        isOpen={isEditProjectModalOpen}
+        onClose={() => {
+          setIsEditProjectModalOpen(false);
+          setEditingProject(null);
+        }}
+        project={editingProject}
+        teamMembers={availableTeamMembers}
+        currentUserId={authUser?.id}
+        onUpdateProject={handleUpdateProject}
+        onDeleteProject={handleDeleteProject}
       />
 
       {/* New Task Creation Modal */}
@@ -595,15 +945,31 @@ export default function DashboardPage() {
         isOpen={isNewTaskModalOpen}
         onClose={() => setIsNewTaskModalOpen(false)}
         projects={projects}
-        teamMembers={TEAM_MEMBERS}
+        teamMembers={availableTeamMembers}
+        currentUserId={authUser?.id}
         onAddTask={handleAddTask}
+      />
+
+      {/* Edit Task Modal */}
+      <EditTaskModal
+        isOpen={isEditTaskModalOpen}
+        onClose={() => {
+          setIsEditTaskModalOpen(false);
+          setEditingTask(null);
+        }}
+        task={editingTask}
+        projects={projects}
+        teamMembers={availableTeamMembers}
+        currentUserId={authUser?.id}
+        onUpdateTask={handleEditTask}
+        onDeleteTask={handleDeleteTask}
       />
 
       {/* Developer Profile & Identity Modal */}
       <ProfileModal
         isOpen={isProfileModalOpen}
         onClose={() => setIsProfileModalOpen(false)}
-        user={currentUser}
+        user={authUser || CURRENT_USER}
         onSaveUser={handleSaveUser}
       />
 
@@ -619,6 +985,12 @@ export default function DashboardPage() {
       <KeyboardShortcutsModal
         isOpen={isShortcutsModalOpen}
         onClose={() => setIsShortcutsModalOpen(false)}
+      />
+
+      {/* Authentication (Login / Signup) Modal */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
       />
     </div>
   );

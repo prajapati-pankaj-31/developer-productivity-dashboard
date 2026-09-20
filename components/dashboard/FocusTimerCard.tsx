@@ -9,11 +9,18 @@ import { cn } from '@/lib/utils';
 const WORK_SECONDS = 25 * 60; // 25 min
 const BREAK_SECONDS = 5 * 60; // 5 min
 
-export const FocusTimerCard: React.FC = () => {
+interface FocusTimerCardProps {
+  onFocusSessionComplete?: (minutes: number) => void;
+}
+
+export const FocusTimerCard: React.FC<FocusTimerCardProps> = ({
+  onFocusSessionComplete,
+}) => {
   const [mode, setMode] = useState<'work' | 'break'>('work');
   const [timeLeft, setTimeLeft] = useState(WORK_SECONDS);
   const [isRunning, setIsRunning] = useState(false);
   const [sessionsCompleted, setSessionsCompleted] = useState(3);
+  const [showCompleteToast, setShowCompleteToast] = useState(false);
 
   useEffect(() => {
     if (!isRunning) return;
@@ -25,6 +32,9 @@ export const FocusTimerCard: React.FC = () => {
           if (mode === 'work') {
             setSessionsCompleted((s) => s + 1);
             setMode('break');
+            onFocusSessionComplete?.(25);
+            setShowCompleteToast(true);
+            setTimeout(() => setShowCompleteToast(false), 4000);
             return BREAK_SECONDS;
           } else {
             setMode('work');
@@ -36,7 +46,7 @@ export const FocusTimerCard: React.FC = () => {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [isRunning, mode]);
+  }, [isRunning, mode, onFocusSessionComplete]);
 
   const toggleTimer = () => setIsRunning(!isRunning);
 
@@ -139,7 +149,28 @@ export const FocusTimerCard: React.FC = () => {
         <Button variant="outline" size="sm" onClick={resetTimer} title="Reset Timer">
           <RotateCcw className="h-3.5 w-3.5 text-zinc-500" />
         </Button>
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={() => {
+            setSessionsCompleted((s) => s + 1);
+            onFocusSessionComplete?.(25);
+            setShowCompleteToast(true);
+            setTimeout(() => setShowCompleteToast(false), 4000);
+          }}
+          title="Log 25m Focus Sprint"
+          className="text-xs text-indigo-400"
+        >
+          <Zap className="h-3.5 w-3.5" />
+          <span>+25m</span>
+        </Button>
       </div>
+
+      {showCompleteToast && (
+        <div className="mt-2 p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs text-center font-medium animate-fade-in">
+          🎉 Sprint logged! +0.4h added to telemetry.
+        </div>
+      )}
 
       {/* Footer Streak */}
       <div className="mt-3 flex items-center justify-between text-[11px] bg-zinc-100/80 dark:bg-[#070918]/80 border border-zinc-200/80 dark:border-indigo-950/50 p-2.5 rounded-lg shadow-[inset_0_1px_0_0_rgba(255,255,255,0.02)] transition-colors">

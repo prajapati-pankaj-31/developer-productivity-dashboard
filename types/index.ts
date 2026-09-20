@@ -4,7 +4,7 @@ export type TaskStatus = 'backlog' | 'in_progress' | 'in_review' | 'completed';
 
 export type ProjectStatus = 'on_track' | 'at_risk' | 'delayed' | 'completed';
 
-export type TabType = 'overview' | 'projects' | 'tasks' | 'activity';
+export type TabType = 'overview' | 'projects' | 'tasks' | 'activity' | 'ai-assistant' | 'profile';
 
 export interface User {
   id: string;

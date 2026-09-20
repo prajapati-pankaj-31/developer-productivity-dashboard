@@ -34,6 +34,7 @@ interface AIChatbotWidgetProps {
   currentUser: User | null;
   tasks?: Task[];
   onOpenStandupModal?: () => void;
+  onOpenFullPage?: () => void;
 }
 
 const DEFAULT_SUGGESTIONS = [
@@ -47,6 +48,7 @@ export const AIChatbotWidget: React.FC<AIChatbotWidgetProps> = ({
   currentUser,
   tasks = [],
   onOpenStandupModal,
+  onOpenFullPage,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -311,6 +313,18 @@ export const AIChatbotWidget: React.FC<AIChatbotWidgetProps> = ({
               >
                 <Trash2 className="h-3.5 w-3.5" />
               </button>
+              {onOpenFullPage && (
+                <button
+                  onClick={() => {
+                    setIsOpen(false);
+                    onOpenFullPage();
+                  }}
+                  title="Open as full workspace page"
+                  className="p-1.5 rounded-lg text-indigo-400 hover:text-white hover:bg-indigo-900/50 transition-colors"
+                >
+                  <Maximize2 className="h-3.5 w-3.5" />
+                </button>
+              )}
               <button
                 onClick={() => setIsExpanded(!isExpanded)}
                 title={isExpanded ? 'Restore size' : 'Expand window'}

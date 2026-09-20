@@ -28,14 +28,17 @@ import { EditTaskModal } from '@/components/dashboard/EditTaskModal';
 import { NewProjectModal } from '@/components/dashboard/NewProjectModal';
 import { EditProjectModal } from '@/components/dashboard/EditProjectModal';
 import { ProfileModal } from '@/components/dashboard/ProfileModal';
+import { ProfileView } from '@/components/profile/ProfileView';
 import { SettingsModal, WorkspaceSettings, defaultSettings } from '@/components/dashboard/SettingsModal';
 import { KeyboardShortcutsModal } from '@/components/dashboard/KeyboardShortcutsModal';
 import { AISprintCopilotModal } from '@/components/dashboard/AISprintCopilotModal';
 import { AIChatbotWidget } from '@/components/ai/AIChatbotWidget';
+import { AIAssistantView } from '@/components/ai/AIAssistantView';
 import { AuthModal } from '@/components/auth/AuthModal';
 import { useAuth } from '@/context/auth-context';
 import { DynamicBackground } from '@/components/ui/DynamicBackground';
 import { Button } from '@/components/ui/Button';
+import { cn } from '@/lib/utils';
 import {
   Sparkles,
   ArrowRight,
@@ -601,7 +604,7 @@ export default function DashboardPage() {
         currentUser={authUser}
         projectsCount={projects.length}
         tasksCount={tasks.length}
-        onOpenProfile={() => setIsProfileModalOpen(true)}
+        onOpenProfile={() => setActiveTab('profile')}
         onOpenSettings={() => setIsSettingsModalOpen(true)}
         onOpenAuthModal={() => setIsAuthModalOpen(true)}
       />
@@ -614,12 +617,12 @@ export default function DashboardPage() {
           isAuthenticated={isAuthenticated}
           onOpenMobileNav={() => setIsMobileNavOpen(true)}
           onNewTaskClick={() => setIsNewTaskModalOpen(true)}
-          onOpenAICopilot={() => setIsAICopilotOpen(true)}
+          onOpenAICopilot={() => setActiveTab('ai-assistant')}
           searchQuery={filters.searchQuery}
           onSearchChange={(q) => handleFilterChange({ searchQuery: q })}
           onStatusChange={handleUserStatusChange}
           isLiveDbConnected={isLiveDbConnected}
-          onOpenProfile={() => setIsProfileModalOpen(true)}
+          onOpenProfile={() => setActiveTab('profile')}
           onOpenSettings={() => setIsSettingsModalOpen(true)}
           onOpenShortcuts={() => setIsShortcutsModalOpen(true)}
           onOpenAuthModal={() => setIsAuthModalOpen(true)}
@@ -657,14 +660,6 @@ export default function DashboardPage() {
 
             {/* Quick action buttons */}
             <div className="flex flex-wrap items-center gap-2">
-              <Button
-                size="sm"
-                onClick={() => setIsAICopilotOpen(true)}
-                className="bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 hover:from-indigo-500 hover:to-purple-500 text-white font-semibold shadow-[0_0_15px_rgba(99,102,241,0.25)] border border-indigo-400/30 flex items-center gap-1.5"
-              >
-                <Sparkles className="h-3.5 w-3.5 text-amber-300 animate-pulse" />
-                <span>AI Copilot</span>
-              </Button>
               <Button
                 variant={activeTab === 'overview' ? 'primary' : 'outline'}
                 size="sm"
@@ -916,6 +911,28 @@ export default function DashboardPage() {
               />
             </div>
           )}
+
+          {/* TAB 5: AI COPILOT & ASSISTANT (MAIN PAGE VIEW) */}
+          {activeTab === 'ai-assistant' && (
+            <AIAssistantView
+              currentUser={authUser}
+              tasks={tasks}
+              projects={projects}
+              weeklyFocusHours={weeklyData.find((d) => d.isToday)?.focusHours || 6.5}
+              onNavigateToTasks={() => setActiveTab('tasks')}
+            />
+          )}
+
+          {/* TAB 6: DEVELOPER PROFILE & IDENTITY (MAIN PAGE VIEW) */}
+          {activeTab === 'profile' && (
+            <ProfileView
+              user={authUser || CURRENT_USER}
+              tasks={tasks}
+              weeklyData={weeklyData}
+              onSaveUser={handleSaveUser}
+              onNavigateToTasks={() => setActiveTab('tasks')}
+            />
+          )}
         </main>
       </div>
 
@@ -1020,6 +1037,7 @@ export default function DashboardPage() {
         currentUser={authUser}
         tasks={tasks}
         onOpenStandupModal={() => setIsAICopilotOpen(true)}
+        onOpenFullPage={() => setActiveTab('ai-assistant')}
       />
     </div>
   );

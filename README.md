@@ -384,7 +384,7 @@ npm test
 ## 👨‍💻 Author & Project Context
 
 - **Developer:** [Pankaj Prajapati](https://github.com/prajapati-pankaj-31)
-- **Role:** Full Stack & AI Developer
+- **Role:** Full Stack Developer
 - **Internship:** Innovation Hacks Full Stack Development Program
 - **Submission:** Tasks 1, 2, 3, and 4 Comprehensive Full Stack Platform
 
